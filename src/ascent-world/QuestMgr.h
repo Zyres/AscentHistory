@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -51,8 +51,8 @@ public:
 	uint32 ActiveQuestsCount(Object* quest_giver, Player* plr);
 
 	//Packet Forging...
-	void BuildOfferReward(WorldPacket* data,Quest* qst, Object* qst_giver, uint32 menutype, uint32 language);
-	void BuildQuestDetails(WorldPacket* data, Quest* qst, Object* qst_giver, uint32 menutype, uint32 language);	
+	void BuildOfferReward(WorldPacket* data,Quest* qst, Object* qst_giver, uint32 menutype, uint32 language, Player * plr);
+	void BuildQuestDetails(WorldPacket* data, Quest* qst, Object* qst_giver, uint32 menutype, uint32 language, Player * plr);
 	void BuildRequestItems(WorldPacket* data, Quest* qst, Object* qst_giver, uint32 status, uint32 language);
 	void BuildQuestComplete(Player*, Quest* qst);
 	void BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32 language);
@@ -75,7 +75,8 @@ public:
 
 	void GiveQuestRewardReputation(Player* plr, Quest* qst, Object *qst_giver);
 
-	uint32 GenerateQuestXP(Player *pl, Quest *qst);
+	uint32 GenerateQuestXP(Player *plr, Quest *qst);
+	uint32 GenerateRewardMoney( Player * plr, Quest * qst );
 
 	void SendQuestInvalid( INVALID_REASON reason, Player *plyr);
 	void SendQuestFailed(FAILED_REASON failed, Quest *qst, Player *plyr);
@@ -91,7 +92,8 @@ public:
 	QuestAssociationList* GetQuestAssociationListForItemId (uint32 itemId);
 	uint32 GetGameObjectLootQuest(uint32 GO_Entry);
 	void SetGameObjectLootQuest(uint32 GO_Entry, uint32 Item_Entry);
-	ASCENT_INLINE bool IsQuestRepeatable(Quest *qst) { return (qst->is_repeatable!=0 ? true : false); }
+	ASCENT_INLINE bool IsQuestRepeatable(Quest *qst) { return (qst->is_repeatable==1 ? true : false); }
+	ASCENT_INLINE bool IsQuestDaily(Quest *qst) { return (qst->is_repeatable==2 ? true : false); }
 
 	bool CanStoreReward(Player *plyr, Quest *qst, uint32 reward_slot);
 

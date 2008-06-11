@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -174,8 +174,13 @@ bool ChatHandler::HandleDeleteCommand(const char* args, WorldSession *m_session)
 
 bool ChatHandler::HandleDeMorphCommand(const char* args, WorldSession *m_session)
 {
-	sLog.outError("Demorphed %s",m_session->GetPlayer()->GetName());
-	m_session->GetPlayer()->DeMorph();
+	Player * target	= getSelectedChar(m_session);
+	if(!target)
+		target	= m_session->GetPlayer();
+
+	sLog.outError("Demorphed %s", target->GetName());
+	target->DeMorph();
+
 	return true;
 }
 
@@ -224,7 +229,7 @@ bool ChatHandler::HandleItemCommand(const char* args, WorldSession *m_session)
 		sstext << "Item '" << item << "' Not Found in Database." << '\0';
 	}
 
-	sGMLog.writefromsession(m_session, "added item %u to vendor %u", pCreature->GetEntry(), item);
+	sGMLog.writefromsession(m_session, "added item %u to vendor %u", item, pCreature->GetEntry());
 	SystemMessage(m_session,  sstext.str().c_str());
 
 	return true;
@@ -550,6 +555,7 @@ bool ChatHandler::HandleMonsterYellCommand(const char* args, WorldSession *m_ses
 bool ChatHandler::HandleGOSelect(const char *args, WorldSession *m_session)
 {
 	GameObject *GObj = NULL;
+	GameObject *GObjs = m_session->GetPlayer()->GetSelectedGo();
 
 	std::set<Object*>::iterator Itr = m_session->GetPlayer()->GetInRangeSetBegin();
 	std::set<Object*>::iterator Itr2 = m_session->GetPlayer()->GetInRangeSetEnd();
@@ -561,7 +567,7 @@ bool ChatHandler::HandleGOSelect(const char *args, WorldSession *m_session)
 	{
 		if(args[0] == '1')
 		{
-			if(m_session->GetPlayer()->m_GM_SelectedGO == NULL)
+			if(GObjs == NULL)
 				bUseNext = true;
 
 			for(;;Itr++)
@@ -580,7 +586,7 @@ bool ChatHandler::HandleGOSelect(const char *args, WorldSession *m_session)
 						GObj = static_cast<GameObject*>(*Itr);
 						break;
 					} else {
-						if(((*Itr) == m_session->GetPlayer()->m_GM_SelectedGO))
+						if(((*Itr) == GObjs))
 						{
 							// Found him. Move to the next one, or beginning if we're at the end
 							bUseNext = true;
@@ -613,7 +619,7 @@ bool ChatHandler::HandleGOSelect(const char *args, WorldSession *m_session)
 		return true;
 	}
 
-	m_session->GetPlayer()->m_GM_SelectedGO = GObj;
+	m_session->GetPlayer()->m_GM_SelectedGO = GObj->GetGUID();
 
 	GreenSystemMessage(m_session, "Selected GameObject [ %s ] which is %.3f meters away from you.",
 		GameObjectNameStorage.LookupEntry(GObj->GetEntry())->Name, m_session->GetPlayer()->CalcDistance(GObj));
@@ -623,7 +629,7 @@ bool ChatHandler::HandleGOSelect(const char *args, WorldSession *m_session)
 
 bool ChatHandler::HandleGODelete(const char *args, WorldSession *m_session)
 {
-	GameObject *GObj = m_session->GetPlayer()->m_GM_SelectedGO;
+	GameObject *GObj = m_session->GetPlayer()->GetSelectedGo();
 	if( !GObj )
 	{
 		RedSystemMessage(m_session, "No selected GameObject...");
@@ -757,9 +763,7 @@ bool ChatHandler::HandleGOInfo(const char *args, WorldSession *m_session)
 {
 	std::stringstream sstext;
 	GameObjectInfo *GOInfo = NULL;
-	GameObject *GObj = NULL;
-
-	GObj = m_session->GetPlayer()->m_GM_SelectedGO;
+	GameObject *GObj = m_session->GetPlayer()->GetSelectedGo();
 	if( !GObj )
 	{
 		RedSystemMessage(m_session, "No selected GameObject...");
@@ -834,9 +838,7 @@ bool ChatHandler::HandleGOInfo(const char *args, WorldSession *m_session)
 
 bool ChatHandler::HandleGOEnable(const char *args, WorldSession *m_session)
 {
-	GameObject *GObj = NULL;
-
-	GObj = m_session->GetPlayer()->m_GM_SelectedGO;
+	GameObject *GObj = m_session->GetPlayer()->GetSelectedGo();
 	if( !GObj )
 	{
 		RedSystemMessage(m_session, "No selected GameObject...");
@@ -856,9 +858,7 @@ bool ChatHandler::HandleGOEnable(const char *args, WorldSession *m_session)
 
 bool ChatHandler::HandleGOActivate(const char* args, WorldSession *m_session)
 {
-	GameObject *GObj = NULL;
-
-	GObj = m_session->GetPlayer()->m_GM_SelectedGO;
+	GameObject *GObj = m_session->GetPlayer()->GetSelectedGo();
 	if( !GObj )
 	{
 		RedSystemMessage(m_session, "No selected GameObject...");
@@ -880,7 +880,7 @@ bool ChatHandler::HandleGOActivate(const char* args, WorldSession *m_session)
 
 bool ChatHandler::HandleGOScale(const char* args, WorldSession* m_session)
 {
-	GameObject *go = m_session->GetPlayer()->m_GM_SelectedGO;
+	GameObject *go = m_session->GetPlayer()->GetSelectedGo();
 	if( !go )
 	{
 		RedSystemMessage(m_session, "No selected GameObject...");
@@ -1015,7 +1015,7 @@ bool ChatHandler::HandleAddAIAgentCommand(const char* args, WorldSession *m_sess
 /*	sp->procCount = atoi(procCount);*/
 	sp->spell = dbcSpell.LookupEntry(atoi(spellId));
 	sp->spellType = atoi(spellType);
-	sp->spelltargetType = atoi(spelltargetType);
+//	sp->spelltargetType = atoi(spelltargetType);
 	sp->floatMisc1 = (float)atof(floatMisc1);
 	sp->Misc2 = (uint32)atof(Misc2);
 	sp->cooldown = (uint32)atoi(spellCooldown);
@@ -1075,11 +1075,13 @@ bool ChatHandler::HandleListAIAgentCommand(const char* args, WorldSession *m_ses
 
 bool ChatHandler::HandleGOAnimProgress(const char * args, WorldSession * m_session)
 {
-	if(!m_session->GetPlayer()->m_GM_SelectedGO)
+	GameObject *GObj = m_session->GetPlayer()->GetSelectedGo();
+
+	if(!GObj)
 		return false;
 
 	uint32 ap = atol(args);
-	m_session->GetPlayer()->m_GM_SelectedGO->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, ap);
+	GObj->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, ap);
 	BlueSystemMessage(m_session, "Set ANIMPROGRESS to %u", ap);
 	return true;
 }

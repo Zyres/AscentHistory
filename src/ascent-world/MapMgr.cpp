@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -114,6 +114,58 @@ MapMgr::~MapMgr()
 	}
 
 	Log.Notice("MapMgr", "Instance %u shut down. (%s)" , m_instanceID, GetBaseMap()->GetName());
+}
+
+WorldPacket* MapMgr::BuildInitialWorldState()
+{
+	WorldPacket * data = new WorldPacket(SMSG_INIT_WORLD_STATES, 99);
+	*data << GetMapId();
+	*data << (uint32)0; // unk
+	*data << (uint32)0; // unk
+	*data << (uint16)_worldStateSet.size();
+	std::map<uint32,uint32>::iterator itr = _worldStateSet.begin();
+	for(; itr != _worldStateSet.end(); itr++)
+	{
+		*data << (uint32)itr->first;
+		*data << (uint32)itr->second;
+	}
+
+	return data;
+}
+
+void MapMgr::SetWorldState(uint32 state, uint32 value)
+{
+	if(_worldStateSet.find(state) == _worldStateSet.end())
+	{
+		_worldStateSet.insert( make_pair(state, value) );
+	}
+	else
+	{
+		_worldStateSet[state] = value;
+	}
+
+	// Distribute this update
+	
+	SessionSet::iterator itr = Sessions.begin();
+	for(; itr != Sessions.end(); itr++)
+	{
+		WorldSession * pSession = (*itr);
+		if(!pSession)
+			continue;
+
+		WorldPacket data(SMSG_UPDATE_WORLD_STATE, 8);
+		data << state;
+		data << value;
+		pSession->SendPacket(&data);
+	}
+}
+
+uint32 MapMgr::GetWorldState(uint32 state)
+{
+	if(_worldStateSet.find(state) == _worldStateSet.end())
+		return 0;
+
+	return _worldStateSet[state];
 }
 
 uint32 MapMgr::GetTeamPlayersCount(uint32 teamId)
@@ -1323,12 +1375,90 @@ void MapMgr::ChangeFarsightLocation(Player *plr, DynamicObject *farsight)
 /* new stuff
 */
 
+//#ifdef FORCED_SERVER_KEEPALIVE
+
+//there is a chance at least one of the players got corrupted
+void MapMgr::TeleportCorruptedPlayers()
+{
+	PlayerStorageMap::iterator itr =  m_PlayerStorage.begin();
+	for(; itr !=  m_PlayerStorage.end();)
+	{
+		Player *p = itr->second;
+		++itr;
+		try	
+		{ 
+//			p->EjectFromInstance();
+			if( p->GetSession() )
+			{
+				p->GetSession()->LogoutPlayer(false);
+			}
+			else
+			{
+				delete p;
+			}
+		}catch(int er)	{ er = 1; }//lols for the warning
+	}
+}
+//an exception ocured somewhere. We try to cleanup if there is anything to clean up and then kill this thread.
+//We should not save data in case some memory corruption ocured
+//we should be prepared that during cleanup process we meet the same exeption and we have to skip that (or handle it)
+//there might be cases when we should restart the mapmanager made for the the map (like always loaded maps)
+void MapMgr::KillThreadWithCleanup()
+{
+	try
+	{
+		// Teleport any left-over players out.
+		TeleportCorruptedPlayers();	
+
+		if(m_battleground)
+		{
+			BattlegroundManager.DeleteBattleground(m_battleground);
+			sInstanceMgr.DeleteBattlegroundInstance( GetMapId(), GetInstanceID() );
+		}
+
+		if(pInstance)
+		{
+			// check for a non-raid instance, these expire after 10 minutes.
+			if(GetMapInfo()->type == INSTANCE_NONRAID || pInstance->m_isBattleground)
+			{
+				pInstance->m_mapMgr = NULL;
+				sInstanceMgr._DeleteInstance(pInstance, true);
+			}
+			else
+			{
+				// just null out the pointer
+				pInstance->m_mapMgr=NULL;
+			}
+		}
+		else if(GetMapInfo()->type == INSTANCE_NULL)
+		{
+			uint32 this_mapid = GetMapId();
+			sInstanceMgr.m_singleMaps[ this_mapid ] = NULL;
+			//if we are really cocky we try to create a new map instead of the crashed one
+			sInstanceMgr._CreateInstance( this_mapid, sInstanceMgr.GenerateInstanceID() );
+		}
+
+		thread_running = false;
+
+		// delete ourselves
+//		delete this; //threadpool will delete us ?
+	}
+	catch(int error)
+	{
+		error = 1;//deal with this later
+		//we are just avoiding the process to catch this exeption. We know it was comming
+	}
+
+//	KillThread();
+}
+//#endif
+
 bool MapMgr::run()
 {
-	bool rv;
-	THREAD_TRY_EXECUTION2
+	bool rv=true;
+	THREAD_TRY_EXECUTION_MapMgr
 		rv = Do();
-	THREAD_HANDLE_CRASH2
+	THREAD_HANDLE_CRASH_MapMgr
 	return rv;
 }
 
@@ -1516,6 +1646,9 @@ Unit* MapMgr::GetUnit(const uint64 & guid)
 	else
 		return NULL;*/
 
+	if (!guid)
+		return NULL;
+
 	switch(GET_TYPE_FROM_GUID(guid))
 	{
 	case HIGHGUID_TYPE_UNIT:
@@ -1536,6 +1669,9 @@ Unit* MapMgr::GetUnit(const uint64 & guid)
 
 Object* MapMgr::_GetObject(const uint64 & guid)
 {
+	if (!guid)
+		return NULL;
+
 	switch(GET_TYPE_FROM_GUID(guid))
 	{
 	case	HIGHGUID_TYPE_GAMEOBJECT:

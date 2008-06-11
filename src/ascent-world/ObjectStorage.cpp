@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,7 @@
 const char * gItemPrototypeFormat						= "uuuussssuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuffuffuffuffuffuuuuuuuuuufuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuusuuuuuuuuuuuuuuuuuuuuuuuuuu";
 const char * gCreatureNameFormat						= "usssuuuuuuuuuuffcc";
 const char * gGameObjectNameFormat						= "uuusuuuuuuuuuuuuuuuuuuuuuuuu";
-const char * gCreatureProtoFormat						= "uuuuuuufuuuffuffuuuuuuuuuuuuuuuuuuffsuuuufffu";
+const char * gCreatureProtoFormat						= "uuuuuuufuuuffuffuuuuuuuuuuuuuuuuuuffsuuuufffuuuuuu";
 const char * gAreaTriggerFormat							= "ucuusffffuu";
 const char * gItemPageFormat							= "usu";
 const char * gNpcTextFormat								= "ufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuu";
@@ -36,6 +36,7 @@ const char * gPvPAreaFormat								= "ush";
 const char * gFishingFormat								= "uuu";
 const char * gWorldMapInfoFormat						= "uuuuufffusuuuuuuufu";
 const char * gZoneGuardsFormat							= "uuu";
+const char * gUnitModelSizeFormat						= "uf";
 
 /** SQLStorage symbols
  */
@@ -52,9 +53,30 @@ SERVER_DECL SQLStorage<TeleportCoords, HashMapStorageContainer<TeleportCoords> >
 SERVER_DECL SQLStorage<FishingZoneEntry, HashMapStorageContainer<FishingZoneEntry> >		FishingZoneStorage;
 SERVER_DECL SQLStorage<MapInfo, ArrayStorageContainer<MapInfo> >							WorldMapInfoStorage;
 SERVER_DECL SQLStorage<ZoneGuardEntry, HashMapStorageContainer<ZoneGuardEntry> >			ZoneGuardStorage;
+SERVER_DECL SQLStorage<UnitModelSizeEntry, HashMapStorageContainer<UnitModelSizeEntry> >	UnitModelSizeStorage;
 
 SERVER_DECL set<string> ExtraMapCreatureTables;
 SERVER_DECL set<string> ExtraMapGameObjectTables;
+
+void ObjectMgr::LoadProfessionDiscoveries()
+{
+	QueryResult * result = WorldDatabase.Query( "SELECT * from professiondiscoveries" );
+	if ( result != NULL )
+	{
+		do
+		{
+			Field *f = result->Fetch();
+			ProfessionDiscovery * pf = new ProfessionDiscovery;
+			pf->SpellId = f[0].GetUInt32();
+			pf->SpellToDiscover = f[1].GetUInt32();
+			pf->SkillValue = f[2].GetUInt32();
+			pf->Chance = f[3].GetFloat();
+			ProfessionDiscoveryTable.insert( pf );
+		}
+		while( result->NextRow() );
+	}
+	delete result;
+}
 
 void ObjectMgr::LoadExtraCreatureProtoStuff()
 {
@@ -161,7 +183,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 				sp->procCount = fields[4].GetUInt32();
 				sp->spell = spe;
 				sp->spellType = fields[6].GetUInt32();
-				sp->spelltargetType = fields[7].GetUInt32();
+//				sp->spelltargetType = fields[7].GetUInt32();
 				sp->cooldown = fields[8].GetUInt32();
 				sp->floatMisc1 = fields[9].GetFloat();
 				sp->autocast_type=(uint32)-1;
@@ -482,6 +504,7 @@ void Storage_FillTaskList(TaskList & tl)
 	make_task(NpcTextStorage, GossipText, HashMapStorageContainer, "npc_text", gNpcTextFormat);
 	make_task(WorldMapInfoStorage, MapInfo, ArrayStorageContainer, "worldmap_info", gWorldMapInfoFormat);
 	make_task(ZoneGuardStorage, ZoneGuardEntry, HashMapStorageContainer, "zoneguards", gZoneGuardsFormat);
+	make_task(UnitModelSizeStorage, UnitModelSizeEntry, HashMapStorageContainer, "unit_display_sizes", gUnitModelSizeFormat);
 }
 
 void Storage_Cleanup()
@@ -514,6 +537,7 @@ void Storage_Cleanup()
 	NpcTextStorage.Cleanup();
 	WorldMapInfoStorage.Cleanup();
 	ZoneGuardStorage.Cleanup();
+	UnitModelSizeStorage.Cleanup();
 }
 
 vector<pair<string,string> > additionalTables;
@@ -556,6 +580,8 @@ bool LoadAdditionalTable(const char * TableName, const char * SecondName)
 		WorldMapInfoStorage.LoadAdditionalData(SecondName, gWorldMapInfoFormat);
 	else if(!stricmp(TableName, "zoneguards"))
 		ZoneGuardStorage.LoadAdditionalData(SecondName, gZoneGuardsFormat);
+	else if(!stricmp(TableName, "unit_display_sizes"))
+		UnitModelSizeStorage.LoadAdditionalData(SecondName, gUnitModelSizeFormat);
 	else
 		return false;
 
@@ -591,6 +617,8 @@ bool Storage_ReloadTable(const char * TableName)
 		WorldMapInfoStorage.Reload();
 	else if(!stricmp(TableName, "zoneguards"))
 		ZoneGuardStorage.Reload();
+	else if(!stricmp(TableName, "unit_display_sizes"))
+		UnitModelSizeStorage.Reload();
 	else if(!stricmp(TableName, "command_overrides"))	// Command Overrides
 	{
 		CommandTableStorage::getSingleton().Dealloc();
@@ -639,5 +667,6 @@ void Storage_LoadAdditionalTables()
 		}
 	}
 }
+
 
 

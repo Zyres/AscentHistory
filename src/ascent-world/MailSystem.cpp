@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -341,7 +341,7 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data )
 	}
 
 	// Check if we're sending mail to ourselves
-	if(player->name == _player->GetName() && !GetPermissionCount())
+	if( strcmp(player->name, _player->GetName()) == 0 && !GetPermissionCount())
 	{
 		SendMailError(MAIL_ERR_CANNOT_SEND_TO_SELF);
 		return;

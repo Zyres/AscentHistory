@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -32,12 +32,44 @@ bool ChatHandler::HandleAnnounceCommand(const char* args, WorldSession *m_sessio
 	}
 
 	char msg[1024];
-	snprintf(msg, 1024, "[Server Notice]"MSG_COLOR_GREEN" %s: %s", m_session->GetPlayer()->GetName(), args);
+	string input2;
+	input2 = sWorld.ann_tagcolor;
+	input2 += "[";
+	input2 += sWorld.announce_tag;
+	input2 += "]";
+	input2 += sWorld.ann_gmtagcolor;
+	if(sWorld.GMAdminTag)
+	{
+		if(m_session->CanUseCommand('z')) input2+="<Admin>";
+		else if(m_session->GetPermissionCount()) input2+="<GM>";
+	}
+	if(sWorld.NameinAnnounce)
+	{
+		input2+="|r"+sWorld.ann_namecolor+"|Hplayer:";
+	input2+=m_session->GetPlayer()->GetName();
+	input2+="|h[";
+	input2+=m_session->GetPlayer()->GetName();
+	input2+="]|h:|r "+sWorld.ann_msgcolor;
+	}
+	else if(!sWorld.NameinAnnounce) {input2+= ": "; input2+= sWorld.ann_msgcolor;}
+	snprintf((char*)msg, 1024, "%s%s", input2.c_str(), args);
 	sWorld.SendWorldText(msg); // send message
 	sGMLog.writefromsession(m_session, "used announce command, [%s]", args);
 	return true;
 }
 
+bool ChatHandler::HandleGMAnnounceCommand(const char* args, WorldSession *m_session)
+{
+	if(!*args)
+	{printf("HandleGMAnnounceCommand !args = failed\n");
+	return false;}
+
+	char GMAnnounce[1024];
+	snprintf(GMAnnounce, 1024, MSG_COLOR_RED"[Team]"MSG_COLOR_GREEN" |Hplayer:%s|h[%s]|h:"MSG_COLOR_YELLOW" %s", m_session->GetPlayer()->GetName(), m_session->GetPlayer()->GetName(), args);
+	sWorld.SendGMWorldText(GMAnnounce);
+	sGMLog.writefromsession(m_session, "used team announce command, [%s]", args);
+	return true;
+}
 
 bool ChatHandler::HandleWAnnounceCommand(const char* args, WorldSession *m_session)
 {
@@ -45,22 +77,30 @@ bool ChatHandler::HandleWAnnounceCommand(const char* args, WorldSession *m_sessi
 		return false;
 
 	char pAnnounce[1024];
-	string input2;
-
-	input2 = "|cffff6060<";
-	if(m_session->CanUseCommand('z')) input2+="Admin";
-	else if(m_session->GetPermissionCount()) input2+="GM";
-	input2+=">|r|c1f40af20";
-	input2+=m_session->GetPlayer()->GetName();
-	input2+=":|r ";
-	snprintf((char*)pAnnounce, 1024, "%s%s", input2.c_str(), args);
+	string input3;
+	input3 = sWorld.ann_tagcolor;
+	input3 += "[";
+	input3 += sWorld.announce_tag;
+	input3 += "]";
+	input3 += sWorld.ann_gmtagcolor;
+	if(sWorld.GMAdminTag)
+	{
+		if(m_session->CanUseCommand('z')) input3+="<Admin>";
+		else if(m_session->GetPermissionCount()) input3+="<GM>";
+	}
+	if(sWorld.NameinWAnnounce)
+	{
+	input3+="|r"+sWorld.ann_namecolor+"[";
+	input3+=m_session->GetPlayer()->GetName();
+	input3+="]:|r "+sWorld.ann_msgcolor;
+	}
+	else if(!sWorld.NameinWAnnounce) {input3+= ": "; input3+= sWorld.ann_msgcolor;}
+	snprintf((char*)pAnnounce, 1024, "%s%s", input3.c_str(), args);
 
 	sWorld.SendWorldWideScreenText(pAnnounce); // send message
 	sGMLog.writefromsession(m_session, "used wannounce command [%s]", args);
-	//sWorld.SendForcedIRCMessage(pAnnounce);
 	return true;
 }
-
 
 bool ChatHandler::HandleGMOnCommand(const char* args, WorldSession *m_session)
 {
@@ -137,11 +177,7 @@ bool ChatHandler::HandleKickCommand(const char* args, WorldSession *m_session)
 
 	if(!*args)
 	return false;
-
-	bool SilentKick = false;
-
 	char *pname = strtok((char*)args, " ");
-
 	if(!pname)
 	{
 		RedSystemMessage(m_session, "No name specified.");
@@ -150,16 +186,10 @@ bool ChatHandler::HandleKickCommand(const char* args, WorldSession *m_session)
 	Player *chr = objmgr.GetPlayer((const char*)pname, false);
 	if (chr)
 	{
-		char *reason = strtok(NULL, " ");
-
+		char *reason = strtok(NULL, "\n");
 		std::string kickreason = "No reason";
 		if(reason)
 			kickreason = reason;
-
-		char* pSilentKick = strtok(NULL, "\n");
-
-		if (pSilentKick)
-			SilentKick = (atoi(pSilentKick)>0?true:false);
 
 		BlueSystemMessage(m_session, "Attempting to kick %s from the server for \"%s\".", chr->GetName(), kickreason.c_str());
 		sGMLog.writefromsession(m_session, "Kicked player %s from the server for %s", chr->GetName(), kickreason.c_str());
@@ -174,14 +204,10 @@ bool ChatHandler::HandleKickCommand(const char* args, WorldSession *m_session)
 			return true;
 		}*/ // we might have to re-work this
 
-		if(SilentKick == false)
-		{
-			char msg[200];
-			snprintf(msg, 200, "%sGM: %s was kicked from the server by %s. Reason: %s", MSG_COLOR_RED, chr->GetName(), m_session->GetPlayer()->GetName(), kickreason.c_str());
-			sWorld.SendWorldText(msg, NULL);
-			//sWorld.SendIRCMessage(msg);
-		}
-		
+		char msg[200];
+		snprintf(msg, 200, "%sGM: %s was kicked from the server by %s. Reason: %s", MSG_COLOR_RED, chr->GetName(), m_session->GetPlayer()->GetName(), kickreason.c_str());
+		sWorld.SendWorldText(msg, NULL);
+		//sWorld.SendIRCMessage(msg);
 		SystemMessageToPlr(chr, "You are being kicked from the server by %s. Reason: %s", m_session->GetPlayer()->GetName(), kickreason.c_str());
 
 		chr->Kick(6000);
@@ -259,7 +285,7 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession *m_session)
 	if(!*args)
 		return false;
 
-	sGMLog.writefromsession(m_session, "summoned %s", args);
+	sGMLog.writefromsession(m_session, "summoned %s on map %u, %f %f %f", args, m_session->GetPlayer()->GetMapId(),m_session->GetPlayer()->GetPositionX(),m_session->GetPlayer()->GetPositionY(),m_session->GetPlayer()->GetPositionZ());
 
 	Player *chr = objmgr.GetPlayer(args, false);
 	if (chr)
@@ -392,17 +418,17 @@ bool ChatHandler::HandleTaxiCheatCommand(const char* args, WorldSession *m_sessi
 		snprintf((char*)buf,256, "%s has deleted all your taxi nodes.",
 			m_session->GetPlayer()->GetName());
 	}
-	SystemMessage(m_session, buf);
+	SystemMessage(chr->GetSession(), buf);
 
 	for (uint8 i=0; i<8; i++)
 	{
 		if (flag != 0)
 		{
-			m_session->GetPlayer()->SetTaximask(i, 0xFFFFFFFF);
+			chr->SetTaximask(i, 0xFFFFFFFF);
 		}
 		else
 		{
-			m_session->GetPlayer()->SetTaximask(i, 0);
+			chr->SetTaximask(i, 0);
 		}
 	}
 
@@ -427,7 +453,11 @@ bool ChatHandler::HandleModifySpeedCommand(const char* args, WorldSession *m_ses
 	Player *chr = getSelectedChar(m_session);
 	if( chr == NULL )
 		return true;
-	
+
+	if ( chr!=m_session->GetPlayer() )
+		sGMLog.writefromsession( m_session, "modified speed of %s to %2.2f.",chr->GetName(), Speed );
+
+
 	char buf[256];
 
 	// send message to user
@@ -759,6 +789,11 @@ bool ChatHandler::HandleNpcSpawnLinkCommand(const char* args, WorldSession *m_se
 
 	return true;
 }
+
+
+
+
+
 
 
 

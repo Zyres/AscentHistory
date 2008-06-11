@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -58,6 +58,7 @@ void DayWatcherThread::dupe_tm_pointer(tm * returnvalue, tm * mypointer)
 void DayWatcherThread::update_settings()
 {
 	CharacterDatabase.Execute("REPLACE INTO server_settings VALUES(\"last_arena_update_time\", %u)", last_arena_time);
+	CharacterDatabase.Execute("REPLACE INTO server_settings VALUES(\"last_daily_update_time\", %u)", last_daily_time);
 }
 
 void DayWatcherThread::load_settings()
@@ -72,12 +73,31 @@ void DayWatcherThread::load_settings()
 		delete result;
 	}
 	else
+	{
+		Log.Notice("DayWatcherThread", "Initializing Arena Updates to zero.");
 		last_arena_time = 0;
+	}
+
+	string daily_timeout = Config.MainConfig.GetStringDefault("Periods", "DailyUpdate", "daily");
+	daily_period = get_timeout_from_string(daily_timeout.c_str(), DAILY);
+
+	QueryResult * result2 = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \"last_daily_update_time\"");
+	if(result2)
+	{
+		last_daily_time = result2->Fetch()[0].GetUInt32();
+		delete result2;
+	}
+	else
+	{
+		Log.Notice("DayWatcherThread", "Initializing Daily Updates to zero.");
+		last_daily_time = 0;
+	}
 }
 
 void DayWatcherThread::set_tm_pointers()
 {
 	dupe_tm_pointer(localtime(&last_arena_time), &local_last_arena_time);
+	dupe_tm_pointer(localtime(&last_daily_time), &local_last_daily_time);
 }
 
 uint32 DayWatcherThread::get_timeout_from_string(const char * string, uint32 def)
@@ -144,6 +164,9 @@ bool DayWatcherThread::run()
 
 		if(has_timeout_expired(&local_currenttime, &local_last_arena_time, arena_period))
 			update_arena();
+
+		if(has_timeout_expired(&local_currenttime, &local_last_daily_time, daily_period))
+			update_daily();
         
 		if(m_dirty)
 			update_settings();
@@ -172,6 +195,16 @@ bool DayWatcherThread::run()
 	pthread_cond_destroy(&abortcond);
 #endif
 	return true;
+}
+
+void DayWatcherThread::update_daily()
+{
+	Log.Notice("DayWatcherThread", "Running Daily Quest Reset...");
+	CharacterDatabase.WaitExecute("UPDATE characters SET finisheddailies = ''");
+	objmgr.ResetDailies();
+	last_daily_time = UNIXTIME;
+	dupe_tm_pointer(localtime(&last_daily_time), &local_last_daily_time);
+	m_dirty = true;
 }
 
 void DayWatcherThread::update_arena()

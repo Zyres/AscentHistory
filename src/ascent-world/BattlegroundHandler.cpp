@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -74,7 +74,7 @@ void WorldSession::SendBattlegroundList(Creature* pCreature, uint32 mapid)
 		return;
 
 	/* we should have a bg id selection here. */
-	uint32 t = BATTLEGROUND_WARSONG_GULCH;
+	uint32 t = BATTLEGROUND_WARSUNG_GULCH;
 	if (mapid == 0)
 	{
 		if(pCreature->GetCreatureName())
@@ -83,12 +83,10 @@ void WorldSession::SendBattlegroundList(Creature* pCreature, uint32 mapid)
 				t = BATTLEGROUND_ARENA_2V2;
 			else if(strstr(pCreature->GetCreatureName()->SubName, "Arathi") != NULL)
 				t = BATTLEGROUND_ARATHI_BASIN;
-			else if(strstr(pCreature->GetCreatureName()->SubName, "Warsong") != NULL)
-				t = BATTLEGROUND_WARSONG_GULCH;
-			else if(strstr(pCreature->GetCreatureName()->SubName, "Alterac") != NULL)
-				t = BATTLEGROUND_ALTERAC_VALLEY;
-			else if(strstr(pCreature->GetCreatureName()->SubName, "Eye") != NULL)
+			else if(strstr(pCreature->GetCreatureName()->SubName, "Eye of the Storm") != NULL)
 				t = BATTLEGROUND_EYE_OF_THE_STORM;
+			else if(strstr(pCreature->GetCreatureName()->SubName, "Warsong") != NULL)
+				t = BATTLEGROUND_WARSUNG_GULCH;
 		}
 	}
 	else
@@ -99,7 +97,21 @@ void WorldSession::SendBattlegroundList(Creature* pCreature, uint32 mapid)
 
 void WorldSession::HandleBattleMasterHelloOpcode(WorldPacket &recv_data)
 {
-	sLog.outString("Received CMSG_BATTLEMASTER_HELLO");
+	CHECK_PACKET_SIZE(recv_data, 8);
+
+	uint64 guid;
+	recv_data >> guid;
+	sLog.outString("Received CMSG_BATTLEMASTER_HELLO from " I64FMT, guid);
+
+	Creature * bm = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+
+	if(!bm)
+		return;
+
+	if(!bm->HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_BATTLEFIELDPERSON ))		// Not a Battlemaster
+		return;
+
+	SendBattlegroundList(bm, 0);
 }
 
 void WorldSession::HandleLeaveBattlefieldOpcode(WorldPacket &recv_data)
@@ -290,4 +302,6 @@ void WorldSession::HandlePVPLogDataOpcode(WorldPacket &recv_data)
 	if(_player->m_bg)
 		_player->m_bg->SendPVPData(_player);
 }
+
+
 

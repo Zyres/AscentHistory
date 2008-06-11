@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -591,7 +591,7 @@ typedef std::list<struct ProcTriggerSpellOnSpell> ProcTriggerSpellOnSpellList;
 /************************************************************************/
 
 class Unit;
-class CombatStatusHandler
+class SERVER_DECL CombatStatusHandler
 {
 	typedef set<uint64> AttackerMap;
 	typedef set<uint32> HealedSet;		// Must Be Players!
@@ -616,7 +616,7 @@ public:
 
 	void UpdateFlag();												// detects if we have changed combat state (in/out), and applies the flag.
 
-	ASCENT_INLINE bool IsInCombat() { return m_lastStatus; }				// checks if we are in combat or not.
+	bool IsInCombat();												// checks if we are in combat or not.
 
 	void OnRemoveFromWorld();										// called when we are removed from world, kills all references to us.
 	
@@ -756,7 +756,7 @@ public:
 	bool HasAura(uint32 spellid);
 	bool HasAuraVisual(uint32 visualid);//not spell id!!!
 	bool HasActiveAura(uint32 spelllid);
-	bool HasActiveAura(uint32 spelllid,uint64);
+	bool HasActiveAura(uint32 spelllid, uint64 guid);
 	
 	void GiveGroupXP(Unit *pVictim, Player *PlayerInGroup);
 
@@ -825,7 +825,7 @@ public:
 	bool m_damgeShieldsInUse;
 	std::list<struct DamageProc> m_damageShields;
 	std::list<struct ReflectSpellSchool*> m_reflectSpellSchool;
- 	std::list<struct DamageSplitTarget> m_damageSplitTargets;
+	std::list<struct DamageSplitTarget> m_damageSplitTargets;
  
 	std::list<struct ProcTriggerSpell> m_procSpells;
 //	std::map<uint32,ProcTriggerSpellOnSpellList> m_procSpellonSpell; //index is namehash
@@ -851,6 +851,10 @@ public:
 	void ModThreatModifyer(int32 mod) { m_threatModifyer += mod; }
 	int32 GetGeneratedThreatModifyer() { return m_generatedThreatModifyer; }
 	void ModGeneratedThreatModifyer(int32 mod) { m_generatedThreatModifyer += mod; }
+
+	void SetHitFromMeleeSpell(float value) { m_hitfrommeleespell = value; }
+	ASCENT_INLINE float GetHitFromMeleeSpell() { return m_hitfrommeleespell; }
+	float m_hitfrommeleespell;
 
 	// DK:Affect
 	ASCENT_INLINE uint32 IsPacified() { return m_pacified; }
@@ -952,9 +956,24 @@ public:
 	void SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, const char * msg);
 	void RegisterPeriodicChatMessage(uint32 delay, uint32 msgid, std::string message, bool sendnotify);
 
-	ASCENT_INLINE int GetHealthPct() { return (int)(GetUInt32Value(UNIT_FIELD_HEALTH) * 100 / GetUInt32Value(UNIT_FIELD_MAXHEALTH)); };
+	ASCENT_INLINE int GetHealthPct()
+	{
+		//shitty db? pet/guardian bug?
+		if (GetUInt32Value(UNIT_FIELD_HEALTH) == 0 || GetUInt32Value(UNIT_FIELD_MAXHEALTH) == 0)
+			return 0;
+
+		return (int)(GetUInt32Value(UNIT_FIELD_HEALTH) * 100 / GetUInt32Value(UNIT_FIELD_MAXHEALTH));
+	};
+
     ASCENT_INLINE void SetHealthPct(uint32 val) { if (val>0) SetUInt32Value(UNIT_FIELD_HEALTH,float2int32(val*0.01f*GetUInt32Value(UNIT_FIELD_MAXHEALTH))); };
-	ASCENT_INLINE int GetManaPct() { return (int)(GetUInt32Value(UNIT_FIELD_POWER1) * 100 / GetUInt32Value(UNIT_FIELD_MAXPOWER1)); };
+
+	ASCENT_INLINE int GetManaPct()
+	{
+		if (GetUInt32Value(UNIT_FIELD_POWER1) == 0 || GetUInt32Value(UNIT_FIELD_MAXPOWER1) == 0)
+			return 0;
+
+		return (int)(GetUInt32Value(UNIT_FIELD_POWER1) * 100 / GetUInt32Value(UNIT_FIELD_MAXPOWER1));
+	};
 		
 	uint32 GetResistance(uint32 type);	
 	
@@ -1147,12 +1166,15 @@ public:
 
 	void CancelSpell(Spell * ptr);
 	void EventStrikeWithAbility(uint64 guid, SpellEntry * sp, uint32 damage);
-	bool m_spellsbusy;
+//	bool m_spellsbusy;
 	void DispelAll(bool positive);
 
 	bool HasAurasOfNameHashWithCaster(uint32 namehash, Unit * caster);
 	int8 m_hasVampiricTouch;
 	int8 m_hasVampiricEmbrace;
+
+	void			EventModelChange();			//model size changes when model changes
+	inline float	GetModelHalfSize() { return ModelHalfSize*GetFloatValue(OBJECT_FIELD_SCALE_X);	}	//used to calculate combat reach and stuff
 	
 protected:
 	Unit ();
@@ -1201,6 +1223,8 @@ protected:
 	uint32 m_charmtemp;
 
 	bool m_extraAttackCounter;
+
+	float ModelHalfSize; // used to calculate if something is in range of this unit
 
 };
 

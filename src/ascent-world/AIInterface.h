@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -169,7 +169,7 @@ struct AI_Spell
 	//uint32 procCountDB;
 	SpellEntry * spell;
 	uint8 spellType;
-	uint8 spelltargetType;
+//	uint8 spelltargetType;
 	uint32 cooldown;
 	uint32 cooldowntime;
 	uint32 procCount;
@@ -185,6 +185,7 @@ struct AI_Spell
 bool isGuard(uint32 id);
 uint32 getGuardId(uint32 id);
 
+/*
 #if ENABLE_SHITTY_STL_HACKS == 1
 typedef HM_NAMESPACE::hash_map<Unit*, int32> TargetMap;
 #else
@@ -209,6 +210,8 @@ namespace HM_NAMESPACE
 
 typedef HM_NAMESPACE::hash_map<Unit*, int32, HM_NAMESPACE::hash<Unit*> > TargetMap;
 #endif
+*/
+typedef HM_NAMESPACE::hash_map<uint64, int32> TargetMap;
 
 typedef std::set<Unit*> AssistTargetSet;
 typedef std::map<uint32, AI_Spell*> SpellMap;
@@ -245,6 +248,7 @@ public:
 	bool	modThreatByPtr(Unit* obj, int32 mod);
 	void	RemoveThreatByPtr(Unit* obj);
 	ASCENT_INLINE AssistTargetSet GetAssistTargets() { return m_assistTargets; }
+	ASCENT_INLINE void LockAITargets(bool lock) { lock? m_aiTargetsLock.Acquire(): m_aiTargetsLock.Release(); };
 	ASCENT_INLINE TargetMap *GetAITargets() { return &m_aiTargets; }
 	void addAssistTargets(Unit* Friends);
 	void ClearHateList();
@@ -276,6 +280,7 @@ public:
 	bool HealReaction(Unit* caster, Unit* victim, uint32 amount);
 	void Event_Summon_EE_totem(uint32 summon_duration);
 	void Event_Summon_FE_totem(uint32 summon_duration);
+	void EventAiInterfaceParamsetFinish();
 
 	// Update
 	void Update(uint32 p_time);
@@ -356,13 +361,20 @@ public:
 		m_nextTarget = nextTarget; 
 		if(nextTarget)
 		{
+			m_nextTarget_guid = nextTarget->GetGUID();
 			m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, m_nextTarget->GetGUID());
 #ifdef ENABLE_GRACEFULL_HIT
 			have_graceful_hit=false;
 #endif
 		}
-		else m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
+		else 
+		{
+			m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
+			m_nextTarget_guid = 0;
+		}
 	}
+	//this is the safe way to do it !
+	void SetNextTarget (uint64 nextTarget_guid);
 
 	/*ASCENT_INLINE void ResetProcCounts()
 	{
@@ -380,7 +392,8 @@ public:
 	uint32 m_formationLinkSqlId;
 
 	void WipeReferences();
-	WayPointMap *m_waypoints;
+	WayPointMap			*m_waypoints;
+	TimedEmoteList		*timed_emotes;
 	ASCENT_INLINE void SetPetOwner(Unit * owner) { m_PetOwner = owner; }
  
 	list<AI_Spell*> m_spells;
@@ -429,6 +442,7 @@ protected:
 	bool FindFriends(float dist);
 	AI_Spell *m_nextSpell;
 	Unit* m_nextTarget;
+	uint64 m_nextTarget_guid;
 	uint32 m_fleeTimer;
 	bool m_hasFleed;
 	bool m_hasCalledForHelp;
@@ -441,6 +455,7 @@ protected:
 	float m_fallowAngle;
 
 	//std::set<AI_Target> m_aiTargets;
+	Mutex m_aiTargetsLock;
 	TargetMap m_aiTargets;
 	AssistTargetSet m_assistTargets;
 	AIType m_AIType;
@@ -486,6 +501,8 @@ protected:
 	MovementState m_MovementState;
 	uint32 m_guardTimer;
 	int32 m_currentHighestThreat;
+	std::list<spawn_timed_emotes*>::iterator	next_timed_emote;
+	uint32										timed_emote_expire;
 public:
 	bool m_is_in_instance;
 	bool skip_reset_hp;

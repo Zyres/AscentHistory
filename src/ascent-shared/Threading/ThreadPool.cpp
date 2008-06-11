@@ -111,7 +111,11 @@ void CThreadPool::ExecuteTask(ThreadBase * ExecutionTarget)
 	}
 
 	// add the thread to the active set
+#ifdef WIN32
+	Log.Debug("ThreadPool", "Thread %u is now executing task at 0x%p.", t->ControlInterface.GetId(), ExecutionTarget);
+#else
 	Log.Debug("ThreadPool", "Thread %u is now executing task at %p.", t->ControlInterface.GetId(), ExecutionTarget);
+#endif
 	m_activeThreads.insert(t);
 	_mutex.Release();
 }

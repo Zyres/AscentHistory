@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -235,6 +235,9 @@ public:
 	Instance * pInstance;
 	void BeginInstanceExpireCountdown();
 	void HookOnAreaTrigger(Player * plr, uint32 id);
+
+	ASCENT_INLINE void SetWorldState(uint32 state, uint32 value);
+	ASCENT_INLINE uint32 GetWorldState(uint32 state);
 	
 	// better hope to clear any references to us when calling this :P
 	void InstanceShutdown()
@@ -255,6 +258,11 @@ public:
 		}
 	}
 
+//#ifdef FORCED_SERVER_KEEPALIVE
+	void	KillThreadWithCleanup();
+	void	TeleportCorruptedPlayers();	//we have to be prepared something is corrupted here
+//#endif
+
 protected:
 
 	//! Collect and send updates to clients
@@ -266,8 +274,12 @@ private:
 	uint32 _mapId;
 	set<Object*> _mapWideStaticObjects;
 
+	std::map<uint32,uint32> _worldStateSet;
+
 	bool _CellActive(uint32 x, uint32 y);
 	void UpdateInRangeSet(Object *obj, Player *plObj, MapCell* cell, ByteBuffer ** buf);
+
+	WorldPacket* BuildInitialWorldState();
 
 public:
 	// Distance a Player can "see" other objects and receive updates from them (!! ALREADY dist*dist !!)

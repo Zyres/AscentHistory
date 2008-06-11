@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -46,12 +46,13 @@ LogonCommServerSocket::~LogonCommServerSocket()
 
 void LogonCommServerSocket::OnDisconnect()
 {
-	// if we're registered -> de-register
+	// if we're registered -> Set offline
 	if(!removed)
 	{
 		set<uint32>::iterator itr = server_ids.begin();
 		for(; itr != server_ids.end(); ++itr)
-			sInfoCore.RemoveRealm((*itr));
+			//sInfoCore.RemoveRealm((*itr));
+			sInfoCore.UpdateRealmStatus((*itr), 2);
 
 		sInfoCore.RemoveServerSocket(this);
 	}
@@ -163,13 +164,35 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
 
 void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
 {
+	string Name;
+	int32 my_id;
+
+	recvData >> Name;
+	my_id = sInfoCore.GetRealmIdByName(Name);
+	
+	if (my_id == -1)
+	{
+		my_id = sInfoCore.GenerateRealmID();
+		sLog.outString("Registering realm `%s` under ID %u.", Name.c_str(), my_id);
+	}
+	else 
+	{
+		sInfoCore.RemoveRealm(my_id);
+		int new_my_id = sInfoCore.GenerateRealmID(); //socket timout will DC old id after a while, make sure it's not the one we restarted
+		sLog.outString("Updating realm `%s` with ID %u to new ID %u.", Name.c_str(), my_id, new_my_id );
+		my_id = new_my_id;
+	}
+
 	Realm * realm = new Realm;
 
-	recvData >> realm->Name >> realm->Address;
-	recvData >> realm->Colour >> realm->Icon >> realm->TimeZone >> realm->Population;
+//	recvData >> realm->Name >> realm->Address;
+//	recvData >> realm->Colour >> realm->Icon >> realm->TimeZone >> realm->Population;
+	realm->Name = Name;
+	realm->Colour = 0;
+	recvData >> realm->Address >> realm->Icon >> realm->TimeZone >> realm->Population >> realm->Lock;
 
-	uint32 my_id = sInfoCore.GenerateRealmID();
-	sLog.outString("Registering realm `%s` under ID %u.", realm->Name.c_str(), my_id);
+//	uint32 my_id = sInfoCore.GenerateRealmID();
+//	sLog.outString("Registering realm `%s` under ID %u.", realm->Name.c_str(), my_id);
 
 	// Add to the main realm list
 	sInfoCore.AddRealm(my_id, realm);

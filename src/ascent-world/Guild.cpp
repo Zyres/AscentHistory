@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -999,7 +999,7 @@ void Guild::GuildChat(const char * szMessage, WorldSession * pClient, uint32 iTy
 	}
 
 	WorldPacket * data = sChatHandler.FillMessageData( CHAT_MSG_GUILD, ((int32)iType)==CHAT_MSG_ADDON?-1:LANG_UNIVERSAL, szMessage,
-		pClient->GetPlayer()->GetGUID());
+		pClient->GetPlayer()->GetGUID(), pClient->GetPlayer()->bGMTagOn? 4:0);
 
 	m_lock.Acquire();
 	for(GuildMemberMap::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)

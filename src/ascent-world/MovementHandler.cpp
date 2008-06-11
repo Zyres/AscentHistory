@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -121,7 +121,7 @@ void WorldSession::HandleMoveTeleportAckOpcode( WorldPacket & recv_data )
 		GetPlayer()->SetPlayerStatus(NONE);
 		if( GetPlayer()->m_rooted <= 0 )
 			GetPlayer()->SetMovement(MOVE_UNROOT,5);
-		_player->ResetHeartbeatCoords();
+		_player->SpeedCheatReset();
 
 		if(GetPlayer()->GetSummon() != NULL)		// move pet too
 			GetPlayer()->GetSummon()->SetPosition((GetPlayer()->GetPositionX() + 2), (GetPlayer()->GetPositionY() + 2), GetPlayer()->GetPositionZ(), float(M_PI));
@@ -142,25 +142,7 @@ void _HandleBreathing(MovementInfo &movement_info, Player * _player, WorldSessio
 	{
 		// player is flagged as in water
 		if( _player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING  )
-		{
 			_player->m_UnderwaterState &= ~UNDERWATERSTATE_SWIMMING;
-			if( _player->FlyCheat )
-			{
-				if(_player->m_lastMoveType != 2)
-				{
-					_player->m_lastMoveType = 2; // flying
-					_player->ResetHeartbeatCoords();
-				}
-			}
-			else
-			{
-				if(_player->m_lastMoveType != 1)
-				{
-					_player->m_lastMoveType = 1; // swimming
-					_player->ResetHeartbeatCoords();
-				}
-			}
-		}
 
 		// player is flagged as under water
 		if( _player->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER )
@@ -203,22 +185,6 @@ void _HandleBreathing(MovementInfo &movement_info, Player * _player, WorldSessio
 			pSession->m_bIsWLevelSet = true;
 		}
 
-		if( _player->FlyCheat )
-		{
-			if( _player->m_lastMoveType != 2 )
-			{
-				_player->m_lastMoveType = 2; // flying
-				_player->ResetHeartbeatCoords();
-			}
-		}
-		else
-		{
-			if( _player->m_lastMoveType != 1 )
-			{
-				_player->m_lastMoveType = 1; // swimming
-				_player->ResetHeartbeatCoords();
-			}
-		}
 		_player->m_UnderwaterState |= UNDERWATERSTATE_SWIMMING;
 	}
 
@@ -235,25 +201,6 @@ void _HandleBreathing(MovementInfo &movement_info, Player * _player, WorldSessio
 			// unset swim session water level
 			pSession->m_bIsWLevelSet = false;
 
-			if( movement_info.flags & MOVEFLAG_AIR_SWIMMING )
-			{
-				if( _player->FlyCheat )
-				{
-					if( _player->m_lastMoveType != 2 )
-					{
-						_player->m_lastMoveType = 2; // flying
-						_player->ResetHeartbeatCoords();
-					}
-				}
-			}
-			else
-			{
-				if( _player->m_lastMoveType != 0 )
-				{
-					_player->m_lastMoveType = 0; // walk or run on land
-					_player->ResetHeartbeatCoords();
-				}
-			}
 			_player->m_UnderwaterState &= ~UNDERWATERSTATE_SWIMMING;
 		}
 	}
@@ -306,13 +253,17 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 
 	// spell cancel on movement, for now only fishing is added
 	Object * t_go = _player->m_SummonedObject;
-	uint32 mstime_s;
 	if (t_go)
 	{
 		if (t_go->GetEntry() == GO_FISHING_BOBBER)
 			((GameObject*)t_go)->EndFishing(GetPlayer(),true);
 	}
 
+	/************************************************************************/
+	/* Clear standing state to stand.				                        */
+	/************************************************************************/
+	if( recv_data.GetOpcode() == MSG_MOVE_START_FORWARD )
+		_player->SetStandState( STANDSTATE_STAND );
 	/************************************************************************/
 	/* Make sure the packet is the correct size range.                      */
 	/************************************************************************/
@@ -326,35 +277,16 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	/************************************************************************/
 	/* Update player movement state                                         */
 	/************************************************************************/
-	if( recv_data.GetOpcode() == MSG_MOVE_STOP 
-		|| recv_data.GetOpcode() == MSG_MOVE_STOP_STRAFE 
-		|| recv_data.GetOpcode() == MSG_MOVE_STOP_TURN 
-		|| recv_data.GetOpcode() == MSG_MOVE_FALL_LAND
-		|| ( recv_data.GetOpcode() == MSG_MOVE_SET_FACING && !(movement_info.flags & MOVEFLAG_MOVING_MASK) ) )
+	//update the detector
+	if( sWorld.antihack_speed && !_player->GetTaxiState() )
 	{
-		if( _player->m_isMoving )
-		{
-#ifdef _DEBUG
-//			printf("MOVING: FALSE (Packet %s)\n", LookupName( recv_data.GetOpcode(), g_worldOpcodeNames ) );
-#endif
-			mstime_s = getMSTime();
-			_player->_SpeedhackCheck(mstime_s);
-			_player->m_isMoving = false;
-			_player->_startMoveTime = 0;
-		}
-	}
-	else
-	{
-		if( !_player->m_isMoving )
-		{
-#ifdef _DEBUG
-//			printf("MOVING: TRUE (Packet %s)\n", LookupName( recv_data.GetOpcode(), g_worldOpcodeNames ) );
-#endif
-			mstime_s = getMSTime();
-			_player->m_isMoving = true;
-			_player->_startMoveTime = mstime_s;
-			_player->_lastHeartbeatPosition = _player->GetPosition();
-		}
+		// simplified: just take the fastest speed. less chance of fuckups too
+		float speed = ( _player->flying_aura ) ? _player->m_flySpeed : ( _player->m_swimSpeed >_player-> m_runSpeed ) ? _player->m_swimSpeed : _player->m_runSpeed;
+
+		_player->SDetector->AddSample( movement_info.x, movement_info.y, getMSTime(), speed );
+
+		if( _player->SDetector->IsCheatDetected() )
+			_player->SDetector->ReportCheater( _player );
 	}
 
 	/************************************************************************/
@@ -397,23 +329,6 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	printf("Packet: 0x%03X (%s)\n", recv_data.GetOpcode(), LookupName( recv_data.GetOpcode(), g_worldOpcodeNames ) );
 	printf("Orientation: %.10f\n", movement_info.orientation);
 #endif
-
-	/************************************************************************/
-	/* Anti-Hack Checks                                                     */
-	/************************************************************************/
-	if( !(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->m_uint32Values[UNIT_FIELD_CHARM] && !_player->_heartbeatDisable)
-	{
-		/************************************************************************/
-		/* Anti-Teleport                                                        */
-		/************************************************************************/
-		if(sWorld.antihack_teleport && _player->m_position.Distance2DSq(movement_info.x, movement_info.y) > 5625.0f
-			&& _player->m_runSpeed < 50.0f && !_player->m_TransporterGUID)
-		{
-			sCheatLog.writefromsession(this, "Used teleport hack {3}, speed was %f", _player->m_runSpeed);
-			Disconnect();
-			return;
-		}
-	}
 
 	/************************************************************************/
 	/* Calculate the timestamp of the packet we have to send out            */
@@ -462,7 +377,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	{
 		_player->blinked = false;
 		_player->m_fallDisabledUntil = UNIXTIME + 5;
-		_player->DelaySpeedHack( 5000 );
+		_player->SpeedCheatDelay( 1000 ); //some say they managed to trigger system with knockback. Maybe they moved in air ?
 	}
 	else
 	{
@@ -488,7 +403,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 
 			//checks that player has fallen more than 12 units, otherwise no damage will be dealt
 			//falltime check is also needed here, otherwise sudden changes in Z axis position, such as using !recall, may result in death			
-			if( _player->isAlive() && !_player->GodModeCheat && falldistance > 12 && ( UNIXTIME >= _player->m_fallDisabledUntil ) && movement_info.FallTime > 1000 )
+			if( _player->isAlive() && !_player->GodModeCheat && falldistance > 12 && ( UNIXTIME >= _player->m_fallDisabledUntil ) && movement_info.FallTime > 2000 )
 			{
 				// 1.7% damage for each unit fallen on Z axis over 13
 				uint32 health_loss = float2int32( float( _player->GetUInt32Value( UNIT_FIELD_MAXHEALTH ) * ( ( falldistance - 12 ) * 0.017 ) ) );
@@ -499,7 +414,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 				_player->SendEnvironmentalDamageLog( _player->GetGUID(), DAMAGE_FALL, health_loss );
 				_player->DealDamage( _player, health_loss, 0, 0, 0 );
 
-				_player->RemoveStealth(); // Fall Damage will cause stealthed units to lose stealth. 
+				//_player->RemoveStealth(); // ceberwow : why again? lost stealth by AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN already. 
 			}
 			_player->z_axisposition = 0.0f;
 		}
@@ -525,7 +440,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 			}
 
 			_player->m_TransporterGUID = 0;
-			_player->ResetHeartbeatCoords();
+			_player->SpeedCheatReset();
 		}
 		else if(movement_info.transGuid)
 		{
@@ -581,8 +496,12 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	/************************************************************************/
 	/* Update our position in the server.                                   */
 	/************************************************************************/
-	if( _player->m_CurrentCharm )
-		_player->m_CurrentCharm->SetPosition(movement_info.x, movement_info.y, movement_info.z, movement_info.orientation);
+	if( _player->m_CurrentCharm && _player->GetMapMgr() )
+	{
+		Unit *cc = _player->GetMapMgr()->GetUnit( _player->m_CurrentCharm );
+		if( cc )
+			cc->SetPosition(movement_info.x, movement_info.y, movement_info.z, movement_info.orientation);
+	}
 	else
 	{
 		if(!_player->m_CurrentTransporter) 
@@ -621,7 +540,7 @@ void WorldSession::HandleSetActiveMoverOpcode( WorldPacket & recv_data )
 	if(guid != m_MoverWoWGuid.GetOldGuid())
 	{
 		// make sure the guid is valid and we aren't cheating
-		if( !(_player->m_CurrentCharm && _player->m_CurrentCharm->GetGUID() == guid) &&
+		if( !(_player->m_CurrentCharm == guid) &&
 			!(_player->GetGUID() == guid) )
 		{
 			// cheater!
@@ -654,9 +573,12 @@ void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket &recvdata)
 
 void WorldSession::HandleWorldportOpcode(WorldPacket & recv_data)
 {
+	uint32 unk;
 	uint32 mapid;
 	float x,y,z,o;
-	recv_data >> mapid >> x >> y >> z >> o;
+	recv_data >> unk >> mapid >> x >> y >> z >> o;
+
+	//printf("\nTEST: %u %f %f %f %f", mapid, x, y, z, o);
 	
 	if(!_player->IsInWorld())
 		return;

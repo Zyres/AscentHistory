@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -382,6 +382,8 @@ public:
 	void SendZoneMessage(WorldPacket *packet, uint32 zoneid, WorldSession *self = 0);
 	void SendInstanceMessage(WorldPacket *packet, uint32 instanceid, WorldSession *self = 0);
 	void SendFactionMessage(WorldPacket *packet, uint8 teamId);
+	void SendGamemasterMessage(WorldPacket *packet, WorldSession *self = 0);
+	void SendGMWorldText(const char* text, WorldSession *self = 0);
 
 	ASCENT_INLINE void SetStartTime(uint32 val) { m_StartTime = val; }
 	ASCENT_INLINE uint32 GetUptime(void) { return (uint32)UNIXTIME - m_StartTime; }
@@ -492,9 +494,33 @@ public:
 	bool gm_skip_attunement;
 
 	bool show_gm_in_who_list;
-	//bool allow_gm_friends;
 	uint32 map_unload_time;
 
+	bool interfaction_chat;
+	bool interfaction_group;
+	bool interfaction_guild;
+	bool interfaction_trade;
+	bool interfaction_friend;
+	bool interfaction_misc;
+	bool crossover_chars;
+	
+	std::string announce_tag;
+	bool GMAdminTag;
+	bool NameinAnnounce;
+	bool NameinWAnnounce;
+	bool announce_output;
+
+	int announce_tagcolor;
+	int announce_gmtagcolor;
+	int announce_namecolor;
+	int announce_msgcolor;
+	string ann_namecolor;
+	string ann_gmtagcolor;
+	string ann_tagcolor;
+	string ann_msgcolor;
+	void AnnounceColorChooser(int tagcolor, int gmtagcolor, int namecolor, int msgcolor);
+
+	int start_level;
 	bool antihack_teleport;
 	bool antihack_speed;
 	bool antihack_flight;

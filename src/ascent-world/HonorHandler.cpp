@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -59,8 +59,12 @@ int32 HonorHandler::CalculateHonorPointsForKill( Player *pPlayer, Unit* pVictim 
 	if( pVictim->GetTypeId() != TYPEID_PLAYER )
 		return 0;
 
+	//use Player::m_honorless, applied with Aura::SpellAuraNoPVPCredit
 	// How dishonorable, you fiend!
-	if( pVictim->HasActiveAura( PLAYER_HONORLESS_TARGET_SPELL ) )
+	//if( pVictim->HasActiveAura( PLAYER_HONORLESS_TARGET_SPELL ) )
+	//	return 0;
+
+	if ( pVictim->GetTypeId() == TYPEID_PLAYER && static_cast< Player* >(pVictim)->m_honorless )
 		return 0;
 
 	uint32 k_level = pPlayer->GetUInt32Value( UNIT_FIELD_LEVEL );
@@ -174,6 +178,7 @@ void HonorHandler::OnPlayerKilledUnit( Player *pPlayer, Unit* pVictim )
 		{
 			set<Player*> contributors;
 			// First loop: Get all the people in the attackermap.
+			pVictim->UpdateOppFactionSet();
 			for(std::set<Object*>::iterator itr = pVictim->GetInRangeOppFactsSetBegin(); itr != pVictim->GetInRangeOppFactsSetEnd(); itr++)
 			{
 				if(!(*itr)->IsPlayer())
@@ -219,7 +224,7 @@ void HonorHandler::OnPlayerKilledUnit( Player *pPlayer, Unit* pVictim )
 				if(pAffectedPlayer->m_bg)
 					pAffectedPlayer->m_bg->HookOnHK(pAffectedPlayer);
 
-				int32 contributorpts = Points / contributors.size();
+				int32 contributorpts = Points / (int32)contributors.size();
 				AddHonorPointsToPlayer(pAffectedPlayer, contributorpts);
 				if(pVictim->IsPlayer())
 				{

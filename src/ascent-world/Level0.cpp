@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -274,7 +274,7 @@ bool ChatHandler::HandleInfoCommand(const char* args, WorldSession *m_session)
 		}			
 	}
 	objmgr._playerslock.ReleaseReadLock();
-	GreenSystemMessage(m_session, "Server Revision: |r%sAscent r%u/%s-%s-%s %s(www.ascentemu.com)", MSG_COLOR_WHITE,
+	GreenSystemMessage(m_session, "Server Revision: |r%sOpenAscent r%u/%s-%s-%s %s(www.openascent.com)", MSG_COLOR_WHITE,
 		BUILD_REVISION, CONFIG, PLATFORM_TEXT, ARCH, MSG_COLOR_LIGHTBLUE);
 	GreenSystemMessage(m_session, "Server Uptime: |r%s", sWorld.GetUptimeString().c_str());
 	GreenSystemMessage(m_session, "Current Players: |r%d (%d GMs, %d queued)", clientsNum, gm,  0);
@@ -422,5 +422,6 @@ bool ChatHandler::HandleRatingsCommand( const char *args , WorldSession *m_sessi
 	m_plyr->UpdateStats();
 	return true;
 }
+
 
 

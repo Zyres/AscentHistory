@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -117,6 +117,8 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 		sLog.outDebug("Missing AreaTrigger: %u", id);
 		return;
 	}
+
+	sHookInterface.OnAreaTrigger(GetPlayer(), id);
 
 	if( _player->GetSession()->CanUseCommand('z') )
 		sChatHandler.BlueSystemMessage( this, "[%sSystem%s] |rEntered areatrigger: %s%u (%s).", MSG_COLOR_WHITE, MSG_COLOR_LIGHTBLUE, MSG_COLOR_SUBWHITE, id, pAreaTrigger->Name );

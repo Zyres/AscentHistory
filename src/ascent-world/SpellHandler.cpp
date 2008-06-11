@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -58,8 +58,8 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 		if(!qst) 
 			return;
 
-        WorldPacket data;
-        sQuestMgr.BuildQuestDetails(&data, qst, tmpItem, 0, language);
+		WorldPacket data;
+		sQuestMgr.BuildQuestDetails(&data, qst, tmpItem, 0, language, _player);
 		SendPacket(&data);
 	}
 	
@@ -97,6 +97,13 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 		if(p_User->GetStandState()!=1)
 		p_User->SetStandState(STANDSTATE_SIT);
 		// loop through the auras and removing existing eating spells
+	}
+	
+	// ceberwow remove stealth on using item
+	if (!(spellInfo->AuraInterruptFlags & ATTRIBUTESEX_NOT_BREAK_STEALTH))
+	{
+		if( p_User->IsStealth() )
+			p_User->RemoveAllAuraType( SPELL_AURA_MOD_STEALTH );
 	}
 
 	if(itemProto->RequiredLevel)
@@ -170,7 +177,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 	spell->i_caster = tmpItem;
 	//GetPlayer()->setCurrentSpell(spell);
 	result = spell->prepare(&targets);
-	
+
 	//if( result == SPELL_CANCAST_OK ) // incorrect - should be on Completed Cast
 	//	_player->Cooldown_AddItem( itemProto, x );
 }
@@ -210,7 +217,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 	if (GetPlayer()->GetOnMeleeSpell() != spellId)
 	{
 		//autoshot 75
-		if((spellInfo->Flags3 & FLAGS3_ACTIVATE_AUTO_SHOT) /*spellInfo->Attributes == 327698*/)	// auto shot..
+		if((spellInfo->AttributesExB & FLAGS3_ACTIVATE_AUTO_SHOT) /*spellInfo->Attributes == 327698*/)	// auto shot..
 		{
 			//sLog.outString( "HandleSpellCast: Auto Shot-type spell cast (id %u, name %s)" , spellInfo->Id , spellInfo->Name );
 			Item *weapon = GetPlayer()->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
@@ -316,10 +323,7 @@ void WorldSession::HandleCancelAuraOpcode( WorldPacket& recvPacket)
 	for(uint32 x = 0; x < MAX_AURAS+MAX_POSITIVE_AURAS; ++x)
 	{
 		if(_player->m_auras[x] && _player->m_auras[x]->IsPositive() && _player->m_auras[x]->GetSpellId() == spellId)
-		{
-			_player->m_auras[x]->m_ignoreunapply = true; // prevent abuse
 			_player->m_auras[x]->Remove();
-		}
 	}
 	sLog.outDebug("removing aura %u",spellId);
 }
@@ -350,17 +354,19 @@ void WorldSession::HandleAddDynamicTargetOpcode(WorldPacket & recvPacket)
 {
 	uint64 guid;
 	uint32 spellid;
-	uint8 flags;
+	uint32 flags;
 	recvPacket >> guid >> spellid >> flags;
 	
-	SpellEntry * sp = dbcSpell.LookupEntry(spellid);
+	SpellEntry * sp = dbcSpell.LookupEntryForced(spellid);
+	if ( !sp ) 
+		return;
 	// Summoned Elemental's Freeze
     if (spellid == 33395)
     {
         if (!_player->m_Summon)
             return;
     }
-    else if (!_player->m_CurrentCharm || guid != _player->m_CurrentCharm->GetGUID())
+    else if ( guid != _player->m_CurrentCharm )
     {
         return;
     }
@@ -371,26 +377,26 @@ void WorldSession::HandleAddDynamicTargetOpcode(WorldPacket & recvPacket)
 
 	if(flags == 0)
 		targets.m_unitTarget = guid;
-	else if(flags & 0x02)
+	else if(flags & TARGET_FLAG_UNIT)
 	{
 		WoWGuid guid;
-		recvPacket >> flags;		// skip one byte
+//		recvPacket >> flags;		// skip one byte
 		recvPacket >> guid;
 		targets.m_unitTarget = guid.GetOldGuid();
 	}
-	else if(flags & 0x20)
+	else if(flags & TARGET_FLAG_SOURCE_LOCATION)
 	{
-		recvPacket >> flags;		// skip one byte
+//		recvPacket >> flags;		// skip one byte
 		recvPacket >> targets.m_srcX >> targets.m_srcY >> targets.m_srcZ;
 	}
-	else if(flags & 0x40)
+	else if(flags & TARGET_FLAG_DEST_LOCATION)
 	{
-		recvPacket >> flags;		// skip one byte
+//		recvPacket >> flags;		// skip one byte
 		recvPacket >> targets.m_destX >> targets.m_destY >> targets.m_destZ;
 	}
-	else if (flags & 0x2000)
+	else if (flags & TARGET_FLAG_STRING)
 	{
-		recvPacket >> flags;		// skip one byte
+//		recvPacket >> flags;		// skip one byte
 		recvPacket >> targets.m_strTarget;
 	}
 	if(spellid == 33395)	// Summoned Water Elemental's freeze
@@ -400,7 +406,11 @@ void WorldSession::HandleAddDynamicTargetOpcode(WorldPacket & recvPacket)
 	}
 	else			// trinket?
 	{
-		Spell * pSpell = new Spell(_player->m_CurrentCharm, sp, false, 0);
-		pSpell->prepare(&targets);
+		Unit *nc = _player->GetMapMgr()->GetUnit( _player->m_CurrentCharm );
+		if( nc )
+		{
+			Spell * pSpell = new Spell(nc, sp, false, 0);
+			pSpell->prepare(&targets);
+		}
 	}
 }

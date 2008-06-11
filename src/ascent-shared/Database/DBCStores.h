@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -186,26 +186,26 @@ struct SpellEntry
 {
 	uint32 Id;                              //1
 	uint32 Category;                        //2
-	uint32 field4;                          //3 something like spelltype 0: general spells 1: Pet spells 2: Disguise / transormation spells 3: enchantment spells
+	uint32 castUI;                          //3 something like spelltype 0: general spells 1: Pet spells 2: Disguise / transormation spells 3: enchantment spells
 	uint32 DispelType;                      //4
 	uint32 MechanicsType;                   //5
 	uint32 Attributes;                      //6
 	uint32 AttributesEx;                    //7
-	uint32 Flags3;                          //8
-	uint32 Flags4;                          //9 // Flags to
-	uint32 Flags5;                          //10 // Flags....
-	uint32 unk201_1;                        //11 // Flags 2.0.1 unknown one
-	uint32 unk240_1;						//12
+	uint32 AttributesExB;                   //8
+	uint32 AttributesExC;                   //9 // Flags to
+	uint32 AttributesExD;                   //10 // Flags....
+	uint32 AttributesExE;                   //11 // Flags 2.0.1 unknown one
+	uint32 AttributesExF;					//12
 	uint32 RequiredShapeShift;              //13 // Flags BitMask for shapeshift spells
-	uint32 UNK14;                           //14-> this is wrong // Flags BitMask for which shapeshift forms this spell can NOT be used in.
+	uint32 ShapeshiftExclude;             //14-> this is wrong // Flags BitMask for which shapeshift forms this spell can NOT be used in.
 	uint32 Targets;                         //15 - N / M
 	uint32 TargetCreatureType;              //16
 	uint32 RequiresSpellFocus;              //17
-	uint32 unk240_2;						//18
+	uint32 FacingCasterFlags;				//18
 	uint32 CasterAuraState;                 //19
 	uint32 TargetAuraState;                 //20
-	uint32 unk201_2;                        //21 2.0.1 unknown two
-	uint32 unk201_3;                        //22 2.0.1 unknown three
+	uint32 ExcludeCasterAuraState;          //21 2.0.1 unknown two
+	uint32 ExcludeTargetAuraState;          //22 2.0.1 unknown three
 	uint32 CastingTimeIndex;                //23
 	uint32 RecoveryTime;                    //24
 	uint32 CategoryRecoveryTime;            //25 recoverytime
@@ -254,8 +254,8 @@ struct SpellEntry
 	float  EffectPointsPerComboPoint[3];    //117 - 117
 	uint32 SpellVisual;                     //120
 	uint32 field114;                        //121
-	uint32 dummy;                           //122
-	uint32 CoSpell;                         //123   activeIconID;
+	uint32 spellIconID;                     //122
+	uint32 activeIconID;                    //123   activeIconID;
 	uint32 spellPriority;                   //124
 	char* Name;                             //125
 	//uint32 NameAlt1;                        //126
@@ -329,20 +329,22 @@ struct SpellEntry
 	uint32 unkflags;                        //194 
 	uint32 StartRecoveryTime;               //195
 	uint32 StartRecoveryCategory;           //196
+//	uint32 MaxTargetLevel						from 3.0.1
 	uint32 SpellFamilyName;                 //197
 	uint64 SpellGroupType;					//198+199
 	uint32 MaxTargets;                      //200 
 	uint32 Spell_Dmg_Type;                  //201   dmg_class Integer      0=None, 1=Magic, 2=Melee, 3=Ranged
-	uint32 FG;                              //202   0,1,2 related to Spell_Dmg_Type I think
-	int32 FH;                               //203   related to paladin aura's 
+	uint32 PreventionType;                  //202   0,1,2 related to Spell_Dmg_Type I think
+	int32 StanceBarOrder;                   //203   related to paladin aura's 
 	float dmg_multiplier[3];                //204 - 206   if the name is correct I dono
-	uint32 FL;                              //207   only one spellid:6994 has this value = 369 UNUSED
-	uint32 FM;                              //208   only one spellid:6994 has this value = 4 UNUSED
-	uint32 FN;                              //209  3 spells 1 or 2   
+	uint32 MinFactionID;                    //207   only one spellid:6994 has this value = 369 UNUSED
+	uint32 MinReputation;                   //208   only one spellid:6994 has this value = 4 UNUSED
+	uint32 RequiredAuraVision;              //209  3 spells 1 or 2   
 	uint32 TotemCategory[2];				//210-211
-	uint32 RequiresAreaId;				     		//212 
-	uint32 School;						// 213
-
+	uint32 RequiresAreaId;					//212 
+	uint32 School;							//213
+//	uint32 RuneCostID;						//214 from 3.0.1
+//	uint32 SpellMissileID;					//215 from 3.0.1
     /// CUSTOM: these fields are used for the modifications made in the world.cpp
     uint32 DiminishStatus;                  //
     uint32 proc_interval;                   //!!! CUSTOM, <Fill description for variable>
@@ -351,30 +353,130 @@ struct SpellEntry
     uint32 buffType;                        //!!! CUSTOM, these are related to creating a item through a spell
     uint32 RankNumber;                      //!!! CUSTOM, this protects players from having >1 rank of a spell
     uint32 NameHash;                        //!!! CUSTOM, related to custom spells, summon spell quest related spells
-    float base_range_or_radius_sqr;         //!!! CUSTOM, needed for aoe spells most of the time
 	uint32 talent_tree;						//!!! CUSTOM,
 	uint32 in_front_status;					//!!! CUSTOM,
-	bool is_melee_spell;					//!!! CUSTOM,
-	bool is_ranged_spell;					//!!! CUSTOM,
-	bool spell_can_crit;					//!!! CUSTOM,
     uint32 EffectSpellGroupRelation_high[3];     //!!! this is not contained in client dbc but server must have it
 	uint32 ThreatForSpell;
-
 	uint32 ProcOnNameHash[3];
+	uint32 spell_coef_flags;                                //!!! CUSTOM, store flags for spell coefficient calculations
 
+	float base_range_or_radius_sqr;         //!!! CUSTOM, needed for aoe spells most of the time
 	// love me or hate me, all "In a cone in front of the caster" spells don't necessarily mean "in front"
 	float cone_width;
 	//Spell Coefficient
 	float casttime_coef;                                    //!!! CUSTOM, faster spell bonus calculation
-	uint32 spell_coef_flags;                                //!!! CUSTOM, store flags for spell coefficient calculations
 	float fixed_dddhcoef;                                   //!!! CUSTOM, fixed DD-DH coefficient for some spells
 	float fixed_hotdotcoef;                                 //!!! CUSTOM, fixed HOT-DOT coefficient for some spells
 	float Dspell_coef_override;                             //!!! CUSTOM, overrides any spell coefficient calculation and use this value in DD&DH
 	float OTspell_coef_override;							//!!! CUSTOM, overrides any spell coefficient calculation and use this value in HOT&DOT
+	int	ai_target_type;
 
 	bool self_cast_only;
 	bool apply_on_shapeshift_change;
 	bool always_apply;
+	bool is_melee_spell;					//!!! CUSTOM,
+	bool is_ranged_spell;					//!!! CUSTOM,
+	bool spell_can_crit;					//!!! CUSTOM,
+
+/*
+//3.0.1 client column namings
+m_id
+m_category
+m_castUI
+m_dispelType
+m_mechanic
+m_attributes
+m_attributesEx
+m_attributesExB
+m_attributesExC
+m_attributesExD
+m_attributesExE
+m_attributesExF
+m_shapeshiftMask
+m_shapeshiftExclude
+m_targets
+m_targetCreatureType
+m_requiresSpellFocus
+m_facingCasterFlags
+m_casterAuraState
+m_targetAuraState
+m_excludeCasterAuraState
+m_excludeTargetAuraState
+m_castingTimeIndex
+m_recoveryTime
+m_categoryRecoveryTime
+m_interruptFlags
+m_auraInterruptFlags
+m_channelInterruptFlags
+m_procTypeMask
+m_procChance
+m_procCharges
+m_maxLevel
+m_baseLevel
+m_spellLevel
+m_durationIndex
+m_powerType
+m_manaCost
+m_manaCostPerLevel
+m_manaPerSecond
+m_manaPerSecondPerLevel
+m_rangeIndex
+m_speed
+m_modalNextSpell
+m_cumulativeAura
+m_totem
+m_reagent
+m_reagentCount
+m_equippedItemClass
+m_equippedItemSubclass
+m_equippedItemInvTypes
+m_effect
+m_effectDieSides
+m_effectBaseDice
+m_effectDicePerLevel
+m_effectRealPointsPerLevel
+m_effectBasePoints
+m_effectMechanic
+m_implicitTargetA
+m_implicitTargetB
+m_effectRadiusIndex
+m_effectAura
+m_effectAuraPeriod
+m_effectAmplitude
+m_effectChainTargets
+m_effectItemType
+m_effectMiscValue
+m_effectMiscValueB
+m_effectTriggerSpell
+m_effectPointsPerCombo
+m_spellVisualID
+m_spellIconID
+m_activeIconID
+m_spellPriority
+m_name_lang
+m_nameSubtext_lang
+m_description_lang
+m_auraDescription_lang
+m_manaCostPct
+m_startRecoveryCategory
+m_startRecoveryTime
+m_maxTargetLevel
+m_spellClassSet
+m_spellClassMask
+m_maxTargets
+m_defenseType
+m_preventionType
+m_stanceBarOrder
+m_effectChainAmplitude
+m_minFactionID
+m_minReputation
+m_requiredAuraVision
+m_requiredTotemCategoryID
+m_requiredAreaID
+m_schoolMask
+m_runeCostID
+m_spellMissileID
+*/
 };
 
 struct ItemExtendedCostEntry
@@ -912,6 +1014,11 @@ class SERVER_DECL DBCStorage
 	uint32 m_stringlength;
 	char * m_stringData;
 
+	uint32 rows;
+	uint32 cols;
+	uint32 useless_shit;
+	uint32 header;
+
 public:
 	
 	DBCStorage()
@@ -937,12 +1044,8 @@ public:
 
 	bool Load(const char * filename, const char * format, bool load_indexed, bool load_strings)
 	{
-		uint32 rows;
-		uint32 cols;
-		uint32 useless_shit;
-		uint32 string_length;
-		uint32 header;
 		uint32 i;
+		uint32 string_length;
 		long pos;
 
 		FILE * f = fopen(filename, "rb");
@@ -1017,7 +1120,7 @@ public:
 		uint32 val;
 		size_t len = strlen(format);
 		if(len!= cols)
-			printf("!!! possible invalid format in file %s (us: %u, them: %u)\n", filename, len, cols);
+			printf("!!! possible invalid format in file %s (us: %zd, them: %u)\n", filename, len, cols);
 
 		while(*t != 0)
 		{

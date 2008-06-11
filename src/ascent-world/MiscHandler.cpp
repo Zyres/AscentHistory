@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -339,6 +339,8 @@ void WorldSession::HandleLootOpcode( WorldPacket & recv_data )
 
 	if(_player->isCasting())
 		_player->InterruptSpell();
+		
+  _player->RemoveStealth(); // ceberwow:RemoveStealth when looting. Blizzlike
 
 	if(_player->InGroup() && !_player->m_bg)
 	{
@@ -638,7 +640,7 @@ void WorldSession::HandleWhoOpcode( WorldPacket & recv_data )
 		}
 
 		// Team check
-		if(!gm && plr->GetTeam() != team && !plr->GetSession()->HasGMPermissions())
+		if(!gm && plr->GetTeam() != team && !plr->GetSession()->HasGMPermissions() &&!sWorld.interfaction_misc)
 			continue;
 
 		++total_count;
@@ -955,8 +957,8 @@ void WorldSession::HandleResurrectResponseOpcode(WorldPacket & recv_data)
 	if(!pl)
 		pl = objmgr.GetPlayer((uint32)guid);
 		
-	
-	if(pl == 0 || status != 1)
+	// checking valid resurrecter fixes exploits
+	if(pl == 0 || status != 1 || !_player->m_resurrecter || _player->m_resurrecter != guid)
 	{
 		_player->m_resurrectHealth = 0;
 		_player->m_resurrectMana = 0;
@@ -1246,7 +1248,8 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 			plyr->SafeTeleport( plyr->GetMapId(), plyr->GetInstanceID(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation() );
 			plyr->SetStandState(STANDSTATE_SIT_MEDIUM_CHAIR);
 			plyr->m_lastRunSpeed = 0; //counteract mount-bug; reset speed to zero to force update SetPlayerSpeed in next line.
-			plyr->SetPlayerSpeed(RUN,plyr->m_base_runSpeed);
+			//plyr->SetPlayerSpeed(RUN,plyr->m_base_runSpeed); <--ceberwow : Oh No,this could be wrong. If I have some mods existed,this just on baserunspeed as a fixed value?
+			plyr->UpdateSpeed();
 		}break;
 	case GAMEOBJECT_TYPE_CHEST://cast da spell
 		{
@@ -1526,7 +1529,12 @@ void WorldSession::HandleInspectOpcode( WorldPacket & recv_data )
 		return;
 	}
 
+   _player->SetUInt64Value(UNIT_FIELD_TARGET, guid);
+
 	_player->SetSelection( guid );
+
+   if(_player->m_comboPoints)
+      _player->UpdateComboPoints();
 
     WorldPacket data( SMSG_INSPECT_TALENTS, 4 + talent_points );
 
@@ -1627,17 +1635,6 @@ void WorldSession::HandleAcknowledgementOpcodes( WorldPacket & recv_data )
 	case CMSG_MOVE_SET_FLY_ACK:
 		_player->FlyCheat = _player->m_setflycheat;
 		break;
-
-	case CMSG_FORCE_RUN_SPEED_CHANGE_ACK:
-	case CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK:
-	case CMSG_FORCE_SWIM_SPEED_CHANGE_ACK:
-	case CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK:
-	case CMSG_FORCE_FLY_BACK_SPEED_CHANGE_ACK:
-	case CMSG_FORCE_MOVE_SET_FLY_SPEED_ACK:
-		_player->ResetHeartbeatCoords();
-		_player->DelaySpeedHack( 5000 );			// give the client a chance to fall/catch up
-		_player->_speedChangeInProgress = false;
-		break;
 	}
 
    /* uint16 opcode = recv_data.GetOpcode();
@@ -1725,8 +1722,15 @@ void WorldSession::HandleRandomRollOpcode(WorldPacket &recv_data)
 
 	uint32 roll;
 
+	if(max > RAND_MAX)
+		max = RAND_MAX;
+	
+	if(min > max)
+		min = max;
+
+
 	// generate number
-	roll = min + int( ((max-min)+1) * rand() / (RAND_MAX + 1.0) );
+	roll = RandomUInt(max - min) + min;
 	
 	// append to packet, and guid
 	data << roll << _player->GetGUID();
@@ -1735,7 +1739,7 @@ void WorldSession::HandleRandomRollOpcode(WorldPacket &recv_data)
     if(_player->InGroup())
 		_player->GetGroup()->SendPacketToAll(&data);
 	else
-	    GetPlayer()->SendMessageToSet(&data, true, true);
+	    SendPacket(&data);
 }
 
 void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
@@ -1748,6 +1752,8 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 	SlotResult slotresult;
 
 	Creature *pCreature = NULL;
+	GameObject *pGameObject = NULL; //ceberwow added it
+	Object *pObj= NULL;
 	Loot *pLoot = NULL;
 	/* struct:
 	{CLIENT} Packet: (0x02A3) CMSG_LOOT_MASTER_GIVE PacketSize = 17
@@ -1785,8 +1791,32 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 		if (!pCreature)return;
 		pLoot=&pCreature->loot;	
 	}
+	else
+	if(GET_TYPE_FROM_GUID(GetPlayer()->GetLootGUID()) == HIGHGUID_TYPE_GAMEOBJECT) // ceberwow added it support gomastergive
+	{
+		pGameObject = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(creatureguid));
+		if (!pGameObject)return;
+		pGameObject->SetUInt32Value(GAMEOBJECT_STATE,0);
+		pLoot=&pGameObject->loot;
+	}
+
 
 	if(!pLoot) return;
+	if ( pCreature )
+		pObj = pCreature;
+	else
+		pObj = pGameObject;
+
+	if ( !pObj ){
+    return;
+	}
+
+  // telling him or not.
+	/*float targetDist = player->CalcDistance(pObj);
+  if(targetDist > 130.0f) {
+    _player->GetSession()->SendNotification("so far!"));
+    return;
+  }*/
 
 	if (slotid >= pLoot->items.size())
 	{

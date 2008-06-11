@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -309,7 +309,9 @@ int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs)
 		// not reached:P
 	}
 
+#ifndef FORCED_SERVER_KEEPALIVE
 	died=true;
+#endif
 
 	// Create the date/time string
 	time_t curtime = time(NULL);
@@ -361,10 +363,15 @@ int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs)
 
 		CloseHandle(hDump);
 	}
+
+#ifndef FORCED_SERVER_KEEPALIVE
 	SetPriorityClass(GetCurrentProcess(), BELOW_NORMAL_PRIORITY_CLASS);
 	OnCrash(!ON_CRASH_BREAK_DEBUGGER);	  
-
 	return EXCEPTION_CONTINUE_SEARCH;
+#else
+	m_crashLock.Release();
+	return EXCEPTION_EXECUTE_HANDLER; //we do wish to handle this exception ourselfs = 1 = kill thread
+#endif
 }
 #endif
 

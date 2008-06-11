@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -765,12 +765,13 @@ bool ChatHandler::HandleThreatListCommand(const char* args, WorldSession *m_sess
 	TargetMap::iterator itr;
 	for(itr = target->GetAIInterface()->GetAITargets()->begin(); itr != target->GetAIInterface()->GetAITargets()->end();)
 	{
-		if(!itr->second)
+		Unit *ai_t = target->GetMapMgr()->GetUnit( itr->first );
+		if(!ai_t || !itr->second)
 		{
 			++itr;
 			continue;
 		}
-		sstext << "guid: " << itr->first->GetGUID() << " | threat: " << itr->second << "| threat after mod: " << (itr->second + itr->first->GetThreatModifyer()) << "\n";
+		sstext << "guid: " << itr->first << " | threat: " << itr->second << "| threat after mod: " << (itr->second + ai_t->GetThreatModifyer()) << "\n";
 		++itr;
 	}
 

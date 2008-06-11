@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -92,9 +92,14 @@ uint32 GetAutoCastTypeForSpell(SpellEntry * ent)
 	/************************************************************************/
 
 	case SPELL_HASH_WATERBOLT:			// Waterbolt
+	case SPELL_HASH_FREEZE:				// Freez -> it's the frost nova thing
 		return AUTOCAST_EVENT_ATTACK;
 		break;
 	}
+
+#ifdef _DEBUG
+	sLog.outDebug("Pet does not have event assigned for spell %u \n",ent->Id);
+#endif
 
 	return AUTOCAST_EVENT_NONE;
 }
@@ -129,6 +134,7 @@ void Pet::CreateAsSummon(uint32 entry, CreatureInfo *ci, Creature* created_from_
 
 	SetUInt32Value(UNIT_FIELD_DISPLAYID,  ci->Male_DisplayID);
 	SetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID, ci->Male_DisplayID);
+	EventModelChange();
 	SetUInt64Value(UNIT_FIELD_SUMMONEDBY, owner->GetGUID());
 	SetUInt64Value(UNIT_FIELD_CREATEDBY, owner->GetGUID());
 	
@@ -399,23 +405,23 @@ AI_Spell * Pet::CreateAISpell(SpellEntry * info)
 	sp->entryId = GetEntry();
 	sp->floatMisc1 = 0;
 	sp->maxrange = GetMaxRange(dbcSpellRange.LookupEntry(info->rangeIndex));
+	if( sp->maxrange < sqrt(info->base_range_or_radius_sqr) )
+		sp->maxrange = sqrt(info->base_range_or_radius_sqr);
 	sp->minrange = GetMinRange(dbcSpellRange.LookupEntry(info->rangeIndex));
 	sp->Misc2 = 0;
 	sp->procChance = 0;
 	sp->spell = info;
 	sp->spellType = STYPE_DAMAGE;
-	sp->spelltargetType = TTYPE_SINGLETARGET;
 	sp->cooldown = objmgr.GetPetSpellCooldown(info->Id);
+	if( sp->cooldown == 0 )
+		sp->cooldown = info->StartRecoveryTime; //avoid spell spaming
+	if( sp->cooldown == 0 )
+		sp->cooldown = info->StartRecoveryCategory; //still 0 ?
+	if( sp->cooldown == 0 )
+		sp->cooldown = PET_SPELL_SPAM_COOLDOWN; //omg, avoid spaming at least
 	sp->cooldowntime = 0;
 	if(info->Effect[0] == SPELL_EFFECT_APPLY_AURA || info->Effect[0] == SPELL_EFFECT_APPLY_AREA_AURA)
 		sp->spellType = STYPE_BUFF;
-
-	if(info->EffectImplicitTargetA[0] == 24)
-	{
-		float radius = ::GetRadius(dbcSpellRadius.LookupEntry(info->EffectRadiusIndex[0]));
-		sp->maxrange = radius;
-		sp->spelltargetType = TTYPE_SOURCE;
-	}
 
 	sp->autocast_type = GetAutoCastTypeForSpell(info);
 	sp->custom_pointer = false;
@@ -488,13 +494,14 @@ void Pet::LoadFromDB(Player* owner, PlayerPet * pi)
 		ApplyStatsForLevel();
 	}
 	
-	// Nuke auras
-	for(uint32 x = UNIT_FIELD_AURA_01; x <= UNIT_FIELD_AURA_55; x++)
-		SetUInt32Value(x, 0);
 }
 
 void Pet::OnPushToWorld()
 {
+	// Nuke auras
+	for(uint32 x = UNIT_FIELD_AURA_01; x <= UNIT_FIELD_AURA_55; x++)
+		SetUInt32Value(x, 0);
+
 	//before we initialize pet spells so we can apply spell mods on them 
 	if( m_Owner && m_Owner->IsPlayer() )
 		static_cast< Player* >( m_Owner )->EventSummonPet( this );
@@ -1342,6 +1349,11 @@ void Pet::ApplySummonLevelAbilities()
 	// Calculate health / mana
 	double health = pet_sta * pet_sta_to_hp;
 	double mana = has_mana ? (pet_int * 15) : 0.0;
+	if( health == 0 )
+	{
+		sLog.outError("Pet with entry %u has 0 health !! \n",m_uint32Values[OBJECT_FIELD_ENTRY]);
+		health = 100;
+	}
 	SetUInt32Value(UNIT_FIELD_BASE_HEALTH, FL2UINT(health));
 	SetUInt32Value(UNIT_FIELD_BASE_MANA, FL2UINT(mana));
 }
@@ -1670,7 +1682,9 @@ AI_Spell * Pet::HandleAutoCastEvent()
 		for(; itr != m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end(), j < c; ++j, ++itr);
 		if(itr == m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end())
 		{
-			if( (*m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin())->autocast_type == AUTOCAST_EVENT_ATTACK )
+			if( (*m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin())->autocast_type == AUTOCAST_EVENT_ATTACK 
+				 && getMSTime() >= (*m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin())->cooldowntime //water elemental would spam it's frost nova like hell
+				)
 				return *m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin();
 			else
 			{
@@ -1681,7 +1695,9 @@ AI_Spell * Pet::HandleAutoCastEvent()
 		}
 		else
 		{
-			if( (*itr)->autocast_type == AUTOCAST_EVENT_ATTACK )
+			if( (*itr)->autocast_type == AUTOCAST_EVENT_ATTACK 
+				 && getMSTime() >= (*itr)->cooldowntime //water elemental would spam it's frost nova like hell
+				)
 				return *itr;
 			else
 			{
@@ -1695,7 +1711,7 @@ AI_Spell * Pet::HandleAutoCastEvent()
 		AI_Spell * sp = *m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin();
 		if( sp->autocast_type == AUTOCAST_EVENT_ATTACK )
 		{
-			if( sp->cooldown && getMSTime() >= sp->cooldowntime )
+			if( sp->cooldowntime && getMSTime() >= sp->cooldowntime )
 				return *m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin();
 			else
 				return NULL;
@@ -1732,12 +1748,12 @@ void Pet::HandleAutoCastEvent(uint32 Type)
 				itr = m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin();
 
 				for(; itr != m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end(), j < c; ++j, ++itr);
-				if(itr == m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end() )
+				if(itr == m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end())
 				{
 					if(  (*m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin())->cooldowntime > ms )
-					m_aiInterface->SetNextSpell(*m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin());
+ 						m_aiInterface->SetNextSpell(*m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin());
 					else
-					return;
+						return;
 					break;
 				}
 				else
@@ -1765,7 +1781,7 @@ void Pet::HandleAutoCastEvent(uint32 Type)
 		it2 = itr++;
 		sp = *it2;
 
-		if( sp->spelltargetType == TTYPE_OWNER )
+		if( sp->spell->ai_target_type == TTYPE_OWNER )
 			CastSpell( m_Owner, sp->spell, false );
 		else
 		{

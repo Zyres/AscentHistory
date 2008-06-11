@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -244,8 +244,8 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket& recvPacket)
 			{
 				uint32 skill = pSpell->pLearnSpell->EffectMiscValue[i];
 				uint32 val = (pSpell->pLearnSpell->EffectBasePoints[i]+1) * 75;
-				if( val > 350 )
-					val = 350;
+				if( val > 375 )
+					val = 375;
 
 				if( _player->_GetSkillLineMax(skill) >= val )
 					return;
@@ -516,6 +516,15 @@ void WorldSession::HandleGossipSelectOptionOpcode( WorldPacket & recv_data )
 		qst_giver=pitem;
 		Script=pitem->GetProto()->gossip_script;
 	}
+	else if(guidtype==HIGHGUID_TYPE_GAMEOBJECT)
+	{
+        GameObject *gobj = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
+		if(!gobj)
+			return;
+        
+		qst_giver=gobj;
+        Script=gobj->GetInfo()->gossip_script;
+    }
 
 	if(!Script||!qst_giver)
 		return;
@@ -551,13 +560,9 @@ void WorldSession::HandleSpiritHealerActivateOpcode( WorldPacket & recv_data )
 
 	if(_player->getLevel() > 10)
 	{
-		Aura *aur = GetPlayer()->FindAura(15007);
+		Aura* aur = GetPlayer()->FindAura(15007);
 		
-		if(aur) // If the player already have the aura, just extend it.
-		{
-			GetPlayer()->SetAurDuration(15007,aur->GetDuration());
-		}
-		else // else add him one, that fucker, he think he will get away!?
+		if( aur == NULL ) // If the player already have the aura, just extend it.
 		{
 			SpellEntry *spellInfo = dbcSpell.LookupEntry( 15007 );//resurrection sickness
 			SpellCastTargets targets;
@@ -565,6 +570,18 @@ void WorldSession::HandleSpiritHealerActivateOpcode( WorldPacket & recv_data )
 			Spell*sp=new Spell(_player,spellInfo,true,NULL);
 			sp->prepare(&targets);
 		}
+
+		//calc new duration
+		int32 duration=600000; //10mins
+
+		if (_player->getLevel() < 20)
+			duration=(_player->getLevel() - 10) * 60000;
+
+		if ( aur == NULL )
+			aur = GetPlayer()->FindAura(15007);
+
+		if ( aur != NULL )
+			aur->SetDuration(duration);
 	}
 
 	GetPlayer( )->SetUInt32Value(UNIT_FIELD_HEALTH, GetPlayer()->GetUInt32Value(UNIT_FIELD_MAXHEALTH)/2);

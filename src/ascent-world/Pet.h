@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,6 +19,8 @@
 
 #ifndef _PET_H
 #define _PET_H
+
+#define PET_SPELL_SPAM_COOLDOWN 2000 //applied only to spells that have no cooldown
 
 /* Taken from ItemPetFood.dbc
  * Each value is equal to a flag

@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -188,9 +188,10 @@ enum SpellCastError
 	SPELL_FAILED_PARTIAL_PLAYTIME                                = 163,
 	SPELL_FAILED_NO_PLAYTIME                                     = 164,
 	SPELL_FAILED_NOT_IN_BATTLEGROUND                             = 165,
-	SPELL_FAILED_ONLY_IN_ARENA                                   = 166,
-	SPELL_FAILED_TARGET_LOCKED_TO_RAID_INSTANCE                  = 167,
-	SPELL_FAILED_UNKNOWN                                         = 168,
+	SPELL_FAILED_UNKOWN_166										 = 166, //You can't do that in a raid instance.
+	SPELL_FAILED_ONLY_IN_ARENA                                   = 167,
+	SPELL_FAILED_TARGET_LOCKED_TO_RAID_INSTANCE                  = 168,
+	SPELL_FAILED_UNKNOWN                                         = 169,
 	SPELL_CANCAST_OK                                             = 255,
 };
 

@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -104,6 +104,7 @@ struct GameObjectInfo
 	// Quests
 	GameObjectGOMap goMap;
 	GameObjectItemMap itemMap;
+    GossipScript * gossip_script;
 };
 #pragma pack(pop)
 
@@ -250,12 +251,19 @@ public:
 	void OnRemoveInRangeObject(Object* pObj);
 	void RemoveFromWorld(bool free_guid);
 
-	ASCENT_INLINE bool CanMine(){return (mines_remaining > 0);}
-	ASCENT_INLINE void UseMine(){ if(mines_remaining) mines_remaining--;}
+	ASCENT_INLINE bool CanMine(){return (usage_remaining > 0);}
+	ASCENT_INLINE void UseMine(){ if(usage_remaining) usage_remaining--;}
 	void CalcMineRemaining(bool force)
 	{
-		if(force || !mines_remaining)
-			mines_remaining = GetInfo()->sound4 + RandomUInt(GetInfo()->sound5 - GetInfo()->sound4) - 1;
+		if(force || !usage_remaining)
+			usage_remaining = GetInfo()->sound4 + RandomUInt(GetInfo()->sound5 - GetInfo()->sound4) - 1;
+	}
+	ASCENT_INLINE bool CanFish() { return ( usage_remaining > 0 ); }
+	ASCENT_INLINE void CatchFish() { if ( usage_remaining ) usage_remaining--; }
+	void CalcFishRemaining( bool force )
+	{
+		if ( force || !usage_remaining )
+			usage_remaining = GetInfo()->sound2 + RandomUInt( GetInfo()->sound3 - GetInfo()->sound2 ) - 1;
 	}
 	bool HasLoot();
 	uint32 GetGOReqSkill();
@@ -268,9 +276,11 @@ protected:
 	GameObjectInfo *pInfo;
 	GameObjectAIScript * myScript;
 	uint32 _fields[GAMEOBJECT_END];
-	uint32 mines_remaining; //used for mining to mark times it can be mined
+	uint32 usage_remaining; //used for mining to mark times it can be mined
 
 };
 
 #endif
+
+
 

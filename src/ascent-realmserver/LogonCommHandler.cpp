@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -61,10 +61,11 @@ void LogonCommHandler::RequestAddition(LogonCommClientSocket * Socket)
 		Realm * realm = *itr;
 		data << realm->Name;
 		data << realm->Address;
-		data << realm->Colour;
+//		data << realm->Colour;
 		data << realm->Icon;
 		data << realm->TimeZone;
 		data << realm->Population;
+		data << realm->Lock;
 		Socket->SendPacket(&data);
 	}
 }
@@ -324,7 +325,7 @@ void LogonCommHandler::LoadRealmConfiguration()
 			Realm * realm = new Realm;
 			realm->Name = Config.RealmConfig.GetStringVA("Name", "SomeRealm", "Realm%u", i);
 			realm->Address = Config.RealmConfig.GetStringVA("Address", "127.0.0.1:8129", "Realm%u", i);
-			realm->Colour = Config.RealmConfig.GetIntVA("Colour", 1, "Realm%u", i);
+//			realm->Colour = Config.RealmConfig.GetIntVA("Colour", 1, "Realm%u", i);
 			realm->TimeZone = Config.RealmConfig.GetIntVA("TimeZone", 1, "Realm%u", i);
 			realm->Population = Config.RealmConfig.GetFloatVA("Population", 0, "Realm%u", i);
 			string rt = Config.RealmConfig.GetStringVA("Icon", "Normal", "Realm%u", i);

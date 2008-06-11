@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -32,7 +32,7 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
 	if(!GetPlayer())
 		return;
 
-	if(count >= 127 || (SrcInvSlot <= 0 && SrcSlot < INVENTORY_SLOT_ITEM_START) || (DstInvSlot <= 0 && DstSlot < INVENTORY_SLOT_ITEM_START))
+	if( count==0 || count >= 127 || (SrcInvSlot <= 0 && SrcSlot < INVENTORY_SLOT_ITEM_START) || (DstInvSlot <= 0 && DstSlot < INVENTORY_SLOT_ITEM_START))
 	{
 		/* exploit fix */
 		return;
@@ -475,6 +475,11 @@ void WorldSession::HandleSwapInvItemOpcode( WorldPacket & recv_data )
 	}
 
 	// swap items
+  if( _player->isDead() ) {
+  	_player->GetItemInterface()->BuildInventoryChangeError(srcitem,NULL,INV_ERR_YOU_ARE_DEAD);
+	  return;
+  }
+
 	_player->GetItemInterface()->SwapItemSlots(srcslot, dstslot);
 }
 
@@ -1063,6 +1068,9 @@ void WorldSession::HandleBuyItemInSlotOpcode( WorldPacket & recv_data ) // drag 
 	recv_data >> slot;
 	recv_data >> amount;
 
+	if(amount < 1)
+		amount = 1;
+
 	if( _player->isCasting() )
 		_player->InterruptSpell();
 
@@ -1388,6 +1396,10 @@ void WorldSession::HandleListInventoryOpcode( WorldPacket & recv_data )
 	if (unit == NULL)
 		return;
 
+	//this is a blizzlike check
+	if( _player->GetDistanceSq( unit ) > 10 )
+		return; //avoid talking to anyone by guid hacking. Like sell farmed items anytime ? Low chance hack
+
 	/*if(unit->GetAIInterface())
 		unit->GetAIInterface()->StopMovement(180000);*/
 
@@ -1418,9 +1430,9 @@ void WorldSession::SendInventoryList(Creature* unit)
 		{
 			if((curItem = ItemPrototypeStorage.LookupEntry(itr->itemid)))
 			{
-				if(curItem->AllowableClass && !(_player->getClassMask() & curItem->AllowableClass))
+				if(curItem->AllowableClass && !(_player->getClassMask() & curItem->AllowableClass) && !_player->GetSession()->HasGMPermissions()) // GM looking up for everything.
 					continue;
-				if(curItem->AllowableRace && !(_player->getRaceMask() & curItem->AllowableRace))
+				if(curItem->AllowableRace && !(_player->getRaceMask() & curItem->AllowableRace) && !_player->GetSession()->HasGMPermissions())
 					continue;
 
 				int32 av_am = (itr->max_amount>0)?itr->available_amount:-1;
@@ -1649,6 +1661,10 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 
 	if( !pCreature->HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_ARMORER ) )
 		return;
+
+	//this is a blizzlike check
+	if( _player->GetDistanceSq( pCreature ) > 10 )
+		return; //avoid talking to anyone by guid hacking. Like repair items anytime in raid ? Low chance hack
 
 	if( !itemguid ) 
 	{

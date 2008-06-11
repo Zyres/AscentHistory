@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -498,6 +498,9 @@ void Creature::RemoveFromWorld(bool addrespawnevent, bool free_guid)
 			delay = proto->RespawnTime;
 		Despawn(0, delay);
 	}
+
+	//remove ai stuff
+	sEventMgr.RemoveEvents(this, EVENT_CREATURE_AISPELL);
 }
 
 void Creature::EnslaveExpire()
@@ -536,6 +539,7 @@ void Creature::EnslaveExpire()
 
 	// Update InRangeSet
 	UpdateOppFactionSet();
+	UpdateSameFactionSet();
 }
 
 bool Creature::RemoveEnslave()
@@ -898,6 +902,7 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 	SetUInt32Value(UNIT_FIELD_DISPLAYID,model);
 	SetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID,model);
 	SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID,proto->MountedDisplayID);
+	EventModelChange();
 
     //SetUInt32Value(UNIT_FIELD_LEVEL, (mode ? proto->Level + (info ? info->lvl_mod_a : 0) : proto->Level));
 	SetUInt32Value(UNIT_FIELD_LEVEL, proto->MinLevel + (RandomUInt(proto->MaxLevel - proto->MinLevel)));
@@ -936,6 +941,8 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 	m_spawnLocation.ChangeCoords(spawn->x, spawn->y, spawn->z, spawn->o);
 	m_aiInterface->setMoveType(spawn->movetype);	
 	m_aiInterface->m_waypoints = objmgr.GetWayPointMap(spawn->id);
+
+	m_aiInterface->timed_emotes = objmgr.GetTimedEmoteList(spawn->id);
 
 	m_faction = dbcFactionTemplate.LookupEntry(spawn->factionid);
 	if(m_faction)
@@ -1065,6 +1072,8 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 	if( spawn->stand_state )
 		SetStandState( (uint8)spawn->stand_state );
 
+	m_aiInterface->EventAiInterfaceParamsetFinish();
+	
 	return true;
 }
 
@@ -1104,6 +1113,7 @@ void Creature::Load(CreatureProto * proto_, float x, float y, float z)
 	SetUInt32Value(UNIT_FIELD_DISPLAYID,model);
 	SetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID,model);
 	SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID,proto->MountedDisplayID);
+	EventModelChange();
 
 	//SetUInt32Value(UNIT_FIELD_LEVEL, (mode ? proto->Level + (info ? info->lvl_mod_a : 0) : proto->Level));
 	SetUInt32Value(UNIT_FIELD_LEVEL, proto->MinLevel + (RandomUInt(proto->MaxLevel - proto->MinLevel)));
@@ -1263,6 +1273,9 @@ void Creature::OnPushToWorld()
 
 			CastSpell(this, sp, 0);
 		}
+		//generic ai stuff
+		if ( this->proto->AISpells[0] != 0 )
+			sEventMgr.AddEvent(this, &Creature::AISpellUpdate, EVENT_CREATURE_AISPELL, 500, 0, 0);
 	}
 	LoadScript();
 	Unit::OnPushToWorld();
@@ -1302,6 +1315,125 @@ void Creature::OnPushToWorld()
 					sEventMgr.AddEvent(this, &Creature::UpdateItemAmount, itr->itemid, EVENT_ITEM_UPDATE, VENDOR_ITEMS_UPDATE_TIME, 1,0);
 		}
 
+	}
+}
+
+void Creature::AISpellUpdate()
+{
+	//lower cooldowns
+	for (int i=0; i<4; i++)
+	{
+		if (AISpellsCooldown[i]>=500)
+			AISpellsCooldown[i]-=500;
+		else
+			AISpellsCooldown[i]=0;
+	}
+
+	if (!IsInWorld() || !isAlive())
+		return;
+
+	if ( GetCurrentSpell() ) //check everythings going well on current spells
+	{
+		Spell* s=GetCurrentSpell();
+		SpellRange* range=dbcSpellRange.LookupEntry(s->m_spellInfo->rangeIndex);
+
+		if (s->GetUnitTarget() != NULL && range != NULL && (CalcDistance(s->GetUnitTarget()) > range->maxRange || CalcDistance(s->GetUnitTarget()) < range->minRange))
+			s->cancel();
+
+		if (m_silenced || IsStunned() || IsFeared())
+			s->cancel();
+
+#ifdef COLLISION
+		if (s->GetUnitTarget() != NULL && !CollideInterface.CheckLOS(GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), s->GetUnitTarget()->GetPositionX(), s->GetUnitTarget()->GetPositionY(), s->GetUnitTarget()->GetPositionZ()))
+			s->cancel();
+#endif
+	}
+	else //guess we can cast a spell now
+	{
+		if (!(this->proto->AISpellsFlags & CREATURE_AI_FLAG_CASTOUTOFCOMBAT) && !CombatStatus.IsInCombat())
+			return;
+
+		bool random_chosen=false;
+
+		//calculate global cooldown
+		int32 GCD=RandomUInt(2000)+5000;
+
+		if (this->proto->AISpellsFlags & CREATURE_AI_FLAG_PLAYERGCD)
+			GCD=1500;
+
+		//do we have a spell to use?
+		for (int i=0; i<4; i++)
+		{
+			if (this->proto->AISpellsFlags & CREATURE_AI_FLAG_RANDOMCAST && !random_chosen)
+			{
+				//find the max spell
+				uint32 maxindex=0;
+				for (int j=0; j<4; j++)
+				{
+					if (this->proto->AISpells[j]==0)
+						break;
+					else
+						maxindex=j;
+				}
+
+				//move index randomly
+				if (maxindex > 0)
+					i=RandomUInt(maxindex);
+
+				random_chosen=true;
+			}
+
+			if (this->proto->AISpells[i]==0)
+				continue;
+
+			if (AISpellsCooldown[i]==0) //we can cast?
+			{
+				//get the spell
+				SpellEntry* newspell=dbcSpell.LookupEntry(this->proto->AISpells[i]);
+				SpellCastTime* casttime=dbcSpellCastTime.LookupEntry(newspell->CastingTimeIndex);
+				Spell* spell=new Spell(this, newspell, false, 0);
+				SpellCastTargets t(0);
+				spell->GenerateTargets(&t);
+
+				//printf("\nCOOLDOWN: %u, %u", newspell->RecoveryTime, newspell->CategoryRecoveryTime);
+
+				//printf("\nTEST: %f %f %f "I64FMT" "I64FMT, t.m_destX, t.m_destY, t.m_destZ, t.m_itemTarget, t.m_unitTarget);
+
+				//we have no targets?
+				if (t.m_destX == 0.0f && t.m_destY == 0.0f && t.m_destZ == 0.0f && t.m_itemTarget == 0 && t.m_unitTarget == 0)
+				{
+					//printf("\nNo target, not casting!");
+					delete spell;
+					continue;
+				}
+
+				//hacky
+				spell->m_targets = t;
+
+				if (spell->CanCast(false) != SPELL_CANCAST_OK || !spell->HasPower() || m_silenced || IsStunned() || IsFeared())
+				{
+					delete spell;
+					continue;
+				}
+
+				spell->prepare(&t);
+
+				//stop movement for spells with a cast time
+				if (casttime->CastTime > 0)
+					GetAIInterface()->StopMovement(0);
+
+				if (newspell->CategoryRecoveryTime > newspell->RecoveryTime)
+					AISpellsCooldown[i]=newspell->CategoryRecoveryTime;
+				else
+					AISpellsCooldown[i]=newspell->RecoveryTime;
+
+
+				//weve cast, set GCD
+				for (int j=0; j<4; j++)
+					if (AISpellsCooldown[j] < GCD)
+						AISpellsCooldown[j] = GCD;
+			}
+		}
 	}
 }
 

@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -35,10 +35,11 @@ typedef struct
 {
 	string Name;
 	string Address;
-	uint32 Colour;
-	uint32 Icon;
-	uint32 TimeZone;
+//	uint32 Colour;
+	uint8 Icon;
+	uint8 TimeZone;
 	float Population;
+	uint8 Lock;
 }Realm;
 
 enum RealmType

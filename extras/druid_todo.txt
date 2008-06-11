@@ -1,15 +1,8 @@
-Druid:
-Feline Gracie...once you left cat form this passive aura get stacked to you
-Can cast moonfire with they'r back,when they shouldn't.
+revision: 87
+bug: Nature's Grace, only trigger with Wrath
+How it should work: Should Trigger with any spell heal or Ofensive spells according http://www.wowwiki.com/Nature's_Grace
 
-Skills
-
-TALENTS
---BAL--
-Moonkin aura - change you into humanoid type and not beast ?
---RESTO--
-Natural Shapeshifter - works but only until you move
-Improved Mark of the Wild - affects only druid
-
-- When casting Force of Nature the target must be standing still if you cast it on a moving target the spell does nothing, at least no treants summon.
-- Treants don't chase after the target you cast the spell on they go after the nearest person/mob that they can attack.
+revision: 87
+bug: Force of Nature, only spawns trees when you cast over an enemy faction. If are more than one enemy into the target area, will be X * 3 trees, where X is the number of enemies into the target area. Don't attack the enemy if he's passive enemy (Yellow Enemies) or your duel's enemy.
+How it should work: Should spawn the trees event if you don't have a target. Should spawn only 3 trees . Should attack any enemy who is on combat with the caster event if they are passive, or etc...
+http://www.wowwiki.com/Force_of_Nature

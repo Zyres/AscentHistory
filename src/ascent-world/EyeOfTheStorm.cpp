@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -40,9 +40,9 @@ const float EOTSStartLocations[2][3] = {
 	{ 1807.735962f, 1539.415649f, 1267.627319f },
 };
 
-const float EOTSBubbleLocations[2][4] = {
-	{ 2527.596924f, 1596.906494f, 1262.128052f, -3.124139f },
-	{ 0.0f, 0.0f, 0.0f, 0.0f },
+const float EOTSBubbleLocations[2][5] = {
+	{ 184719, 1803.21f, 1539.49f, 1261.09f, 3.14159f },
+	{ 184720, 2527.6f, 1596.91f, 1262.13f, -3.12414f },
 };
 
 const float EOTSBubbleRotations[2][4] = {
@@ -408,16 +408,18 @@ void EyeOfTheStorm::OnCreate()
 	/* BUBBLES! */
 	for( i = 0; i < 2; ++i )
 	{
-		m_bubbles[i] = m_mapMgr->CreateGameObject(184719);
-		if( !m_bubbles[i]->CreateFromProto( 184719, m_mapMgr->GetMapId(), EOTSBubbleLocations[i][0], EOTSBubbleLocations[i][1], EOTSBubbleLocations[i][2], EOTSBubbleLocations[i][3] ) )
+		m_bubbles[i] = m_mapMgr->CreateGameObject((uint32)EOTSBubbleLocations[i][0]);
+		if( !m_bubbles[i]->CreateFromProto( (uint32)EOTSBubbleLocations[i][0], m_mapMgr->GetMapId(), EOTSBubbleLocations[i][1], EOTSBubbleLocations[i][2], EOTSBubbleLocations[i][3], EOTSBubbleLocations[i][4] ) )
 		{
-			m_bubbles[i]->SetFloatValue(OBJECT_FIELD_SCALE_X,0.1f);
-			m_bubbles[i]->SetUInt32Value(GAMEOBJECT_STATE,1);
-			m_bubbles[i]->SetUInt32Value(GAMEOBJECT_FLAGS,32);
 			Log.LargeErrorMessage(LARGERRORMESSAGE_ERROR, "EOTS is being created and you are missing gameobjects. Terminating.");
 			abort();
 			return;
 		}
+
+		m_bubbles[i]->SetFloatValue(OBJECT_FIELD_SCALE_X,0.1f);
+		m_bubbles[i]->SetUInt32Value(GAMEOBJECT_STATE,1);
+		m_bubbles[i]->SetUInt32Value(GAMEOBJECT_FLAGS,32);
+		m_bubbles[i]->SetUInt32Value(GAMEOBJECT_FACTION,114);
 
 		m_bubbles[i]->PushToWorld( m_mapMgr );
 	}
@@ -609,7 +611,7 @@ void EyeOfTheStorm::GeneratePoints()
 	{
 		if( towers[i] == 0 )
 		{
-			printf("EOTS: No points on team %u\n", i);
+			//printf("EOTS: No points on team %u\n", i);
 			continue;
 		}
 
@@ -626,7 +628,6 @@ bool EyeOfTheStorm::GivePoints(uint32 team, uint32 points)
 	if( m_points[team] >= 2000 )
 	{
 		m_points[team] = 2000;
-		SetWorldState( EOTS_WORLDSTATE_ALLIANCE_VICTORYPOINTS + team, m_points[team] );
 
 		m_ended = true;
 		m_winningteam = team;
@@ -638,20 +639,50 @@ bool EyeOfTheStorm::GivePoints(uint32 team, uint32 points)
 		/* add the marks of honor to all players */
 		m_mainLock.Acquire();
 
-		SpellEntry * winner_spell = dbcSpell.LookupEntry(24953);
-		SpellEntry * loser_spell = dbcSpell.LookupEntry(24952);
 		for(uint32 i = 0; i < 2; ++i)
 		{
 			for(set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
 			{
 				(*itr)->Root();
-				if(i == m_winningteam)
-					(*itr)->CastSpell((*itr), winner_spell, true);
+				
+				ItemPrototype *proto = ItemPrototypeStorage.LookupEntry(29024);
+				SlotResult slotresult;
+				slotresult = (*itr)->GetItemInterface()->FindFreeInventorySlot(proto);
+
+				if(i == m_winningteam) {
+					if(!slotresult.Result)
+					{
+						(*itr)->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+					}
+					else
+					{
+						Item *itm = objmgr.CreateItem(29024, (*itr));
+						itm->SetUInt32Value(ITEM_FIELD_STACK_COUNT, 100);
+						itm->SetUInt32Value(ITEM_FIELD_STACK_COUNT, 3);
+						(*itr)->GetItemInterface()->SafeAddItem(itm,slotresult.ContainerSlot, slotresult.Slot);
+						itm->m_isDirty = true;
+					}
+				}
 				else
-					(*itr)->CastSpell((*itr), loser_spell, true);
+				{
+					if(!slotresult.Result)
+					{
+						(*itr)->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+					}
+					else
+					{
+						Item *itm = objmgr.CreateItem(29024, (*itr));
+						itm->SetUInt32Value(ITEM_FIELD_STACK_COUNT, 100);
+						itm->SetUInt32Value(ITEM_FIELD_STACK_COUNT, 1);
+						(*itr)->GetItemInterface()->SafeAddItem(itm,slotresult.ContainerSlot, slotresult.Slot);
+						itm->m_isDirty = true;
+					}
+				}
 			}
 		}
 		m_mainLock.Release();
+		SetWorldState( EOTS_WORLDSTATE_ALLIANCE_VICTORYPOINTS + team, m_points[team] );
+		UpdatePvPData();
 		return true;
 	}
 
@@ -702,4 +733,5 @@ void EyeOfTheStorm::OnStart()
 		delete m_bubbles[i];
 		m_bubbles[i] = NULL;
 	}
+	m_started = true;
 }

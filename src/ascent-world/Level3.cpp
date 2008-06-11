@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -52,6 +52,11 @@ bool ChatHandler::HandleClearCooldownsCommand(const char *args, WorldSession *m_
 		SystemMessage(m_session, "Auto-targeting self.");
 	}
 	if(!plr) return false;
+
+	if(plr != m_session->GetPlayer())
+	{
+		sGMLog.writefromsession(m_session, "Cleared all cooldowns for player %s", plr->GetName());
+	}
 
 	if(plr->getClass()==WARRIOR)
 	{
@@ -591,26 +596,31 @@ bool ChatHandler::HandleAddSkillCommand(const char* args, WorldSession *m_sessio
 
 bool ChatHandler::HandleNpcInfoCommand(const char *args, WorldSession *m_session)
 {
-	char msg[512];
 	uint32 guid = GUID_LOPART(m_session->GetPlayer()->GetSelection());
 	Creature *crt = getSelectedCreature(m_session);
 	if(!crt) return false;
 	if(crt->GetCreatureName())
 		BlueSystemMessage(m_session, "Showing creature info for %s", crt->GetCreatureName()->Name);
-	snprintf(msg,512,"GUID: %d\nFaction: %d\nNPCFlags: %d\nDisplayID: %d", (int)guid, (int)crt->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE), (int)crt->GetUInt32Value(UNIT_NPC_FLAGS), (int)crt->GetUInt32Value(UNIT_FIELD_DISPLAYID));
-	SystemMessage(m_session, msg);
+	SystemMessage(m_session, "GUID: %d", guid);
+	SystemMessage(m_session, "Faction: %d", crt->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
+	SystemMessage(m_session, "NPCFlags: %d", crt->GetUInt32Value(UNIT_NPC_FLAGS));
+	SystemMessage(m_session, "DisplayID: %d", crt->GetUInt32Value(UNIT_FIELD_DISPLAYID));
 	if(crt->m_faction)
-		GreenSystemMessage(m_session, "Combat Support: 0x%.3X", crt->m_faction->FriendlyMask);
-	GreenSystemMessage(m_session, "Base Health: %d", crt->GetUInt32Value(UNIT_FIELD_BASE_HEALTH));
-	GreenSystemMessage(m_session, "Base Armor: %d", crt->GetUInt32Value(UNIT_FIELD_RESISTANCES));
+		SystemMessage(m_session, "Combat Support: 0x%.3X", crt->m_faction->FriendlyMask);
+	SystemMessage(m_session, "Health (cur/max): %d/%d", crt->GetUInt32Value(UNIT_FIELD_HEALTH), crt->GetUInt32Value(UNIT_FIELD_MAXHEALTH));
+	SystemMessage(m_session, "Mana (cur/max): %d/%d", crt->GetUInt32Value(UNIT_FIELD_POWER1), crt->GetUInt32Value(UNIT_FIELD_MAXPOWER1));
+	SystemMessage(m_session, "Armor/Holy/Fire/Nature/Frost/Shadow/Arcane");
+	SystemMessage(m_session, "%d/%d/%d/%d/%d/%d/%d", crt->GetUInt32Value(UNIT_FIELD_RESISTANCES), crt->GetUInt32Value(UNIT_FIELD_RESISTANCES_01), crt->GetUInt32Value(UNIT_FIELD_RESISTANCES_02), crt->GetUInt32Value(UNIT_FIELD_RESISTANCES_03), crt->GetUInt32Value(UNIT_FIELD_RESISTANCES_04), crt->GetUInt32Value(UNIT_FIELD_RESISTANCES_05), crt->GetUInt32Value(UNIT_FIELD_RESISTANCES_06));
+	
+	/*GreenSystemMessage(m_session, "Base Armor: %d", crt->GetUInt32Value(UNIT_FIELD_RESISTANCES));
 	GreenSystemMessage(m_session, "Base Mana: %d", crt->GetUInt32Value(UNIT_FIELD_MAXPOWER1));
 	GreenSystemMessage(m_session, "Base Holy: %d", crt->GetUInt32Value(UNIT_FIELD_RESISTANCES_01));
 	GreenSystemMessage(m_session, "Base Fire: %d", crt->GetUInt32Value(UNIT_FIELD_RESISTANCES_02));
 	GreenSystemMessage(m_session, "Base Nature: %d", crt->GetUInt32Value(UNIT_FIELD_RESISTANCES_03));
 	GreenSystemMessage(m_session, "Base Frost: %d", crt->GetUInt32Value(UNIT_FIELD_RESISTANCES_04));
 	GreenSystemMessage(m_session, "Base Shadow: %d", crt->GetUInt32Value(UNIT_FIELD_RESISTANCES_05));
-	GreenSystemMessage(m_session, "Base Arcane: %d", crt->GetUInt32Value(UNIT_FIELD_RESISTANCES_06));
-	GreenSystemMessage(m_session, "Damage min/max: %f/%f", crt->GetFloatValue(UNIT_FIELD_MINDAMAGE),crt->GetFloatValue(UNIT_FIELD_MAXDAMAGE));
+	GreenSystemMessage(m_session, "Base Arcane: %d", crt->GetUInt32Value(UNIT_FIELD_RESISTANCES_06));*/
+	SystemMessage(m_session, "Damage (min/max): %f/%f", crt->GetFloatValue(UNIT_FIELD_MINDAMAGE),crt->GetFloatValue(UNIT_FIELD_MAXDAMAGE));
 	
 	ColorSystemMessage(m_session, MSG_COLOR_RED, "Entry ID: %d", crt->GetUInt32Value(OBJECT_FIELD_ENTRY));
 	ColorSystemMessage(m_session, MSG_COLOR_RED, "SQL Entry ID: %d", crt->GetSQL_id());
@@ -619,7 +629,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char *args, WorldSession *m_session
 	uint32 theBytes = crt->GetUInt32Value(UNIT_FIELD_BYTES_0);
 	sstext << "UNIT_FIELD_BYTES_0 are " << uint16((uint8)theBytes & 0xFF) << " " << uint16((uint8)(theBytes >> 8) & 0xFF) << " ";
 	sstext << uint16((uint8)(theBytes >> 16) & 0xFF) << " " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\0';
-	BlueSystemMessage(m_session, sstext.str().c_str());
+	SystemMessage(m_session, sstext.str().c_str());
 	return true;
 }
 
@@ -724,7 +734,7 @@ bool ChatHandler::HandleIncreaseWeaponSkill(const char *args, WorldSession *m_se
 	uint32 skill = SubClassSkill;
 
 	BlueSystemMessage(m_session, "Modifying skill line %d. Advancing %d times.", skill, cnt);
-	sGMLog.writefromsession(m_session, "increased weapon skill of %s by %u", pr->GetName(), cnt);
+	sGMLog.writefromsession(m_session, "increased weapon skill (%u) of %s by %u", skill, pr->GetName(), cnt);
 
 	if(!pr->_HasSkillLine(skill))
 	{
@@ -873,6 +883,7 @@ bool ChatHandler::HandleAccountUnmuteCommand(const char * args, WorldSession * m
 	sLogonCommHandler.Account_SetMute( args, 0 );
 
 	GreenSystemMessage(m_session, "Account '%s' has been unmuted.", args);
+	sGMLog.writefromsession( m_session, "unmuted account %s", args );
 	WorldSession * pSession = sWorld.FindSessionByName(args);
 	if( pSession != NULL )
 	{
@@ -920,6 +931,8 @@ bool ChatHandler::HandleRemoveAurasCommand(const char *args, WorldSession *m_ses
 	{
 		if(plr->m_auras[i] != 0) plr->m_auras[i]->Remove();
 	}
+	if(plr != m_session->GetPlayer())
+		sGMLog.writefromsession(m_session, "Removed all of %s's auras.", plr->GetName());
 	return true;
 }
 
@@ -930,6 +943,8 @@ bool ChatHandler::HandleRemoveRessurectionSickessAuraCommand(const char *args, W
 
 	BlueSystemMessage(m_session, "Removing ressurection sickness...");
 	plr->RemoveAura( 15007 );
+	if(plr != m_session->GetPlayer())
+		sGMLog.writefromsession(m_session, "Removed resurrection sickness from %s", plr->GetName());
 	return true;
 }
 
@@ -1074,6 +1089,13 @@ bool ChatHandler::HandleCooldownCheatCommand(const char* args, WorldSession* m_s
 
 	bool val = plyr->CooldownCheat;
 	BlueSystemMessage(m_session, "%s cooldown cheat on %s.", val ? "Deactivating" : "Activating", plyr->GetName());
+	if( val == false )
+	{
+		//best case we could simply iterate through cooldowns or create a special function ...
+		SpellSet::const_iterator itr = plyr->mSpells.begin();
+		for(; itr != plyr->mSpells.end(); ++itr)
+			plyr->ClearCooldownForSpell( (*itr) );
+	}
 	GreenSystemMessageToPlr(plyr, "%s %s a cooldown cheat on you.", m_session->GetPlayer()->GetName(), val ? "deactivated" : "activated");
 
 	plyr->CooldownCheat = !val;
@@ -1151,6 +1173,8 @@ bool ChatHandler::HandleFlyCommand(const char* args, WorldSession* m_session)
 	fly << uint32(2);
 	chr->SendMessageToSet(&fly, true);
 	BlueSystemMessage(chr->GetSession(), "Flying mode enabled.");
+	if(chr != m_session->GetPlayer())
+		sGMLog.writefromsession(m_session, "Enabled flying mode for %s", chr->GetName());
 	return 1;
 }
 
@@ -2234,6 +2258,40 @@ void SendHighlightedName(WorldSession * m_session, char* full_name, string& lowe
 	sChatHandler.SystemMessage(m_session, message);
 }
 
+void SendItemLinkToPlayer(ItemPrototype * iProto, WorldSession * pSession, bool ItemCount, Player * owner = NULL)
+{
+	if(!iProto || !pSession)
+		return;
+	if(ItemCount && owner == NULL)
+		return;
+		
+	string q;
+	switch(iProto->Quality)
+	{
+	case 0:{ q = "cff9d9d9d";}
+		break;
+	case 1:{ q = "cffffffff";}
+		break;
+	case 2:{ q = "cff1eff00";}
+		break;
+	case 3:{ q = "cff0070dd";}
+		break;
+	case 4:{ q = "cffa335ee";}
+		break;
+	case 5:{ q = "cffff8000";}
+		break;
+	case 6:{ q = "c00fce080";}
+		break;
+	default:{ q = "cff9d9d9d";}
+	}
+		
+	if(ItemCount)
+		sChatHandler.SystemMessage(pSession,"Item %u |%s|Hitem:%u:0:0:0:0:0:0:0|h[%s]|h|r  count %u", iProto->ItemId ,q.c_str(),iProto->ItemId,iProto->Name1, owner->GetItemInterface()->GetItemCount(iProto->ItemId, true));
+	else
+		sChatHandler.SystemMessage(pSession,"Item %u |%s|Hitem:%u:0:0:0:0:0:0:0|h[%s]|h|r", iProto->ItemId ,q.c_str(),iProto->ItemId,iProto->Name1);
+}
+
+
 bool ChatHandler::HandleLookupItemCommand(const char * args, WorldSession * m_session)
 {
 	if(!*args) return false;
@@ -2246,19 +2304,21 @@ bool ChatHandler::HandleLookupItemCommand(const char * args, WorldSession * m_se
 		return true;
 	}
 
-	StorageContainerIterator<ItemPrototype> * itr = ItemPrototypeStorage.MakeIterator();
-
 	BlueSystemMessage(m_session, "Starting search of item `%s`...", x.c_str());
 	uint32 t = getMSTime();
 	ItemPrototype * it;
 	uint32 count = 0;
+
+	StorageContainerIterator<ItemPrototype> * itr = ItemPrototypeStorage.MakeIterator();
+
 	while(!itr->AtEnd())
 	{
 		it = itr->Get();
 		if(FindXinYString(x, it->lowercase_name))
 		{
 			// Print out the name in a cool highlighted fashion
-			SendHighlightedName(m_session, it->Name1, it->lowercase_name, x, it->ItemId, true);
+			//SendHighlightedName(m_session, it->Name1, it->lowercase_name, x, it->ItemId, true);
+			SendItemLinkToPlayer(it, m_session, false);
 			++count;
 			if(count == 25)
 			{
@@ -2320,7 +2380,7 @@ bool ChatHandler::HandleLookupCreatureCommand(const char * args, WorldSession * 
 
 bool ChatHandler::HandleGORotate(const char * args, WorldSession * m_session)
 {
-	GameObject *go = m_session->GetPlayer()->m_GM_SelectedGO;
+	GameObject *go = m_session->GetPlayer()->GetSelectedGo();
 	if( !go )
 	{
 		RedSystemMessage(m_session, "No selected GameObject...");
@@ -2352,7 +2412,7 @@ bool ChatHandler::HandleGORotate(const char * args, WorldSession * m_session)
 bool ChatHandler::HandleGOMove(const char * args, WorldSession * m_session)
 {
 	// move the go to player's coordinates
-	GameObject *go = m_session->GetPlayer()->m_GM_SelectedGO;
+	GameObject *go = m_session->GetPlayer()->GetSelectedGo();
 	if( !go )
 	{
 		RedSystemMessage(m_session, "No selected GameObject...");
@@ -2706,6 +2766,7 @@ bool ChatHandler::HandleDispelAllCommand(const char * args, WorldSession * m_ses
 
 bool ChatHandler::HandleShowItems(const char * args, WorldSession * m_session)
 {
+	string q;
 	Player * plr = getSelectedChar(m_session, true);
 	if(!plr) return true;
 
@@ -2713,17 +2774,31 @@ bool ChatHandler::HandleShowItems(const char * args, WorldSession * m_session)
 	itr.BeginSearch();
 	for(; !itr.End(); itr.Increment())
 	{
-		SystemMessage(m_session, "Item %s count %u", (*itr)->GetProto()->Name1, (*itr)->GetUInt32Value(ITEM_FIELD_STACK_COUNT));
+		if(!(*itr))
+			return false;
+
+		SendItemLinkToPlayer((*itr)->GetProto(), m_session, true, plr);
 	}
 	itr.EndSearch();
+	sGMLog.writefromsession(m_session, "used show items command on %s,", plr->GetName());
+
+   return true;
+}
+
+bool ChatHandler::HandleShowSkills(const char * args, WorldSession * m_session)
+{
+	Player * plr = getSelectedChar(m_session, true);
+	if(!plr) 
+		return true;
 
 	SkillIterator itr2(plr);
 	itr2.BeginSearch();
 	for(; !itr2.End(); itr2.Increment())
 	{
-		SystemMessage(m_session, "Skill %u %u/%u", itr2->Skill->id, itr2->CurrentValue, itr2->MaximumValue);
+		SystemMessage(m_session, "Skill %u %s %u/%u", itr2->Skill->id, itr2->Skill->Name ,itr2->CurrentValue, itr2->MaximumValue);
 	}
 	itr2.EndSearch();
+	sGMLog.writefromsession(m_session, "used show skills command on %s,", plr->GetName());
 
 	return true;
 }

@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -61,10 +61,11 @@ void LogonCommHandler::RequestAddition(LogonCommClientSocket * Socket)
 		Realm * realm = *itr;
 		data << realm->Name;
 		data << realm->Address;
-		data << realm->Colour;
+//		data << realm->Colour;
 		data << realm->Icon;
 		data << realm->TimeZone;
 		data << realm->Population;
+		data << realm->Lock;
 		Socket->SendPacket(&data,false);
 	}
 }
@@ -377,21 +378,21 @@ void LogonCommHandler::LoadRealmConfiguration()
 			Realm * realm = new Realm;
 			realm->Name = Config.RealmConfig.GetStringVA("Name", "SomeRealm", "Realm%u", i);
 			realm->Address = Config.RealmConfig.GetStringVA("Address", "127.0.0.1:8129", "Realm%u", i);
-			realm->Colour = Config.RealmConfig.GetIntVA("Colour", 1, "Realm%u", i);
+//			realm->Colour = Config.RealmConfig.GetIntVA("Colour", 1, "Realm%u", i);
 			realm->TimeZone = Config.RealmConfig.GetIntVA("TimeZone", 1, "Realm%u", i);
 			realm->Population = Config.RealmConfig.GetFloatVA("Population", 0, "Realm%u", i);
 			string rt = Config.RealmConfig.GetStringVA("Icon", "Normal", "Realm%u", i);
 			uint32 type;
 
 			// process realm type
-			if(!stricmp(rt.c_str(), "pvp"))
-				type = 1;
-			else if(!stricmp(rt.c_str(), "rp"))
-				type = 0;
-			else if(!stricmp(rt.c_str(), "rppvp"))
-				type = 0;
+			if( stricmp(rt.c_str(), "pvp")==0 )
+				type = REALMTYPE_PVP;
+			else if( stricmp(rt.c_str(), "rp")==0 )
+				type = REALMTYPE_RP;
+			else if( stricmp(rt.c_str(), "rppvp")==0 )
+				type = REALMTYPE_RPPVP;
 			else
-				type = 0;
+				type = REALMTYPE_NORMAL;
 
 			_realmType = type;
 

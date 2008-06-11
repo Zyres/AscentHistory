@@ -314,9 +314,9 @@ void StatDumper::DumpStats()
     {
         // Dump server information.
 #ifdef WIN32
-		fprintf(f, "    <platform>Ascent %s r%u/%s-Win-%s (www.ascentemu.com)</platform>\n", BUILD_TAG, BUILD_REVISION, CONFIG, ARCH);		
+		fprintf(f, "    <platform>OpenAscent %s r%u/%s-Win-%s (www.openascent.com)</platform>\n", BUILD_TAG, BUILD_REVISION, CONFIG, ARCH);		
 #else
-		fprintf(f, "    <platform>Ascent %s r%u/%s-%s (www.ascentemu.com)</platform>\n", BUILD_TAG, BUILD_REVISION, PLATFORM_TEXT, ARCH);
+		fprintf(f, "    <platform>OpenAscent %s r%u/%s-%s (www.openascent.com)</platform>\n", BUILD_TAG, BUILD_REVISION, PLATFORM_TEXT, ARCH);
 #endif
 
         char uptime[80];
@@ -437,7 +437,8 @@ void StatDumper::DumpStats()
         {
             plr = gms.front();
             gms.pop_front();
-
+			if(!plr->bGMTagOn)
+				continue;
             FillOnlineTime(t - plr->OnlineTime, otime);
             fprintf(f, "    <gmplr>\n");
             fprintf(f, "      <name>%s</name>\n", plr->GetName());

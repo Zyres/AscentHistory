@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef SPELL_SCRIPTS_SETUP_H
-#define SPELL_SCRIPTS_SETUP_H
+#ifndef INSTANCE_SCRIPTS_SETUP_H
+#define INSTANCE_SCRIPTS_SETUP_H
 
 void SetupShamanSpells(ScriptMgr * mgr);
 void SetupWarlockSpells(ScriptMgr * mgr);

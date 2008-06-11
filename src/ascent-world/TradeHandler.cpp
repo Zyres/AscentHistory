@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -47,7 +47,7 @@ void WorldSession::HandleInitiateTrade(WorldPacket & recv_data)
 		TradeStatus = TRADE_STATUS_DEAD;
 	else if(pTarget->mTradeTarget != 0)
 		TradeStatus = TRADE_STATUS_ALREADY_TRADING;
-	else if(pTarget->GetTeam() != _player->GetTeam() && GetPermissionCount() == 0)
+	else if(pTarget->GetTeam() != _player->GetTeam() && GetPermissionCount() == 0 && !sWorld.interfaction_trade)
 		TradeStatus = TRADE_STATUS_WRONG_FACTION;
 
 	data << TradeStatus;
@@ -239,8 +239,14 @@ void WorldSession::HandleSetTradeItem(WorldPacket & recv_data)
 	Player * pTarget = _player->GetMapMgr()->GetPlayer( _player->mTradeTarget );
 
 	Item * pItem = _player->GetItemInterface()->GetInventoryItem(SourceBag, SourceSlot);
-	if( pTarget == NULL || pItem == 0 || TradeSlot > 6 || ( TradeSlot < 6 && pItem->IsSoulbound() ) )
+	if( pTarget == NULL || pItem == 0 || TradeSlot > 6 )
 		return;
+
+	if( pItem->IsContainer() && ((Container*)pItem)->HasItems() )
+	{
+		_player->GetItemInterface()->BuildInventoryChangeError(	pItem, NULL, INV_ERR_CANT_TRADE_EQUIP_BAGS);
+		return;
+	}
 
 	if(TradeSlot < 6 && pItem->IsSoulbound())
 	{
@@ -344,7 +350,8 @@ void WorldSession::HandleAcceptTrade(WorldPacket & recv_data)
 				Guid = _player->mTradeItems[Index] ? _player->mTradeItems[Index]->GetGUID() : 0;
 				if(Guid != 0)
 				{
-					if( _player->mTradeItems[Index]->IsSoulbound() )
+					if( _player->mTradeItems[Index]->GetProto()->Bonding == ITEM_BIND_ON_PICKUP ||
+						_player->mTradeItems[Index]->GetProto()->Bonding  >=  ITEM_BIND_QUEST  )
 					{
 						_player->mTradeItems[Index] = NULL;
 					}
@@ -361,7 +368,8 @@ void WorldSession::HandleAcceptTrade(WorldPacket & recv_data)
 				Guid = pTarget->mTradeItems[Index] ? pTarget->mTradeItems[Index]->GetGUID() : 0;
 				if(Guid != 0)
 				{
-					if( pTarget->mTradeItems[Index]->IsSoulbound() )
+					if( pTarget->mTradeItems[Index]->GetProto()->Bonding == ITEM_BIND_ON_PICKUP ||  
+						pTarget->mTradeItems[Index]->GetProto()->Bonding  >=  ITEM_BIND_QUEST )
 					{
 						pTarget->mTradeItems[Index] = NULL;
 					}

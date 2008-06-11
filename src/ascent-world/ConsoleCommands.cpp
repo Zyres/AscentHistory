@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -45,7 +45,7 @@ bool HandleInfoCommand(BaseConsole * pConsole, int argc, const char * argv[])
 	pConsole->Write("======================================================================\r\n");
 	pConsole->Write("Server Information: \r\n");
 	pConsole->Write("======================================================================\r\n");
-	pConsole->Write("Server Revision: Ascent r%u/%s-%s-%s (ascentemu.com)\r\n", BUILD_REVISION, CONFIG, PLATFORM_TEXT, ARCH);
+	pConsole->Write("Server Revision: OpenAscent r%u/%s-%s-%s (www.openascent.com)\r\n", BUILD_REVISION, CONFIG, PLATFORM_TEXT, ARCH);
 	pConsole->Write("Server Uptime: %s\r\n", sWorld.GetUptimeString().c_str());
 	pConsole->Write("Current Players: %d (%d GMs, %d queued)\r\n", clientsNum, gm,  0);
 	pConsole->Write("Active Thread Count: %u\r\n", ThreadPool.GetActiveThreadCount());
@@ -328,4 +328,3 @@ bool HandleNameHashCommand(BaseConsole * pConsole, int argc, const char * argv[]
 	sWorld.Rehash(true);
 	return true;
 }
-

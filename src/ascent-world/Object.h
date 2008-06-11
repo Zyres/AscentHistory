@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -392,6 +392,7 @@ public:
 		m_objectsInRange.clear();
 		m_inRangePlayers.clear();
 		m_oppFactsInRange.clear();
+		m_sameFactsInRange.clear();
 	}
 
 	ASCENT_INLINE size_t GetInRangeCount() { return m_objectsInRange.size(); }
@@ -429,8 +430,14 @@ public:
 		m_inRangePlayers.erase( reinterpret_cast< Player* >( obj ) );
 	}
 
+	bool IsInRangeSameFactSet(Object* pObj) { return (m_sameFactsInRange.count(pObj) > 0); }
+	void UpdateSameFactionSet();
+	ASCENT_INLINE std::set<Object*>::iterator GetInRangeSameFactsSetBegin() { return m_sameFactsInRange.begin(); }
+	ASCENT_INLINE std::set<Object*>::iterator GetInRangeSameFactsSetEnd() { return m_sameFactsInRange.end(); }
+
 	bool IsInRangeOppFactSet(Object* pObj) { return (m_oppFactsInRange.count(pObj) > 0); }
 	void UpdateOppFactionSet();
+	ASCENT_INLINE size_t GetInRangeOppFactsSize(){ return m_oppFactsInRange.size(); }
 	ASCENT_INLINE std::set<Object*>::iterator GetInRangeOppFactsSetBegin() { return m_oppFactsInRange.begin(); }
 	ASCENT_INLINE std::set<Object*>::iterator GetInRangeOppFactsSetEnd() { return m_oppFactsInRange.end(); }
 	ASCENT_INLINE std::set<Player*>::iterator GetInRangePlayerSetBegin() { return m_inRangePlayers.begin(); }
@@ -558,6 +565,7 @@ protected:
 	std::set<Object*> m_objectsInRange;
 	std::set<Player*> m_inRangePlayers;
 	std::set<Object*> m_oppFactsInRange;
+	std::set<Object*> m_sameFactsInRange;
    
   
 	//! Remove object from map

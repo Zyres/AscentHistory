@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -38,6 +38,14 @@ struct CreatureItem
 	uint32 incrtime;
 };
 
+enum CreatureAISpellFlags
+{
+	CREATURE_AI_FLAG_NONE				= 0x00,
+	CREATURE_AI_FLAG_RANDOMCAST			= 0x01,
+	CREATURE_AI_FLAG_CASTOUTOFCOMBAT	= 0x02,
+	CREATURE_AI_FLAG_PLAYERGCD			= 0x04
+};
+
 SERVER_DECL bool Rand(float chance);
 SERVER_DECL bool Rand(uint32 chance);
 SERVER_DECL bool Rand(int32 chance);
@@ -65,87 +73,24 @@ struct CreatureInfo
 
 	std::string lowercase_name;
 	GossipScript * gossip_script;
-	uint32 GenerateModelId(uint32 * dest)
+	uint32 GenerateModelId(uint32 * des)
 	{
-		/* only M */
-		if(( Male_DisplayID || Male_DisplayID2 ) && !Female_DisplayID && !Female_DisplayID2 )
+		uint32 models[] = { Male_DisplayID, Male_DisplayID2, Female_DisplayID, Female_DisplayID2 };
+		if(!models[0] && !models[1] && !models[2] && !models[3])
 		{
-			if (Male_DisplayID2)
-			{
-				if(Rand(50.0f))
-				{
-					*dest = Male_DisplayID;
-				}
-				else
-				{
-					*dest = Male_DisplayID2;
-				}
-			}
-			else
-			{
-				*dest = Male_DisplayID;
-			}
+			// All models are invalid.
+			Log.Notice("CreatureSpawn", "All model IDs are invalid for creature %u", Id);
 			return 0;
-		}
-		/* only F */
-		if(( Female_DisplayID || Female_DisplayID2 ) && !Male_DisplayID && !Male_DisplayID2 )
-		{
-			if (Female_DisplayID2)
-			{
-				if(Rand(50.0f))
-				{
-					*dest = Female_DisplayID;
-				}
-				else
-				{
-					*dest = Female_DisplayID2;
-				}
-			}
-			else
-			{
-				*dest = Female_DisplayID;
-			}
-			return 1;
 		}
 
-		/* make a random one */
-		if(Rand(50.0f))
+		while(true)
 		{
-			if (Female_DisplayID2)
+			uint32 res = RandomUInt(3);
+			if(models[res])
 			{
-				if(Rand(50.0f))
-				{
-					*dest = Female_DisplayID;
-				}
-				else
-				{
-					*dest = Female_DisplayID2;
-				}
+				*des = models[res];
+				return res < 2 ? 0 : 1;
 			}
-			else
-			{
-				*dest = Female_DisplayID;
-			}
-			return 1;
-		}
-		else
-		{
-			if (Male_DisplayID2)
-			{
-				if(Rand(50.0f))
-				{
-					*dest = Male_DisplayID;
-				}
-				else
-				{
-					*dest = Male_DisplayID2;
-				}
-			}
-			else
-			{
-				*dest = Male_DisplayID;
-			}
-			return 0;
 		}
 	}
 };
@@ -191,6 +136,8 @@ struct CreatureProto
 	float	run_speed;//most of the time mobs use this
 	float fly_speed;
 	uint32 extra_a9_flags;
+	uint32 AISpells[4];
+	uint32 AISpellsFlags;
 
 	/* AI Stuff */
 	bool m_canRangedAttack;
@@ -421,6 +368,8 @@ public:
 	void RegenerateMana();
 	int BaseAttackType;
 
+	int32 AISpellsCooldown[4];
+
 	bool CanSee(Unit* obj) // * Invisibility & Stealth Detection - Partha *
 	{
 		if(!obj)
@@ -550,6 +499,9 @@ public:
 	uint32 original_emotestate;
 	CreatureProto * proto;
 	CreatureSpawn * m_spawn;
+
+	void AISpellUpdate();
+
 	void OnPushToWorld();
 	void Despawn(uint32 delay, uint32 respawntime);
 	void TriggerScriptEvent(string func);

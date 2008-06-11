@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -288,7 +288,7 @@ bool Transporter::GenerateWaypoints()
 	//mCurrentWaypoint = GetNextWaypoint();
 	mNextWaypoint = GetNextWaypoint();
 	m_pathTime = timer;
-	
+	m_timer = 0;
 	return true;
 }
 
@@ -309,7 +309,7 @@ void Transporter::UpdatePosition()
 
 	m_timer = getMSTime() % m_period;
 	
-	while (((m_timer - mCurrentWaypoint->first) % m_pathTime) > ((mNextWaypoint->first - mCurrentWaypoint->first) % m_pathTime))
+	while (((m_timer - mCurrentWaypoint->first) % m_pathTime) >= ((mNextWaypoint->first - mCurrentWaypoint->first) % m_pathTime))
 	{
 		/*printf("%s from %u %f %f %f to %u %f %f %f\n", this->GetInfo()->Name,
 			mCurrentWaypoint->second.mapid, mCurrentWaypoint->second.x,mCurrentWaypoint->second.y,mCurrentWaypoint->second.z,
@@ -317,16 +317,13 @@ void Transporter::UpdatePosition()
 
 		mCurrentWaypoint = mNextWaypoint;
 		mNextWaypoint = GetNextWaypoint();
-		if (mNextWaypoint->second.mapid != GetMapId() || mCurrentWaypoint->second.teleport) {
-			//mCurrentWaypoint = mNextWaypoint;
-			//mNextWaypoint = GetNextWaypoint();
-			TransportPassengers(mNextWaypoint->second.mapid, GetMapId(),
-				mNextWaypoint->second.x, mNextWaypoint->second.y, mNextWaypoint->second.z);
+		if (mCurrentWaypoint->second.mapid != GetMapId() || mCurrentWaypoint->second.teleport)
+		{
+			TransportPassengers(mCurrentWaypoint->second.mapid, GetMapId(), mCurrentWaypoint->second.x, mCurrentWaypoint->second.y, mCurrentWaypoint->second.z);
 			break;
-		} else {
-			SetPosition(mNextWaypoint->second.x, mNextWaypoint->second.y,
-				mNextWaypoint->second.z, m_position.o, false);
 		}
+		else
+			SetPosition(mCurrentWaypoint->second.x, mCurrentWaypoint->second.y, mCurrentWaypoint->second.z, m_position.o, false);
 
 		if(mCurrentWaypoint->second.delayed)
 		{

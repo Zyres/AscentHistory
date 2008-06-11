@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -178,10 +178,11 @@ typedef struct
 {
 	string Name;
 	string Address;
-	uint32 Colour;
-	uint32 Icon;
-	uint32 TimeZone;
+	uint8 Colour;
+	uint8 Icon;
+	uint8 TimeZone;
 	float Population;
+	uint8 Lock;
 	HM_NAMESPACE::hash_map<uint32, uint8> CharacterMap;
 }Realm;
 
@@ -219,7 +220,9 @@ public:
 
 	Realm*		  AddRealm(uint32 realm_id, Realm * rlm);
 	Realm*        GetRealm(uint32 realm_id);
+	int32		  GetRealmIdByName(string Name);
 	void		  RemoveRealm(uint32 realm_id);
+	void		  UpdateRealmStatus(uint32 realm_id, uint8 Color);
 
 	ASCENT_INLINE void   AddServerSocket(LogonCommServerSocket * sock) { serverSocketLock.Acquire(); m_serverSockets.insert( sock ); serverSocketLock.Release(); }
 	ASCENT_INLINE void   RemoveServerSocket(LogonCommServerSocket * sock) { serverSocketLock.Acquire(); m_serverSockets.erase( sock ); serverSocketLock.Release(); }

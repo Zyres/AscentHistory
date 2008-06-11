@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -609,8 +609,8 @@ void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 dir
 		uint16 lenght = len;
 		unsigned int count = 0;
 
-		fprintf(m_file, "{%s} Packet: (0x%04X) %s PacketSize = %u\n", (direction ? "SERVER" : "CLIENT"), opcode,
-			LookupName(opcode, g_worldOpcodeNames), lenght);
+		fprintf(m_file, "{%s} Packet: (0x%04X) %s PacketSize = %u stamp = %u\n", (direction ? "SERVER" : "CLIENT"), opcode,
+			LookupName(opcode, g_worldOpcodeNames), lenght, getMSTime() );
 		fprintf(m_file, "|------------------------------------------------|----------------|\n");
 		fprintf(m_file, "|00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|\n");
 		fprintf(m_file, "|------------------------------------------------|----------------|\n");

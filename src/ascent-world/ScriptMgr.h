@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -53,7 +53,10 @@ enum ServerHookEvents
 	SERVER_HOOK_EVENT_ON_HONORABLE_KILL		= 23,
 	SERVER_HOOK_EVENT_ON_ARENA_FINISH		= 24,
 	SERVER_HOOK_EVENT_ON_OBJECTLOOT			= 25,
-	SERVER_HOOK_EVENT_ON_POST_LEVELUP		= 26,
+	SERVER_HOOK_EVENT_ON_AREATRIGGER		= 26,
+	SERVER_HOOK_EVENT_ON_POST_LEVELUP       = 27,
+	SERVER_HOOK_EVENT_ON_PRE_DIE	        = 28,	//general unit die, not only based on players
+	SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE  = 29,
 
 	NUM_SERVER_HOOKS,
 };
@@ -94,7 +97,10 @@ typedef void(*tOnQuestFinished)(Player * pPlayer, Quest * pQuest);
 typedef void(*tOnHonorableKill)(Player * pPlayer, Player * pKilled);
 typedef void(*tOnArenaFinish)(Player * pPlayer, ArenaTeam * pTeam, bool victory, bool rated);
 typedef void(*tOnObjectLoot)(Player * pPlayer, Object * pTarget, uint32 Money, uint32 ItemId);
+typedef void(*tOnAreaTrigger)(Player * pPlayer, uint32 areaTrigger);
 typedef void(*tOnPostLevelUp)(Player * pPlayer);
+typedef void(*tOnPreUnitDie)(Unit *killer, Unit *target);
+typedef void(*tOnAdvanceSkillLine)(Player * pPlayer, uint32 SkillLine, uint32 Current);
 
 class Spell;
 class Aura;
@@ -148,6 +154,7 @@ public:
 	void register_creature_script(uint32 entry, exp_create_creature_ai callback);
 	void register_gameobject_script(uint32 entry, exp_create_gameobject_ai callback);
 	void register_gossip_script(uint32 entry, GossipScript * gs);
+	void register_go_gossip_script(uint32 entry, GossipScript * gs);
 	void register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback);
 	void register_dummy_spell(uint32 entry, exp_handle_dummy_spell callback);
 	void register_hook(ServerHookEvents event, void * function_pointer);
@@ -288,7 +295,10 @@ public:
 	void OnHonorableKill(Player * pPlayer, Player * pKilled);
 	void OnArenaFinish(Player * pPlayer, ArenaTeam* pTeam, bool victory, bool rated);
 	void OnObjectLoot(Player * pPlayer, Object * pTarget, uint32 Money, uint32 ItemId);
+	void OnAreaTrigger(Player * pPlayer, uint32 areaTrigger);
 	void OnPostLevelUp(Player * pPlayer);
+	void OnPreUnitDie(Unit *Killer, Unit *Victim);
+	void OnAdvanceSkillLine(Player * pPlayer, uint32 SkillLine, uint32 Current);
 };
 
 #define sScriptMgr ScriptMgr::getSingleton()

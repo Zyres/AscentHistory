@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +18,6 @@
  */
 
 #include "StdAfx.h"
-
 initialiseSingleton( World );
 
 DayWatcherThread* dw = NULL;
@@ -50,7 +49,17 @@ World::World()
 	AlliancePlayers = 0;
 	gm_skip_attunement = false;
 	show_gm_in_who_list = true;
-	//allow_gm_friends = true;
+	interfaction_chat = false;
+	interfaction_group = false;
+	interfaction_guild = false;
+	interfaction_trade = false;
+	interfaction_friend = false;
+	interfaction_misc = false;
+	crossover_chars = true;
+	GMAdminTag = true;
+	NameinAnnounce = false;
+	NameinWAnnounce = false;
+	announce_output = true;
 	map_unload_time=0;
 #ifndef CLUSTERING
 	SocketSendBufSize = WORLDSOCKET_SENDBUF_SIZE;
@@ -58,6 +67,7 @@ World::World()
 #endif
 	m_levelCap=70;
 	m_genLevelCap=70;
+	start_level=1;
 	m_limitedNames=false;
 	m_banTable = NULL;
 	m_speedHackThreshold = -600.0f;
@@ -393,6 +403,7 @@ bool World::SetInitialWorldSettings()
 	tl.wait();
 
 	MAKE_TASK(ObjectMgr, LoadCreatureWaypoints);
+	MAKE_TASK(ObjectMgr, LoadCreatureTimedEmotes);
 	MAKE_TASK(ObjectMgr, LoadTrainers);
 	MAKE_TASK(ObjectMgr, LoadTotemSpells);
 	MAKE_TASK(ObjectMgr, LoadSpellSkills);
@@ -417,6 +428,7 @@ bool World::SetInitialWorldSettings()
 	MAKE_TASK(ObjectMgr, LoadExtraItemStuff);
 	MAKE_TASK(QuestMgr, LoadExtraQuestStuff);
 	MAKE_TASK(ObjectMgr, LoadArenaTeams);
+	MAKE_TASK(ObjectMgr, LoadProfessionDiscoveries);
 
 #undef MAKE_TASK
 
@@ -617,6 +629,23 @@ void World::SendFactionMessage(WorldPacket *packet, uint8 teamId)
 	m_sessionlock.ReleaseReadLock();
 }
 
+void World::SendGamemasterMessage(WorldPacket *packet, WorldSession *self)
+{
+	m_sessionlock.AcquireReadLock();
+	SessionMap::iterator itr;
+	for(itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
+	{
+	  if (itr->second->GetPlayer() &&
+	  itr->second->GetPlayer()->IsInWorld()
+	  && itr->second != self)  // dont send to self!
+	  {
+		if(itr->second->CanUseCommand('u'))
+		itr->second->SendPacket(packet);
+	  }
+	}
+	m_sessionlock.ReleaseReadLock();
+}
+
 void World::SendZoneMessage(WorldPacket *packet, uint32 zoneid, WorldSession *self)
 {
 	m_sessionlock.AcquireReadLock();
@@ -675,7 +704,28 @@ void World::SendWorldText(const char* text, WorldSession *self)
 
 	SendGlobalMessage(&data, self);
 
-	sLog.outString("> %s", text);
+	if(announce_output){
+		sLog.outString("> %s", text);}
+}
+
+void World::SendGMWorldText(const char* text, WorldSession *self)
+{
+    uint32 textLen = (uint32)strlen((char*)text) + 1;
+
+    WorldPacket data(textLen + 40);
+
+	data.Initialize(SMSG_MESSAGECHAT);
+	data << uint8(CHAT_MSG_SYSTEM);
+	data << uint32(LANG_UNIVERSAL);
+	
+	data << (uint64)0;
+	data << (uint32)0;
+	data << (uint64)0;
+
+	data << textLen;
+	data << text;
+	data << uint8(0);
+	SendGamemasterMessage(&data, self);
 }
 
 void World::SendWorldWideScreenText(const char *text, WorldSession *self)
@@ -1092,11 +1142,12 @@ void World::Rehash(bool load)
 	{
 		#ifdef WIN32
 		Config.MainConfig.SetSource("ascent-world.conf", true);
+		Config.OptionalConfig.SetSource("ascent-optional.conf", true);
 		#else
 		Config.MainConfig.SetSource((char*)CONFDIR "/ascent-world.conf", true);
+		Config.OptionalConfig.SetSource((char*)CONFDIR "/ascent-optional.conf", true);
 		#endif
 	}
-
 	if(!ChannelMgr::getSingletonPtr())
 		new ChannelMgr;
 
@@ -1234,7 +1285,27 @@ void World::Rehash(bool load)
 	flood_seconds = Config.MainConfig.GetIntDefault("FloodProtection", "Seconds", 0);
 	flood_message = Config.MainConfig.GetBoolDefault("FloodProtection", "SendMessage", false);
 	show_gm_in_who_list = Config.MainConfig.GetBoolDefault("Server", "ShowGMInWhoList", true);
-	//allow_gm_friends = Config.MainConfig.GetBoolDefault("Server", "AllowGMFriends", false);
+	interfaction_chat = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionChat", false);
+	interfaction_group = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionGroup", false);
+	interfaction_guild = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionGuild", false);
+	interfaction_trade = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionTrade", false);
+	interfaction_friend= Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionFriends", false);
+	interfaction_misc = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionMisc", false);
+	crossover_chars = Config.OptionalConfig.GetBoolDefault("Interfaction", "CrossOverCharacters", false);
+	start_level = Config.OptionalConfig.GetIntDefault("Optional", "StartingLevel", 1);
+	if(start_level > 70) {start_level = 70;}
+
+	announce_tag = Config.MainConfig.GetStringDefault("Announce", "Tag", "Staff");
+	GMAdminTag = Config.MainConfig.GetBoolDefault("Announce", "GMAdminTag", false);
+	NameinAnnounce = Config.MainConfig.GetBoolDefault("Announce", "NameinAnnounce", true);
+	NameinWAnnounce = Config.MainConfig.GetBoolDefault("Announce", "NameinWAnnounce", true);
+	announce_output = Config.MainConfig.GetBoolDefault("Announce", "ShowInConsole", true);
+	announce_tagcolor = Config.OptionalConfig.GetIntDefault("Color", "AnnTagColor", 2);
+	announce_gmtagcolor = Config.OptionalConfig.GetIntDefault("Color", "AnnGMTagColor", 1);
+	announce_namecolor = Config.OptionalConfig.GetIntDefault("Color", "AnnNameColor", 4);
+	announce_msgcolor = Config.OptionalConfig.GetIntDefault("Color", "AnnMsgColor", 10);
+	AnnounceColorChooser(announce_tagcolor, announce_gmtagcolor, announce_namecolor, announce_msgcolor);
+
 	if(!flood_lines || !flood_seconds)
 		flood_lines = flood_seconds = 0;
 
@@ -1247,8 +1318,8 @@ void World::Rehash(bool load)
 	no_antihack_on_gm = Config.MainConfig.GetBoolDefault("AntiHack", "DisableOnGM", false);
 	m_speedHackThreshold = Config.MainConfig.GetFloatDefault("AntiHack", "SpeedThreshold", -600.0f);
 	SpeedhackProtection = antihack_speed;
-	m_levelCap = Config.MainConfig.GetIntDefault("Server", "LevelCap", 70);
-	m_genLevelCap = Config.MainConfig.GetIntDefault("Server", "GenLevelCap", 70);
+	m_levelCap = Config.OptionalConfig.GetIntDefault("Optional", "LevelCap", 70);
+	m_genLevelCap = Config.OptionalConfig.GetIntDefault("Optional", "GenLevelCap", 70);
 	m_limitedNames = Config.MainConfig.GetBoolDefault("Server", "LimitedNames", true);
 	m_useAccountData = Config.MainConfig.GetBoolDefault("Server", "UseAccountData", false);
 
@@ -1304,6 +1375,143 @@ void World::CharacterEnumProc(QueryResultVector& results, uint32 AccountId)
 		return;
 
 	s->CharacterEnumProc(results[0].result);
+}
+
+void World::AnnounceColorChooser(int tagcolor, int gmtagcolor, int namecolor, int msgcolor)
+{
+	switch(tagcolor)
+	{
+		case 1:
+			ann_tagcolor = "|cffff6060"; //lightred
+			break;
+		case 2:
+			ann_tagcolor = "|cff00ccff"; //lightblue
+			break;
+		case 3:
+			ann_tagcolor = "|cff0000ff"; //blue
+			break;
+		case 4:
+			ann_tagcolor = "|cff00ff00"; //green
+			break;
+		case 5:
+			ann_tagcolor = "|cffff0000"; //red
+			break;
+		case 6:
+			ann_tagcolor = "|cffffcc00"; //gold
+			break;
+		case 7:
+			ann_tagcolor = "|cff888888"; //grey
+			break;
+		case 8:
+			ann_tagcolor = "|cffffffff"; //white
+			break;
+		case 9:
+			ann_tagcolor = "|cffff00ff"; //magenta
+			break;
+		case 10:
+			ann_tagcolor = "|cffffff00"; //yellow
+			break;
+	}
+	switch(gmtagcolor)
+	{
+		case 1:
+			ann_gmtagcolor = "|cffff6060"; //lightred
+			break;
+		case 2:
+			ann_gmtagcolor = "|cff00ccff"; //lightblue
+			break;
+		case 3:
+			ann_gmtagcolor = "|cff0000ff"; //blue
+			break;
+		case 4:
+			ann_gmtagcolor = "|cff00ff00"; //green
+			break;
+		case 5:
+			ann_gmtagcolor = "|cffff0000"; //red
+			break;
+		case 6:
+			ann_gmtagcolor = "|cffffcc00"; //gold
+			break;
+		case 7:
+			ann_gmtagcolor = "|cff888888"; //grey
+			break;
+		case 8:
+			ann_gmtagcolor = "|cffffffff"; //white
+			break;
+		case 9:
+			ann_gmtagcolor = "|cffff00ff"; //magenta
+			break;
+		case 10:
+			ann_gmtagcolor = "|cffffff00"; //yellow
+			break;
+	}
+	switch(namecolor)
+	{
+		case 1:
+			ann_namecolor = "|cffff6060"; //lightred
+			break;
+		case 2:
+			ann_namecolor = "|cff00ccff"; //lightblue
+			break;
+		case 3:
+			ann_namecolor = "|cff0000ff"; //blue
+			break;
+		case 4:
+			ann_namecolor = "|cff00ff00"; //green
+			break;
+		case 5:
+			ann_namecolor = "|cffff0000"; //red
+			break;
+		case 6:
+			ann_namecolor = "|cffffcc00"; //gold
+			break;
+		case 7:
+			ann_namecolor = "|cff888888"; //grey
+			break;
+		case 8:
+			ann_namecolor = "|cffffffff"; //white
+			break;
+		case 9:
+			ann_namecolor = "|cffff00ff"; //magenta
+			break;
+		case 10:
+			ann_namecolor = "|cffffff00"; //yellow
+			break;
+	}
+	switch(msgcolor)
+	{
+		case 1:
+			ann_msgcolor = "|cffff6060"; //lightred
+			break;
+		case 2:
+			ann_msgcolor = "|cff00ccff"; //lightblue
+			break;
+		case 3:
+			ann_msgcolor = "|cff0000ff"; //blue
+			break;
+		case 4:
+			ann_msgcolor = "|cff00ff00"; //green
+			break;
+		case 5:
+			ann_msgcolor = "|cffff0000"; //red
+			break;
+		case 6:
+			ann_msgcolor = "|cffffcc00"; //gold
+			break;
+		case 7:
+			ann_msgcolor = "|cff888888"; //grey
+			break;
+		case 8:
+			ann_msgcolor = "|cffffffff"; //white
+			break;
+		case 9:
+			ann_msgcolor = "|cffff00ff"; //magenta
+			break;
+		case 10:
+			ann_msgcolor = "|cffffff00"; //yellow
+			break;
+	}
+	printf("\nAnnounce colors initialized.\n");
 }
 
 void World::LoadAccountDataProc(QueryResultVector& results, uint32 AccountId)

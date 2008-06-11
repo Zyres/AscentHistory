@@ -1,24 +1,24 @@
 # Microsoft Developer Studio Project File - Name="libbz2" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 5.00
-# ** •ÒW‚µ‚È‚¢‚Å‚­‚¾‚³‚¢ **
+# ** ï¿½ÒWï¿½ï¿½ï¿½È‚ï¿½ï¿½Å‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ **
 
 # TARGTYPE "Win32 (x86) Dynamic-Link Library" 0x0102
 
 CFG=libbz2 - Win32 Debug
-!MESSAGE ‚±‚ê‚Í—LŒø‚ÈÒ²¸Ì§²Ù‚Å‚Í‚ ‚è‚Ü‚¹‚ñB ‚±‚ÌÌßÛ¼Þª¸Ä‚ðËÞÙÄÞ‚·‚é‚½‚ß‚É‚Í NMAKE ‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B
-!MESSAGE [Ò²¸Ì§²Ù‚Ì´¸½Îß°Ä] ºÏÝÄÞ‚ðŽg—p‚µ‚ÄŽÀs‚µ‚Ä‚­‚¾‚³‚¢
+!MESSAGE ï¿½ï¿½ï¿½ï¿½Í—Lï¿½ï¿½ï¿½ï¿½Ò²ï¿½Ì§ï¿½Ù‚Å‚Í‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½B ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û¼Þªï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½Þ‚ï¿½ï¿½é‚½ï¿½ß‚É‚ï¿½ NMAKE ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
+!MESSAGE [Ò²ï¿½Ì§ï¿½Ù‚Ì´ï¿½ï¿½ï¿½ß°ï¿½] ï¿½ï¿½ï¿½ï¿½Þ‚ï¿½gï¿½pï¿½ï¿½ï¿½ÄŽï¿½ï¿½sï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 !MESSAGE 
 !MESSAGE NMAKE /f "libbz2.mak".
 !MESSAGE 
-!MESSAGE NMAKE ‚ÌŽÀsŽž‚É\¬‚ðŽw’è‚Å‚«‚Ü‚·
-!MESSAGE ºÏÝÄÞ ×²Ýã‚ÅÏ¸Û‚ÌÝ’è‚ð’è‹`‚µ‚Ü‚·B—á:
+!MESSAGE NMAKE ï¿½ÌŽï¿½ï¿½sï¿½ï¿½ï¿½É\ï¿½ï¿½ï¿½ï¿½wï¿½ï¿½Å‚ï¿½ï¿½Ü‚ï¿½
+!MESSAGE ï¿½ï¿½ï¿½ï¿½ï¿½ ×²Ýï¿½ï¿½Ï¸Û‚ÌÝ’ï¿½ï¿½ï¿½`ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½Bï¿½ï¿½:
 !MESSAGE 
 !MESSAGE NMAKE /f "libbz2.mak" CFG="libbz2 - Win32 Debug"
 !MESSAGE 
-!MESSAGE ‘I‘ð‰Â”\‚ÈËÞÙÄÞ Ó°ÄÞ:
+!MESSAGE ï¿½Iï¿½ï¿½Â”\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ó°ï¿½ï¿½:
 !MESSAGE 
-!MESSAGE "libbz2 - Win32 Release" ("Win32 (x86) Dynamic-Link Library" —p)
-!MESSAGE "libbz2 - Win32 Debug" ("Win32 (x86) Dynamic-Link Library" —p)
+!MESSAGE "libbz2 - Win32 Release" ("Win32 (x86) Dynamic-Link Library" ï¿½p)
+!MESSAGE "libbz2 - Win32 Debug" ("Win32 (x86) Dynamic-Link Library" ï¿½p)
 !MESSAGE 
 
 # Begin Project

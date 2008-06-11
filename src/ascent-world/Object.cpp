@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -83,6 +83,9 @@ Object::~Object( )
 	
 	if( m_extensions != NULL )
 		delete m_extensions;
+
+	//avoid leaving traces in eventmanager. Have to work on the speed. Not all objects ever had events so list iteration can be skipped
+	sEventMgr.RemoveEvents( this );
 }
 
 
@@ -538,56 +541,60 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 			GameObject *go = ((GameObject*)this);
 			QuestLogEntry *qle;
 			GameObjectInfo *info;
-			if( go->HasQuests() )
-			{
-				activate_quest_object = true;
-			}
-			else
-			{
-				info = go->GetInfo();
-				if( info && ( info->goMap.size() || info->itemMap.size() ) )
-				{
-					for( GameObjectGOMap::iterator itr = go->GetInfo()->goMap.begin(); itr != go->GetInfo()->goMap.end(); ++itr )
-					{
-						qle = target->GetQuestLogForEntry( itr->first->id );
-						if( qle != NULL )
-						{
-							if( qle->GetQuest()->count_required_mob == 0 )
-								continue;
-							for( uint32 i = 0; i < 4; ++i )
-							{
-								if( qle->GetQuest()->required_mob[i] == go->GetEntry() && qle->GetMobCount(i) < qle->GetQuest()->required_mobcount[i])
-								{
-									activate_quest_object = true;
-									break;
-								}
-							}
-							if(activate_quest_object)
-								break;
-						}
-					}
 
-					if(!activate_quest_object)
+			if ( go )
+			{
+				if( go->HasQuests() )
+				{
+					activate_quest_object = true;
+				}
+				else
+				{
+					info = go->GetInfo();
+					if( info && ( info->goMap.size() || info->itemMap.size() ) )
 					{
-						for(GameObjectItemMap::iterator itr = go->GetInfo()->itemMap.begin();
-							itr != go->GetInfo()->itemMap.end();
-							++itr)
+						for( GameObjectGOMap::iterator itr = go->GetInfo()->goMap.begin(); itr != go->GetInfo()->goMap.end(); ++itr )
 						{
-							for(std::map<uint32, uint32>::iterator it2 = itr->second.begin();
-								it2 != itr->second.end(); 
-								++it2)
+							qle = target->GetQuestLogForEntry( itr->first->id );
+							if( qle != NULL )
 							{
-								if((qle = target->GetQuestLogForEntry(itr->first->id)))
+								if( qle->GetQuest()->count_required_mob == 0 )
+									continue;
+								for( uint32 i = 0; i < 4; ++i )
 								{
-									if(target->GetItemInterface()->GetItemCount(it2->first) < it2->second)
+									if( qle->GetQuest()->required_mob[i] == go->GetEntry() && qle->GetMobCount(i) < qle->GetQuest()->required_mobcount[i])
 									{
 										activate_quest_object = true;
 										break;
 									}
 								}
+								if(activate_quest_object)
+									break;
 							}
-							if(activate_quest_object)
-								break;
+						}
+
+						if(!activate_quest_object)
+						{
+							for(GameObjectItemMap::iterator itr = go->GetInfo()->itemMap.begin();
+								itr != go->GetInfo()->itemMap.end();
+								++itr)
+							{
+								for(std::map<uint32, uint32>::iterator it2 = itr->second.begin();
+									it2 != itr->second.end(); 
+									++it2)
+								{
+									if((qle = target->GetQuestLogForEntry(itr->first->id)))
+									{
+										if(target->GetItemInterface()->GetItemCount(it2->first) < it2->second)
+										{
+											activate_quest_object = true;
+											break;
+										}
+									}
+								}
+								if(activate_quest_object)
+									break;
+							}
 						}
 					}
 				}
@@ -1534,6 +1541,32 @@ void Object::UpdateOppFactionSet()
 	}
 }
 
+void Object::UpdateSameFactionSet()
+{
+	m_sameFactsInRange.clear();
+	for(Object::InRangeSet::iterator i = GetInRangeSetBegin(); i != GetInRangeSetEnd(); ++i)
+	{
+		if (((*i)->GetTypeId() == TYPEID_UNIT) || ((*i)->GetTypeId() == TYPEID_PLAYER) || ((*i)->GetTypeId() == TYPEID_GAMEOBJECT))
+		{
+			if (isFriendly(this, (*i)))
+			{
+				if(!(*i)->IsInRangeSameFactSet(this))
+					(*i)->m_sameFactsInRange.insert(this);
+				if (!IsInRangeOppFactSet((*i)))
+					m_sameFactsInRange.insert((*i));
+				
+			}
+			else
+			{
+				if((*i)->IsInRangeSameFactSet(this))
+					(*i)->m_sameFactsInRange.erase(this);
+				if (IsInRangeSameFactSet((*i)))
+					m_sameFactsInRange.erase((*i));
+			}
+		}
+	}
+}
+
 void Object::EventSetUInt32Value(uint32 index, uint32 value)
 {
 	SetUInt32Value(index,value);
@@ -1605,7 +1638,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 		//the black sheep , no actually it is paladin : Ardent Defender
 		if(static_cast<Unit*>(this)->DamageTakenPctModOnHP35 && HasFlag(UNIT_FIELD_AURASTATE , AURASTATE_FLAG_HEALTH35) )
 			damage = damage - float2int32(damage * static_cast<Unit*>(this)->DamageTakenPctModOnHP35) / 100 ;
-
+			
 		plr = 0;
 		if(IsPet())
 			plr = static_cast<Pet*>(this)->GetPetOwner();
@@ -1777,6 +1810,8 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 	/* -------------------------- HIT THAT CAUSES VICTIM TO DIE ---------------------------*/
 	if ((isCritter || health <= damage) )
 	{
+		//general hook for die
+		sHookInterface.OnPreUnitDie( static_cast< Unit* >( this ), pVictim);
 		//warlock - seed of corruption
 		if( IsUnit() )
 		{
@@ -1797,6 +1832,51 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 			if( owner != NULL && pVictim->GetAIInterface()->getThreatByPtr( owner ) > 0 )
 				owner_participe = true;
 		}
+
+		/* -------------------------------- HONOR + BATTLEGROUND CHECKS ------------------------ */
+		//Zack : this event should ocure before setting death state !
+		plr = NULL;
+		if( IsPlayer() )
+			plr = static_cast< Player* >( this );
+		else if(IsPet())
+			plr = static_cast< Pet* >( this )->GetPetOwner();
+
+		if( plr != NULL)
+		{
+			if( plr->m_bg != 0 )
+				plr->m_bg->HookOnPlayerKill( plr, pVictim );
+
+			if( pVictim->IsPlayer() )
+			{
+				sHookInterface.OnKillPlayer( plr, static_cast< Player* >( pVictim ) );
+				if(plr->getLevel() > pVictim->getLevel())
+				{
+					unsigned int diff = plr->getLevel() - pVictim->getLevel();
+					if( diff <= 8 )
+					{
+						HonorHandler::OnPlayerKilledUnit(plr, pVictim);
+						SetFlag( UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR );
+					}
+					else
+						RemoveFlag( UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR );
+				}
+				else
+				{
+					HonorHandler::OnPlayerKilledUnit( plr, pVictim );
+					SetFlag( UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR );
+				}
+			}
+			else
+			{
+				if (!isCritter) // REPUTATION
+				{
+					plr->Reputation_OnKilledUnit( pVictim, false );
+					RemoveFlag( UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR );
+				}
+			}
+		}
+		/* -------------------------------- HONOR + BATTLEGROUND CHECKS END------------------------ */
+
 		/* victim died! */
 		if( pVictim->IsPlayer() )
 			static_cast< Player* >( pVictim )->KillPlayer();
@@ -1911,49 +1991,6 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 			//pVictim->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
 		}
 
-		/* -------------------------------- HONOR + BATTLEGROUND CHECKS ------------------------ */
-		plr = NULL;
-		if( IsPlayer() )
-			plr = static_cast< Player* >( this );
-		else if(IsPet())
-			plr = static_cast< Pet* >( this )->GetPetOwner();
-
-		if( plr != NULL)
-		{
-			if( plr->m_bg != 0 )
-				plr->m_bg->HookOnPlayerKill( plr, pVictim );
-
-			if( pVictim->IsPlayer() )
-			{
-				sHookInterface.OnKillPlayer( plr, static_cast< Player* >( pVictim ) );
-				if(plr->getLevel() > pVictim->getLevel())
-				{
-					unsigned int diff = plr->getLevel() - pVictim->getLevel();
-					if( diff <= 8 )
-					{
-						HonorHandler::OnPlayerKilledUnit(plr, pVictim);
-						SetFlag( UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR );
-					}
-					else
-						RemoveFlag( UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR );
-				}
-				else
-				{
-					HonorHandler::OnPlayerKilledUnit( plr, pVictim );
-					SetFlag( UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR );
-				}
-			}
-			else
-			{
-				if (!isCritter) // REPUTATION
-				{
-					plr->Reputation_OnKilledUnit( pVictim, false );
-					RemoveFlag( UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR );
-				}
-			}
-		}
-		/* -------------------------------- HONOR + BATTLEGROUND CHECKS END------------------------ */
-
 		// Wipe our attacker set on death
 		pVictim->CombatStatus.Vanished();
 
@@ -2044,7 +2081,8 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 					{
 						// Owner was in a party.
 						// Check loot method.
-						switch( pGroup->GetMethod() )
+						victim->m_lootMethod = pGroup->GetMethod();
+						switch( victim->m_lootMethod )
 						{
 						case PARTY_LOOT_RR:
 /*						//this commented code is not used because it was never tested and finished !
@@ -2082,14 +2120,27 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 							}break;
 						case PARTY_LOOT_MASTER:
 							{
-								// Master loot: only the loot master gets the update.
+								GroupMembersSet::iterator itr;
+								SubGroup * sGrp;
+								pGroup->Lock();
+								for( uint32 Index = 0; Index < pGroup->GetSubGroupCount(); ++Index )
+								{
+									sGrp = pGroup->GetSubGroup( Index );
+									itr = sGrp->GetGroupMembersBegin();
+									for( ; itr != sGrp->GetGroupMembersEnd(); ++itr )
+									{
+										if( (*itr)->m_loggedInPlayer && (*itr)->m_loggedInPlayer->IsVisible( victim ) )	   // Save updates for non-existant creatures
+											(*itr)->m_loggedInPlayer->PushUpdateData( &buf, 1 );
+									}
+								}
+								pGroup->Unlock();
+
 								Player * pLooter = pGroup->GetLooter() ? pGroup->GetLooter()->m_loggedInPlayer : NULL;
 								if( pLooter == NULL )
 									pLooter = pGroup->GetLeader()->m_loggedInPlayer;
 
 								if( pLooter->IsVisible( victim ) )  // Save updates for non-existant creatures
 									pLooter->PushUpdateData( &buf, 1 );
-
 							}break;
 						}
 					}
@@ -2290,7 +2341,7 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 		{
 //------------------------------critical strike chance--------------------------------------	
 			// lol ranged spells were using spell crit chance
-			float CritChance;
+			float CritChance=0.0f;
 			if( spellInfo->is_ranged_spell )
 			{
 
@@ -2307,7 +2358,7 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 					CritChance = 5.0f; // static value for mobs.. not blizzlike, but an unfinished formula is not fatal :)
 				}
 				if( pVictim->IsPlayer() )
-				CritChance -= static_cast< Player* >(pVictim)->CalcRating( PLAYER_RATING_MODIFIER_RANGED_CRIT_RESILIENCE );
+					CritChance -= static_cast< Player* >(pVictim)->CalcRating( PLAYER_RATING_MODIFIER_RANGED_CRIT_RESILIENCE );
 			}
 			else if( spellInfo->is_melee_spell )
 			{
@@ -2454,16 +2505,16 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 				{
 					// calculate damage
 					tmpsplit = itr->m_flatDamageSplit;
-					if( tmpsplit > float2int32( res ))
+					if( (int)tmpsplit > float2int32( res ))
 						tmpsplit = float2int32( res ); // prevent < 0 damage
 					splitdamage = tmpsplit;
 					res -= (float)tmpsplit;
-					tmpsplit = itr->m_pctDamageSplit * res;
-					if( tmpsplit > float2int32( res ) )
-						tmpsplit = float2int32( res );
+					tmpsplit = float2int32( itr->m_pctDamageSplit * res );
+					if( (int)tmpsplit > float2int32( res ) )
+					tmpsplit = float2int32( res );
 					splitdamage += tmpsplit;
 					res -= (float)tmpsplit;
-					// TODO: pct damage
+				// TODO: pct damage
 
 					if( splitdamage )
 					{
@@ -2474,6 +2525,7 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 				}
 			}
 		}
+	
 //==========================================================================================
 //==============================Data Sending ProcHandling===================================
 //==========================================================================================

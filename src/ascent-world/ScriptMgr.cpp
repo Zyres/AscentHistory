@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -353,6 +353,15 @@ void ScriptMgr::register_gossip_script(uint32 entry, GossipScript * gs)
 	_customgossipscripts.insert(gs);
 }
 
+void ScriptMgr::register_go_gossip_script(uint32 entry, GossipScript * gs)
+{
+	GameObjectInfo * gi = GameObjectNameStorage.LookupEntry(entry);
+	if(gi)
+		gi->gossip_script = gs;
+
+	_customgossipscripts.insert(gs);
+}
+
 void ScriptMgr::register_quest_script(uint32 entry, QuestScript * qs)
 {
 	Quest * q = QuestStorage.LookupEntry( entry );
@@ -404,7 +413,7 @@ bool ScriptMgr::CallScriptedDummyAura(uint32 uSpellId, uint32 i, Aura* pAura, bo
 
 bool ScriptMgr::CallScriptedItem(Item * pItem, Player * pPlayer)
 {
-	if(pItem->GetProto()->gossip_script)
+	if(pItem->GetProto() && pItem->GetProto()->gossip_script)
 	{
 		pItem->GetProto()->gossip_script->GossipHello(pItem,pPlayer,true);
 		return true;
@@ -888,9 +897,30 @@ void HookInterface::OnArenaFinish(Player * pPlayer, ArenaTeam* pTeam, bool victo
 	OUTER_LOOP_END
 }
 
+void HookInterface::OnAreaTrigger(Player * pPlayer, uint32 areaTrigger)
+{
+	OUTER_LOOP_BEGIN(SERVER_HOOK_EVENT_ON_AREATRIGGER, tOnAreaTrigger)
+		(call)(pPlayer, areaTrigger);
+	OUTER_LOOP_END
+}
+
 void HookInterface::OnPostLevelUp(Player * pPlayer)
 {
 	OUTER_LOOP_BEGIN(SERVER_HOOK_EVENT_ON_POST_LEVELUP, tOnPostLevelUp)
 		(call)(pPlayer);
+	OUTER_LOOP_END
+}
+
+void HookInterface::OnPreUnitDie(Unit *Killer, Unit *Victim)
+{
+	OUTER_LOOP_BEGIN(SERVER_HOOK_EVENT_ON_PRE_DIE, tOnPreUnitDie)
+		(call)(Killer, Victim);
+	OUTER_LOOP_END
+}
+
+void HookInterface::OnAdvanceSkillLine(Player * pPlayer, uint32 SkillLine, uint32 Current)
+{
+	OUTER_LOOP_BEGIN(SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE, tOnAdvanceSkillLine)
+		(call)(pPlayer, SkillLine, Current);
 	OUTER_LOOP_END
 }

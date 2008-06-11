@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -51,6 +51,20 @@ struct ZoneGuardEntry
 	uint32 ZoneID;
 	uint32 HordeEntry;
 	uint32 AllianceEntry;
+};
+
+struct UnitModelSizeEntry
+{
+	uint32	DisplayId;
+	float	HalfSize;
+};
+
+struct ProfessionDiscovery
+{
+	uint32 SpellId;
+	uint32 SpellToDiscover;
+	uint32 SkillValue;
+	float Chance;
 };
 
 struct ItemPage
@@ -313,6 +327,9 @@ public:
 	~ObjectMgr();
 	void LoadCreatureWaypoints();
 
+	void LoadCreatureTimedEmotes();
+	TimedEmoteList * GetTimedEmoteList(uint32 spawnid);
+
 	// other objects
     
     // Set typedef's
@@ -504,6 +521,7 @@ public:
 
 	void LoadExtraItemStuff();
 	void LoadExtraCreatureProtoStuff();
+	void LoadProfessionDiscoveries();
 	void CreateGossipMenuForPlayer(GossipMenu** Location, uint64 Guid, uint32 TextID, Player* Plr); 
 
 	LevelInfo * GetLevelInfo(uint32 Race, uint32 Class, uint32 Level);
@@ -514,6 +532,8 @@ public:
 	void LoadPetSpellCooldowns();
 	WayPointMap * GetWayPointMap(uint32 spawnid);
 	void LoadSpellOverride();
+
+	void ResetDailies();
 
 	uint32 GenerateCreatureSpawnID()
 	{
@@ -575,6 +595,8 @@ public:
 	ASCENT_INLINE GuildMap::iterator GetGuildsBegin() { return mGuild.begin(); }
 	ASCENT_INLINE GuildMap::iterator GetGuildsEnd() { return mGuild.end(); }
 
+	std::set<ProfessionDiscovery*> ProfessionDiscoveryTable;
+
 protected:
 	RWLock playernamelock;
 	uint32 m_mailid;
@@ -602,6 +624,7 @@ protected:
 	PlayerNameStringIndexMap m_playersInfoByName;
 	
 	HM_NAMESPACE::hash_map<uint32,WayPointMap*> m_waypoints;//stored by spawnid
+	HM_NAMESPACE::hash_map<uint32,TimedEmoteList*> m_timedemotes;//stored by spawnid
 	uint32 m_hiCreatureSpawnId;
 	
 	Mutex m_CreatureSpawnIdMutex;

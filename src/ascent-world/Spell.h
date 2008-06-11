@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -174,6 +174,13 @@ static void SM_PFValue( int32* m, float* v, uint64 group )
             (*v) += ( (*v) * m[x] ) / 100.0f;
 }
 
+enum SPELL_INFRONT_STATUS
+{
+	SPELL_INFRONT_STATUS_REQUIRE_INFRONT	= 1,
+	SPELL_INFRONT_STATUS_REQUIRE_INBACK		= 2,
+	SPELL_INFRONT_STATUS_REQUIRE_SKIPCHECK	= 3,
+};
+
 //bool IsBeneficSpell(SpellEntry *sp);
 //AI_SpellTargetType RecommandAISpellTargetType(SpellEntry *sp);
 
@@ -183,6 +190,14 @@ enum SPELL_DMG_TYPE // SPELL_ENTRY_Spell_Dmg_Type
 	SPELL_DMG_TYPE_MAGIC  = 1,
 	SPELL_DMG_TYPE_MELEE  = 2,
 	SPELL_DMG_TYPE_RANGED = 3
+};
+
+enum SPELL_RUNE_TYPES
+{
+	RUNE_BLOOD		= 0,
+	RUNE_UNHOLY		= 1,
+	RUNE_FROST		= 2,
+	RUNE_DEATH		= 3,
 };
 
 // value's for SendSpellLog
@@ -412,7 +427,7 @@ enum AttributesEx
 	ATTRIBUTESEX_UNK5                         = 0x8, // 4
 	ATTRIBUTESEX_UNK6                         = 0x10, // 5, stealth effects but Rockbiter wtf 0_0
 	ATTRIBUTESEX_NOT_BREAK_STEALTH            = 0x20, // 6
-	ATTRIBUTESEX_UNK8							= 0x40, // 7 [POSSIBLY: dynamite, grenades from engineering etc..]
+	ATTRIBUTESEX_UNK8			  = 0x40, // 7 [POSSIBLY: dynamite, grenades from engineering etc..]
 	ATTRIBUTESEX_UNK9                         = 0x80,
 	ATTRIBUTESEX_UNK10                        = 0x100,
 	ATTRIBUTESEX_UNK11                        = 0x200,
@@ -504,7 +519,8 @@ enum School
     SCHOOL_NATURE = 3,
     SCHOOL_FROST  = 4,
     SCHOOL_SHADOW = 5,
-    SCHOOL_ARCANE = 6
+    SCHOOL_ARCANE = 6,
+	SCHOOL_COUNT   
 };
 
 // converting schools for 2.4.0 client
@@ -752,221 +768,6 @@ enum SpellEffects
 // spell target system
 #define TOTAL_SPELL_TARGET 81 // note: all spells with target type's > 80 are test spells
 
-enum SPELL_ENTRY
-{
-    SPELL_ENTRY_Id,
-    SPELL_ENTRY_School,
-    SPELL_ENTRY_Category,
-    SPELL_ENTRY_field4,
-    SPELL_ENTRY_DispelType,
-    SPELL_ENTRY_MechanicsType,
-    SPELL_ENTRY_Attributes,
-    SPELL_ENTRY_AttributesEx,
-    SPELL_ENTRY_Flags3,
-    SPELL_ENTRY_Flags4,
-    SPELL_ENTRY_Flags5,
-    SPELL_ENTRY_unk201_1,
-    SPELL_ENTRY_RequiredShapeShift,
-    SPELL_ENTRY_UNK14,
-    SPELL_ENTRY_Targets,
-    SPELL_ENTRY_TargetCreatureType,
-    SPELL_ENTRY_RequiresSpellFocus,
-    SPELL_ENTRY_CasterAuraState,
-    SPELL_ENTRY_TargetAuraState,
-    SPELL_ENTRY_unk201_2,
-    SPELL_ENTRY_unk201_3,
-    SPELL_ENTRY_CastingTimeIndex,
-    SPELL_ENTRY_RecoveryTime,
-    SPELL_ENTRY_CategoryRecoveryTime,
-    SPELL_ENTRY_InterruptFlags,
-    SPELL_ENTRY_AuraInterruptFlags,
-    SPELL_ENTRY_ChannelInterruptFlags,
-    SPELL_ENTRY_procFlags,
-    SPELL_ENTRY_procChance,
-    SPELL_ENTRY_procCharges,
-    SPELL_ENTRY_maxLevel,
-    SPELL_ENTRY_baseLevel,
-    SPELL_ENTRY_spellLevel,
-    SPELL_ENTRY_DurationIndex,
-    SPELL_ENTRY_powerType,
-    SPELL_ENTRY_manaCost,
-    SPELL_ENTRY_manaCostPerlevel,
-    SPELL_ENTRY_manaPerSecond,
-    SPELL_ENTRY_manaPerSecondPerLevel,
-    SPELL_ENTRY_rangeIndex,
-    SPELL_ENTRY_speed,
-    SPELL_ENTRY_modalNextSpell,
-    SPELL_ENTRY_maxstack,
-    SPELL_ENTRY_Totem_1,
-    SPELL_ENTRY_Totem_2,
-    SPELL_ENTRY_Reagent_1,
-    SPELL_ENTRY_Reagent_2,
-    SPELL_ENTRY_Reagent_3,
-    SPELL_ENTRY_Reagent_4,
-    SPELL_ENTRY_Reagent_5,
-    SPELL_ENTRY_Reagent_6,
-    SPELL_ENTRY_Reagent_7,
-    SPELL_ENTRY_Reagent_8,
-    SPELL_ENTRY_ReagentCount_1,
-    SPELL_ENTRY_ReagentCount_2,
-    SPELL_ENTRY_ReagentCount_3,
-    SPELL_ENTRY_ReagentCount_4,
-    SPELL_ENTRY_ReagentCount_5,
-    SPELL_ENTRY_ReagentCount_6,
-    SPELL_ENTRY_ReagentCount_7,
-    SPELL_ENTRY_ReagentCount_8,
-    SPELL_ENTRY_EquippedItemClass,
-    SPELL_ENTRY_EquippedItemSubClass,
-    SPELL_ENTRY_RequiredItemFlags,
-    SPELL_ENTRY_Effect_1,
-    SPELL_ENTRY_Effect_2,
-    SPELL_ENTRY_Effect_3,
-    SPELL_ENTRY_EffectDieSides_1,
-    SPELL_ENTRY_EffectDieSides_2,
-    SPELL_ENTRY_EffectDieSides_3,
-    SPELL_ENTRY_EffectBaseDice_1,
-    SPELL_ENTRY_EffectBaseDice_2,
-    SPELL_ENTRY_EffectBaseDice_3,
-    SPELL_ENTRY_EffectDicePerLevel_1,
-    SPELL_ENTRY_EffectDicePerLevel_2,
-    SPELL_ENTRY_EffectDicePerLevel_3,
-    SPELL_ENTRY_EffectRealPointsPerLevel_1,
-    SPELL_ENTRY_EffectRealPointsPerLevel_2,
-    SPELL_ENTRY_EffectRealPointsPerLevel_3,
-    SPELL_ENTRY_EffectBasePoints_1,
-    SPELL_ENTRY_EffectBasePoints_2,
-    SPELL_ENTRY_EffectBasePoints_3,
-    SPELL_ENTRY_EffectMechanic_1,
-    SPELL_ENTRY_EffectMechanic_2,
-    SPELL_ENTRY_EffectMechanic_3,
-    SPELL_ENTRY_EffectImplicitTargetA_1,
-    SPELL_ENTRY_EffectImplicitTargetA_2,
-    SPELL_ENTRY_EffectImplicitTargetA_3,
-    SPELL_ENTRY_EffectImplicitTargetB_1,
-    SPELL_ENTRY_EffectImplicitTargetB_2,
-    SPELL_ENTRY_EffectImplicitTargetB_3,
-    SPELL_ENTRY_EffectRadiusIndex_1,
-    SPELL_ENTRY_EffectRadiusIndex_2, 
-    SPELL_ENTRY_EffectRadiusIndex_3, 
-    SPELL_ENTRY_EffectApplyAuraName_1,
-    SPELL_ENTRY_EffectApplyAuraName_2,
-    SPELL_ENTRY_EffectApplyAuraName_3,
-    SPELL_ENTRY_EffectAmplitude_1,
-    SPELL_ENTRY_EffectAmplitude_2,
-    SPELL_ENTRY_EffectAmplitude_3,
-    SPELL_ENTRY_Effectunknown_1,
-    SPELL_ENTRY_Effectunknown_2,
-    SPELL_ENTRY_Effectunknown_3,
-    SPELL_ENTRY_EffectChainTarget_1,
-    SPELL_ENTRY_EffectChainTarget_2,
-    SPELL_ENTRY_EffectChainTarget_3,
-    SPELL_ENTRY_EffectSpellGroupRelation_1,
-    SPELL_ENTRY_EffectSpellGroupRelation_2,
-    SPELL_ENTRY_EffectSpellGroupRelation_3,
-    SPELL_ENTRY_EffectMiscValue_1,
-    SPELL_ENTRY_EffectMiscValue_2,
-    SPELL_ENTRY_EffectMiscValue_3,
-    SPELL_ENTRY_EffectTriggerSpell_1,
-    SPELL_ENTRY_EffectTriggerSpell_2,
-    SPELL_ENTRY_EffectTriggerSpell_3,
-    SPELL_ENTRY_EffectPointsPerComboPoint_1,
-    SPELL_ENTRY_EffectPointsPerComboPoint_2,
-    SPELL_ENTRY_EffectPointsPerComboPoint_3,
-    SPELL_ENTRY_SpellVisual,
-    SPELL_ENTRY_field114,
-    SPELL_ENTRY_dummy,
-    SPELL_ENTRY_CoSpell,
-    SPELL_ENTRY_spellPriority,
-    SPELL_ENTRY_Name,
-    SPELL_ENTRY_NameAlt1,
-    SPELL_ENTRY_NameAlt2,
-    SPELL_ENTRY_NameAlt3,
-    SPELL_ENTRY_NameAlt4,
-    SPELL_ENTRY_NameAlt5,
-    SPELL_ENTRY_NameAlt6,
-    SPELL_ENTRY_NameAlt7,
-    SPELL_ENTRY_NameAlt8,
-    SPELL_ENTRY_NameAlt9,
-    SPELL_ENTRY_NameAlt10,
-    SPELL_ENTRY_NameAlt11,
-    SPELL_ENTRY_NameAlt12,
-    SPELL_ENTRY_NameAlt13,
-    SPELL_ENTRY_NameAlt14,
-    SPELL_ENTRY_NameAlt15,
-    SPELL_ENTRY_NameFlags,
-    SPELL_ENTRY_Rank,
-    SPELL_ENTRY_RankAlt1,
-    SPELL_ENTRY_RankAlt2,
-    SPELL_ENTRY_RankAlt3,
-    SPELL_ENTRY_RankAlt4,
-    SPELL_ENTRY_RankAlt5,
-    SPELL_ENTRY_RankAlt6,
-    SPELL_ENTRY_RankAlt7,
-    SPELL_ENTRY_RankAlt8,
-    SPELL_ENTRY_RankAlt9,
-    SPELL_ENTRY_RankAlt10,
-    SPELL_ENTRY_RankAlt11,
-    SPELL_ENTRY_RankAlt12,
-    SPELL_ENTRY_RankAlt13,
-    SPELL_ENTRY_RankAlt14,
-    SPELL_ENTRY_RankAlt15,
-    SPELL_ENTRY_RankFlags,
-    SPELL_ENTRY_Description,
-    SPELL_ENTRY_DescriptionAlt1,
-    SPELL_ENTRY_DescriptionAlt2,
-    SPELL_ENTRY_DescriptionAlt3,
-    SPELL_ENTRY_DescriptionAlt4,
-    SPELL_ENTRY_DescriptionAlt5,
-    SPELL_ENTRY_DescriptionAlt6,
-    SPELL_ENTRY_DescriptionAlt7,
-    SPELL_ENTRY_DescriptionAlt8,
-    SPELL_ENTRY_DescriptionAlt9,
-    SPELL_ENTRY_DescriptionAlt10,
-    SPELL_ENTRY_DescriptionAlt11,
-    SPELL_ENTRY_DescriptionAlt12,
-    SPELL_ENTRY_DescriptionAlt13,
-    SPELL_ENTRY_DescriptionAlt14,
-    SPELL_ENTRY_DescriptionAlt15,
-    SPELL_ENTRY_DescriptionFlags,
-    SPELL_ENTRY_BuffDescription,
-    SPELL_ENTRY_BuffDescriptionAlt1,
-    SPELL_ENTRY_BuffDescriptionAlt2,
-    SPELL_ENTRY_BuffDescriptionAlt3,
-    SPELL_ENTRY_BuffDescriptionAlt4,
-    SPELL_ENTRY_BuffDescriptionAlt5,
-    SPELL_ENTRY_BuffDescriptionAlt6,
-    SPELL_ENTRY_BuffDescriptionAlt7,
-    SPELL_ENTRY_BuffDescriptionAlt8,
-    SPELL_ENTRY_BuffDescriptionAlt9,
-    SPELL_ENTRY_BuffDescriptionAlt10,
-    SPELL_ENTRY_BuffDescriptionAlt11,
-    SPELL_ENTRY_BuffDescriptionAlt12,
-    SPELL_ENTRY_BuffDescriptionAlt13,
-    SPELL_ENTRY_BuffDescriptionAlt14,
-    SPELL_ENTRY_BuffDescriptionAlt15,
-    SPELL_ENTRY_buffdescflags,
-    SPELL_ENTRY_ManaCostPercentage,
-    SPELL_ENTRY_unkflags,
-    SPELL_ENTRY_StartRecoveryTime,
-    SPELL_ENTRY_StartRecoveryCategory,
-    SPELL_ENTRY_SpellFamilyName,
-    SPELL_ENTRY_SpellGroupType,
-    SPELL_ENTRY_unkne,
-    SPELL_ENTRY_MaxTargets,
-    SPELL_ENTRY_Spell_Dmg_Type,
-    SPELL_ENTRY_FG,
-    SPELL_ENTRY_FH,
-    SPELL_ENTRY_dmg_multiplier_1,
-    SPELL_ENTRY_dmg_multiplier_2,
-    SPELL_ENTRY_dmg_multiplier_3,
-    SPELL_ENTRY_FL,
-    SPELL_ENTRY_FM,
-    SPELL_ENTRY_FN,
-	SPELL_ENTRY_TotemCategory1,
-	SPELL_ENTRY_TotemCategory2,
-	SPELL_ENTRY_RequiredAreaID
-};
-
 // target type flags
 enum SpellTargetTypes
 {
@@ -1035,6 +836,7 @@ enum SpellIsFlags
     SPELL_FLAG_IS_EXPIREING_ON_PET		= 0x00000800, //when pet is summoned
 	SPELL_FLAG_IS_FORCEDDEBUFF			= 0x00001000, // forced to be a debuff
 	SPELL_FLAG_IS_FORCEDBUFF			= 0x00002000, // forced to be a buff
+	SPELL_FLAG_IS_INHERITING_LEVEL		= 0x00004000, // summons to inherit caster level or not
 };
 
 enum SpellCoefficientsFlags
@@ -1379,22 +1181,22 @@ enum MECHANICS
     MECHANIC_SILENCED, // 9
     MECHANIC_ASLEEP, // 10
     MECHANIC_ENSNARED, // 11
-    MECHANIC_STUNNED, // 12
-    MECHANIC_FROZEN, // 13
-    MECHANIC_INCAPACIPATED, // 14
-    MECHANIC_BLEEDING, // 15
-    MECHANIC_HEALING, // 16
-    MECHANIC_POLYMORPHED, // 17
-    MECHANIC_BANISHED, // 18
-    MECHANIC_SHIELDED, // 19
-    MECHANIC_SHACKLED, // 20
-    MECHANIC_MOUNTED, // 21
-    MECHANIC_SEDUCED, // 22
-    MECHANIC_TURNED, // 23
-    MECHANIC_HORRIFIED, // 24
-    MECHANIC_INVULNARABLE, // 25
-    MECHANIC_INTERRUPTED, // 26
-    MECHANIC_DAZED, // 27
+	MECHANIC_STUNNED, // 12
+	MECHANIC_FROZEN, // 13
+	MECHANIC_INCAPACIPATED, // 14
+	MECHANIC_BLEEDING, // 15
+	MECHANIC_HEALING, // 16
+	MECHANIC_POLYMORPHED, // 17
+	MECHANIC_BANISHED, // 18
+	MECHANIC_SHIELDED, // 19
+	MECHANIC_SHACKLED, // 20
+	MECHANIC_MOUNTED, // 21
+	MECHANIC_SEDUCED, // 22
+	MECHANIC_TURNED, // 23
+	MECHANIC_HORRIFIED, // 24
+	MECHANIC_INVULNARABLE, // 25
+	MECHANIC_INTERRUPTED, // 26
+	MECHANIC_DAZED, // 27
 	MECHANIC_UNK1, // 28, fill in please
 	MECHANIC_UNK2, // 29, fill in please
 	MECHANIC_SAPPED // 30
@@ -1464,28 +1266,80 @@ typedef enum {
    EFF_TARGET_SELECTED_ENEMY_DEADLY_POISON				= 86,
 } SpellEffectTarget;
 
+inline bool HasTargetType(SpellEntry *sp,uint32 ttype)
+{
+	if( 
+		sp->EffectImplicitTargetA[0]==ttype ||
+		sp->EffectImplicitTargetA[1]==ttype ||
+		sp->EffectImplicitTargetA[2]==ttype ||
+		sp->EffectImplicitTargetB[0]==ttype ||
+		sp->EffectImplicitTargetB[1]==ttype ||
+		sp->EffectImplicitTargetB[2]==ttype
+		)
+		return true;
+	return false;
+}
+
+inline int GetAiTargetType(SpellEntry *sp)
+{
+	if( 
+		HasTargetType(sp,EFF_TARGET_SELF) ||
+		HasTargetType(sp,4) ||
+		HasTargetType(sp,EFF_TARGET_PET) ||
+		HasTargetType(sp,EFF_TARGET_MINION)
+		)
+		return TTYPE_CASTER;
+	if( 
+		HasTargetType(sp,EFF_TARGET_INVISIBLE_OR_HIDDEN_ENEMIES_AT_LOCATION_RADIUS) ||
+		HasTargetType(sp,EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS) ||
+		HasTargetType(sp,EFF_TARGET_ALL_ENEMY_IN_AREA) ||
+		HasTargetType(sp,EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT) ||
+		HasTargetType(sp,EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED) ||
+		HasTargetType(sp,EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS_OVER_TIME)
+		)
+		return TTYPE_DESTINATION;
+	if( 
+		HasTargetType(sp,EFF_TARGET_LOCATION_TO_SUMMON) ||
+		HasTargetType(sp,EFF_TARGET_IN_FRONT_OF_CASTER) ||
+		HasTargetType(sp,EFF_TARGET_ALL_FRIENDLY_IN_AREA) ||
+		HasTargetType(sp,EFF_TARGET_PET_SUMMON_LOCATION) ||
+		HasTargetType(sp,EFF_TARGET_LOCATION_INFRONT_CASTER)
+		)
+		return TTYPE_SOURCE;
+	if( 
+		HasTargetType(sp,EFF_TARGET_SINGLE_ENEMY) ||
+		HasTargetType(sp,EFF_TARGET_ALL_ENEMIES_AROUND_CASTER) ||
+		HasTargetType(sp,EFF_TARGET_DUEL) ||
+		HasTargetType(sp,EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET) ||
+		HasTargetType(sp,EFF_TARGET_CHAIN) ||
+		HasTargetType(sp,EFF_TARGET_CURRENT_SELECTION) ||
+		HasTargetType(sp,EFF_TARGET_TARGET_AT_ORIENTATION_TO_CASTER) ||
+		HasTargetType(sp,EFF_TARGET_MULTIPLE_GUARDIAN_SUMMON_LOCATION) ||
+		HasTargetType(sp,EFF_TARGET_SELECTED_ENEMY_CHANNELED)
+		)
+		return TTYPE_SINGLETARGET;
+	if( 
+		HasTargetType(sp,EFF_TARGET_ALL_PARTY_AROUND_CASTER) ||
+		HasTargetType(sp,EFF_TARGET_SINGLE_FRIEND) ||
+		HasTargetType(sp,EFF_TARGET_PET_MASTER) ||
+		HasTargetType(sp,EFF_TARGET_ALL_PARTY_IN_AREA_CHANNELED) ||
+		HasTargetType(sp,EFF_TARGET_ALL_PARTY_IN_AREA) ||
+		HasTargetType(sp,EFF_TARGET_SINGLE_PARTY) ||
+		HasTargetType(sp,EFF_TARGET_ALL_PARTY) ||
+		HasTargetType(sp,EFF_TARGET_PARTY_MEMBER) ||
+		HasTargetType(sp,EFF_TARGET_AREAEFFECT_PARTY_AND_CLASS)
+		)
+		return TTYPE_OWNER;
+	return TTYPE_NULL;
+}
 
 ASCENT_INLINE bool IsTargetingStealthed(SpellEntry *sp)
 {
 	if(
-		sp->EffectImplicitTargetA[0]==EFF_TARGET_INVISIBLE_OR_HIDDEN_ENEMIES_AT_LOCATION_RADIUS ||
-		sp->EffectImplicitTargetA[1]==EFF_TARGET_INVISIBLE_OR_HIDDEN_ENEMIES_AT_LOCATION_RADIUS ||
-		sp->EffectImplicitTargetA[2]==EFF_TARGET_INVISIBLE_OR_HIDDEN_ENEMIES_AT_LOCATION_RADIUS ||
-		sp->EffectImplicitTargetB[0]==EFF_TARGET_INVISIBLE_OR_HIDDEN_ENEMIES_AT_LOCATION_RADIUS ||
-		sp->EffectImplicitTargetB[1]==EFF_TARGET_INVISIBLE_OR_HIDDEN_ENEMIES_AT_LOCATION_RADIUS ||
-		sp->EffectImplicitTargetB[2]==EFF_TARGET_INVISIBLE_OR_HIDDEN_ENEMIES_AT_LOCATION_RADIUS ||
-		sp->EffectImplicitTargetA[0]==EFF_TARGET_ALL_ENEMIES_AROUND_CASTER ||
-		sp->EffectImplicitTargetA[1]==EFF_TARGET_ALL_ENEMIES_AROUND_CASTER ||
-		sp->EffectImplicitTargetA[2]==EFF_TARGET_ALL_ENEMIES_AROUND_CASTER ||
-		sp->EffectImplicitTargetB[0]==EFF_TARGET_ALL_ENEMIES_AROUND_CASTER ||
-		sp->EffectImplicitTargetB[1]==EFF_TARGET_ALL_ENEMIES_AROUND_CASTER ||
-		sp->EffectImplicitTargetB[2]==EFF_TARGET_ALL_ENEMIES_AROUND_CASTER ||
-		sp->EffectImplicitTargetA[0]==EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED ||
-		sp->EffectImplicitTargetA[1]==EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED ||
-		sp->EffectImplicitTargetA[2]==EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED ||
-		sp->EffectImplicitTargetB[0]==EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED ||
-		sp->EffectImplicitTargetB[1]==EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED ||
-		sp->EffectImplicitTargetB[2]==EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED
+		HasTargetType(sp,EFF_TARGET_INVISIBLE_OR_HIDDEN_ENEMIES_AT_LOCATION_RADIUS) ||
+		HasTargetType(sp,EFF_TARGET_ALL_ENEMIES_AROUND_CASTER) ||
+		HasTargetType(sp,EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED) ||
+		HasTargetType(sp,EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT)
 		)
 		return 1;
 

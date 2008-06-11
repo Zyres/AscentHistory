@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -187,7 +187,7 @@ void TestConsoleLogin(string& username, string& password, uint32 requestid);
 
 void ConsoleSocket::OnRead()
 {
-	uint32 readlen = GetReadBuffer().GetSize();
+	uint32 readlen = (uint32)GetReadBuffer().GetSize();
 	uint32 len;
 	char * p;
 	if( ( readlen + m_pBufferPos ) >= m_pBufferLen )
@@ -262,7 +262,7 @@ void ConsoleSocket::OnRead()
 
 void ConsoleSocket::OnConnect()
 {
-	m_pConsole->Write("Welcome to Ascent's Remote Administration Console.\r\n");
+	m_pConsole->Write("Welcome to OpenAscent's Remote Administration Console.\r\n");
 	m_pConsole->Write("Please authenticate to continue. \r\n\r\n");
 	m_pConsole->Write("login: ");
 }
@@ -337,6 +337,7 @@ struct ConsoleCommand
 void HandleConsoleInput(BaseConsole * pConsole, const char * szInput)
 {
 	static ConsoleCommand Commands[] = {
+		{ &HandleAnnounceCommand, "a", "<announce string>", "Shows the message in all client chat boxes." },
 		{ &HandleAnnounceCommand, "announce", "<announce string>", "Shows the message in all client chat boxes." },
 		{ &HandleBanAccountCommand, "ban", "<account> <timeperiod>", "Bans account x for time y." },
 		{ &HandleBanAccountCommand, "banaccount", "<account> <timeperiod>", "Bans account x for time y." },
@@ -354,9 +355,10 @@ void HandleConsoleInput(BaseConsole * pConsole, const char * szInput)
 		{ &HandleRehashCommand, "rehash", "none", "Reloads the config file" },
 		{ &HandleUnbanAccountCommand, "unban", "<account>", "Unbans account x." },
 		{ &HandleUnbanAccountCommand, "unbanaccount", "<account>", "Unbans account x." },
+		{ &HandleWAnnounceCommand, "w", "<wannounce string>", "Shows the message in all client title areas." },
 		{ &HandleWAnnounceCommand, "wannounce", "<wannounce string>", "Shows the message in all client title areas." },
 		{ &HandleWhisperCommand, "whisper","<player> <message>", "Whispers a message to someone from the console." },
-		{ &HandleNameHashCommand, "getnamehash" , "<text>" , "Returns the crc32 hash of <text>" } ,
+		{ &HandleNameHashCommand, "getnamehash" , "<text>" , "Returns the crc32 hash of <text>" } ,		
 		{ NULL, NULL, NULL, NULL },
 	};
 

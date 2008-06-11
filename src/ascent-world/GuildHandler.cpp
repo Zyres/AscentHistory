@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -89,7 +89,7 @@ void WorldSession::HandleInviteToGuild(WorldPacket & recv_data)
 		Guild::SendGuildCommandResult(this, GUILD_INVITE_S,"",GUILD_PERMISSIONS);
 		return;
 	}
-	else if(plyr->GetTeam()!=_player->GetTeam() && _player->GetSession()->GetPermissionCount() == 0)
+	else if(plyr->GetTeam()!=_player->GetTeam() && _player->GetSession()->GetPermissionCount() == 0 && !sWorld.interfaction_guild)
 	{
 		Guild::SendGuildCommandResult(this, GUILD_INVITE_S,"",GUILD_NOT_ALLIED);
 		return;
@@ -504,6 +504,9 @@ void WorldSession::HandleCharterBuy(WorldPacket & recv_data)
 	-------------------------------------------------------------------
 	*/
 
+	if(!_player->IsInWorld())
+		return;
+
 	uint64 creature_guid;
 	uint64 crap;
 	uint32 crap2;
@@ -808,7 +811,13 @@ void WorldSession::HandleCharterOffer( WorldPacket & recv_data )
 	Player * pTarget = _player->GetMapMgr()->GetPlayer((uint32)target_guid);
 	pCharter = objmgr.GetCharterByItemGuid(item_guid);
 
-	if(pTarget == 0 || pTarget->GetTeam() != _player->GetTeam() || pTarget == _player)
+	if( !pCharter )
+	{
+		SendNotification("Item not found.");
+		return;
+	}
+
+	if(pTarget == 0 || pTarget->GetTeam() != _player->GetTeam() || pTarget == _player && !sWorld.interfaction_guild)
 	{
 		SendNotification("Target is of the wrong faction.");
 		return;
@@ -829,10 +838,10 @@ void WorldSession::HandleCharterSign( WorldPacket & recv_data )
 	recv_data >> item_guid;
 
 	Charter * c = objmgr.GetCharterByItemGuid(item_guid);
-	if(c == 0)
+	if( c == NULL )
 		return;
 
-	for(uint32 i = 0; i < 9; ++i)
+	for(uint32 i = 0; i < c->SignatureCount; ++i)
 	{
 		if(c->Signatures[i] == _player->GetGUID())
 		{
@@ -1606,6 +1615,8 @@ void Guild::SendGuildBank(WorldSession * pClient, GuildBankTab * pTab, int8 upda
 			data << pTab->pSlots[j]->GetEntry();
 			data << uint32(0);			// this is an enchant
 			data << pTab->pSlots[j]->GetUInt32Value(ITEM_FIELD_STACK_COUNT);
+			if(pClient->GetClientBuild() >= 8278)   // new 2.4.2
+				data << uint8(0);
 			data << uint16(0);
 		}
 	}

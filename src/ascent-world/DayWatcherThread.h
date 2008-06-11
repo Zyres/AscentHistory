@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -40,7 +40,11 @@ class DayWatcherThread : public CThread
 	time_t last_arena_time;
 	tm local_last_arena_time;
 
+	time_t last_daily_time;
+	tm local_last_daily_time;
+
 	uint32 arena_period;
+	uint32 daily_period;
 
 public:
 	DayWatcherThread();
@@ -56,6 +60,7 @@ public:
 	uint32 get_timeout_from_string(const char * string, uint32 def);
 	bool has_timeout_expired(tm * now_time, tm * last_time, uint32 timeoutval);
 	void update_arena();
+	void update_daily();
 };
 
 #endif

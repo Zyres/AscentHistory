@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -109,7 +109,7 @@ public:
 };
 
 
-class MailSystem : public Singleton<MailSystem>, public EventableObject
+class SERVER_DECL MailSystem : public Singleton<MailSystem>, public EventableObject
 {
 public:
 

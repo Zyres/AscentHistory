@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -98,6 +98,19 @@ ObjectMgr::~ObjectMgr()
 		for(WayPointMap::iterator i2 = i->second->begin(); i2 != i->second->end(); ++i2)
 			if((*i2))
 				delete (*i2);
+
+		delete i->second;
+	}
+
+	Log.Notice("ObjectMgr", "Deleting timed emote Cache...");
+	for(HM_NAMESPACE::hash_map<uint32, TimedEmoteList*>::iterator i = m_timedemotes.begin(); i != m_timedemotes.end(); ++i)
+	{
+		for(TimedEmoteList::iterator i2 = i->second->begin(); i2 != i->second->end(); ++i2)
+			if((*i2))
+			{
+				delete [] (*i2)->msg;
+				delete (*i2); 
+			}
 
 		delete i->second;
 	}
@@ -1642,7 +1655,7 @@ void ObjectMgr::LoadTrainers()
 
 				if( ts.pCastSpell == NULL && ts.pLearnSpell == NULL )
 				{
-					Log.Warning("LoadTrainers", "Trainer %u with no invalid spells (%u/%u).", entry, CastSpellID, LearnSpellID);
+					Log.Warning("LoadTrainers", "Trainer %u without valid spells (%u/%u).", entry, CastSpellID, LearnSpellID);
 					continue; //omg a bad spell !
 				}
 
@@ -2058,6 +2071,58 @@ void ObjectMgr::SetVendorList(uint32 Entry, std::vector<CreatureItem>* list_)
 	mVendors[Entry] = list_;
 }
 
+void ObjectMgr::LoadCreatureTimedEmotes()
+{
+	QueryResult *result = WorldDatabase.Query("SELECT * FROM creature_timed_emotes order by `rowid` asc");
+	if(!result)return;
+
+	do
+	{
+		Field *fields = result->Fetch();
+		spawn_timed_emotes* te = new spawn_timed_emotes;
+		te->type = fields[2].GetUInt8();
+		te->value = fields[3].GetUInt32();
+		char *str = ( char* ) fields[4].GetString();
+		if ( str )
+		{
+			uint32 len = ( int ) strlen ( str ) ;
+			te->msg = new char[ len+1 ];
+			memcpy ( te->msg, str, len+1 );
+		}
+		else te->msg = NULL;
+		te->msg_type = fields[5].GetUInt32();
+		te->msg_lang = fields[6].GetUInt32();
+		te->expire_after = fields[7].GetUInt32();
+
+		HM_NAMESPACE::hash_map<uint32,TimedEmoteList*>::const_iterator i;
+		uint32 spawnid=fields[0].GetUInt32();
+		i=m_timedemotes.find(spawnid);
+		if(i==m_timedemotes.end())
+		{
+			TimedEmoteList* m=new TimedEmoteList;
+			m->push_back( te );
+			m_timedemotes[spawnid]=m;		
+		}else
+		{
+			i->second->push_back( te );
+		}
+	}while( result->NextRow() );
+
+	Log.Notice("ObjectMgr", "%u timed emotes cached.", result->GetRowCount());
+	delete result;
+}
+
+TimedEmoteList*ObjectMgr::GetTimedEmoteList(uint32 spawnid)
+{
+	HM_NAMESPACE::hash_map<uint32,TimedEmoteList*>::const_iterator i;
+	i=m_timedemotes.find(spawnid);
+	if(i!=m_timedemotes.end())
+	{
+		TimedEmoteList * m=i->second;
+		return m;
+	}
+	else return NULL;
+}
 
 void ObjectMgr::LoadCreatureWaypoints()
 {
@@ -2828,6 +2893,20 @@ void ObjectMgr::UpdateArenaTeamWeekly()
 		}
 	}
 	m_arenaTeamLock.Release();
+}
+
+void ObjectMgr::ResetDailies()
+{
+	_playerslock.AcquireReadLock();
+	PlayerStorageMap::iterator itr = _players.begin();
+	for(; itr != _players.end(); itr++)
+	{
+		Player * pPlayer = itr->second;
+		pPlayer->DailyMutex.Acquire();
+		pPlayer->m_finishedDailies.clear();
+		pPlayer->DailyMutex.Release();
+	}
+	_playerslock.ReleaseReadLock();
 }
 
 #ifdef VOICE_CHAT

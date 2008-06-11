@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -628,6 +628,17 @@ struct WayPoint
 
 };
 
+struct spawn_timed_emotes
+{
+	uint8		type; //1 standstate, 2 emotestate, 3 emoteoneshot
+	uint32		value; //get yar list elsewhere
+	char		*msg; //maybe we wish to say smething while changing emote state
+	uint8		msg_type; //yell ? say ?
+	uint8		msg_lang; //yell ? say ?
+	uint32		expire_after; //going to nex faze in
+};
+typedef std::list<spawn_timed_emotes*> TimedEmoteList;
+
 ASCENT_INLINE void reverse_array(uint8 * pointer, size_t count)
 {
 	size_t x;
@@ -657,7 +668,7 @@ ASCENT_INLINE void ASCENT_TOUPPER(std::string& str)
 };
 
 // returns true if the ip hits the mask, otherwise false
-static bool ParseCIDRBan(unsigned int IP, unsigned int Mask, unsigned int MaskBits)
+inline static bool ParseCIDRBan(unsigned int IP, unsigned int Mask, unsigned int MaskBits)
 {
 	// CIDR bans are a compacted form of IP / Submask
 	// So 192.168.1.0/255.255.255.0 would be 192.168.1.0/24
@@ -707,7 +718,7 @@ static bool ParseCIDRBan(unsigned int IP, unsigned int Mask, unsigned int MaskBi
 	return true;
 }
 
-static unsigned int MakeIP(const char * str)
+inline static unsigned int MakeIP(const char * str)
 {
 	unsigned int bytes[4];
 	unsigned int res;
@@ -717,5 +728,14 @@ static unsigned int MakeIP(const char * str)
 	res = bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24);
 	return res;
 }
+
+// warning, by enabling this define you are aware that you are only delaying the inevitable
+// some crashes are not recorable and those will stack up in time and lead to a full crash
+// enabling this define will make windows servers shut down only the map instance in where the crash ocured
+// during this forced shutdown players are not saved to avoid saving corrupted data
+// there might be a lot of cases where each saved crash will lead to memory leaks or unhandled cases
+// crashreports are still created and do use them to report the actaul problem that casued the crash
+// fixing the problem that causes the crash is the proper way to fix things
+#define FORCED_SERVER_KEEPALIVE
 
 #endif

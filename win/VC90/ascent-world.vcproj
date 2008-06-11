@@ -226,7 +226,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm250"
+				AdditionalOptions="/Zm250&#x0D;&#x0A;/MP"
 				Optimization="4"
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="true"
@@ -1015,6 +1015,14 @@
 		</File>
 		<File
 			RelativePath="..\..\src\ascent-world\SocialHandler.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\ascent-world\SpeedDetector.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\ascent-world\SpeedDetector.h"
 			>
 		</File>
 		<File

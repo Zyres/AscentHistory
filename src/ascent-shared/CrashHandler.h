@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -29,10 +29,11 @@
 bool HookCrashReporter(bool logon);
 void OutputCrashLogLine(const char* format, ...);
 
+#include "Common.h"
+
 #ifdef WIN32
 
 //#include <Windows.h>
-#include "Common.h"
 #include <DbgHelp.h>
 #include "StackWalker.h"
 #include "CircularQueue.h"
@@ -61,6 +62,9 @@ int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs);
 #define THREAD_TRY_EXECUTION2 __try {
 #define THREAD_HANDLE_CRASH2  } __except(HandleCrash(GetExceptionInformation())) {}
 
+#define THREAD_TRY_EXECUTION_MapMgr __try {
+#define THREAD_HANDLE_CRASH_MapMgr  } __except(HandleCrash(GetExceptionInformation())) { KillThreadWithCleanup(); }
+
 #else
 
 // We dont wanna confuse nix ;p
@@ -69,6 +73,14 @@ int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs);
 
 #define THREAD_TRY_EXECUTION2 ;
 #define THREAD_HANDLE_CRASH2 ;
+
+#ifndef FORCED_SERVER_KEEPALIVE
+	#define THREAD_TRY_EXECUTION_MapMgr ;
+	#define THREAD_HANDLE_CRASH_MapMgr ;
+#else
+	#define THREAD_TRY_EXECUTION_MapMgr try {
+	#define THREAD_HANDLE_CRASH_MapMgr } catch (int error) { KillThreadWithCleanup(); }
+#endif
 
 #endif
 

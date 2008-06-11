@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,7 +31,7 @@ class Group;
 enum BattleGroundTypes
 {
 	BATTLEGROUND_ALTERAC_VALLEY = 1,
-	BATTLEGROUND_WARSONG_GULCH	= 2,
+	BATTLEGROUND_WARSUNG_GULCH	= 2,
 	BATTLEGROUND_ARATHI_BASIN	= 3,
 	BATTLEGROUND_ARENA_2V2		= 4,
 	BATTLEGROUND_ARENA_3V3		= 5,

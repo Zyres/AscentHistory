@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -77,7 +77,7 @@ void Arena::OnAddPlayer(Player * plr)
 	{
 		if(plr->m_auras[x])
 		{
-			if(plr->m_auras[x] && !plr->m_auras[x]->GetSpellProto()->DurationIndex && plr->m_auras[x]->GetSpellProto()->Flags4 & CAN_PERSIST_AND_CASTED_WHILE_DEAD)
+			if(plr->m_auras[x] && !plr->m_auras[x]->GetSpellProto()->DurationIndex && plr->m_auras[x]->GetSpellProto()->AttributesExC & CAN_PERSIST_AND_CASTED_WHILE_DEAD)
 				continue;
 			else
 			{
@@ -93,8 +93,11 @@ void Arena::OnAddPlayer(Player * plr)
 
 	UpdatePlayerCounts();
 
+	if (plr->m_bgIsQueued)
+		plr->m_bgIsQueued = false;
+
 	/* Add the green/gold team flag */
-	Aura * aura = new Aura(dbcSpell.LookupEntry(32725-plr->m_bgTeam), -1, plr, plr);
+	Aura * aura = new Aura(dbcSpell.LookupEntry(plr->GetTeam() ? 35775-plr->m_bgTeam : 32725-plr->m_bgTeam), -1, plr, plr);
 	plr->AddAura(aura);
 	
 	/* Set FFA PvP Flag */
@@ -130,9 +133,11 @@ void Arena::OnRemovePlayer(Player * plr)
 	plr->RemoveAura(ARENA_PREPARATION);
 	UpdatePlayerCounts();
 	
-	plr->RemoveAura(32725-plr->m_bgTeam);
+	plr->RemoveAura(plr->GetTeam() ? 35775-plr->m_bgTeam : 32725-plr->m_bgTeam);
 	if(plr->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP))
 		plr->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
+	
+	plr->m_bg = NULL;
 }
 
 void Arena::HookOnPlayerKill(Player * plr, Unit * pVictim)
@@ -274,8 +279,8 @@ void Arena::UpdatePlayerCounts()
 	uint32 players[2] = {0,0};
 	for(uint32 i = 0; i < 2; ++i) {
 		for(set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr) {
-			if((*itr)->isAlive())
-				players[i]++;
+			if ((*itr)->isAlive())
+				players[(*itr)->GetTeam()]++;
 		}
 	}
 

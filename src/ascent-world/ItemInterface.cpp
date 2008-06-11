@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -186,7 +186,7 @@ AddItemResult ItemInterface::m_AddItem(Item *item, int8 ContainerSlot, int8 slot
 {
 	ASSERT( slot < MAX_INVENTORY_SLOT );
 	ASSERT( ContainerSlot < MAX_INVENTORY_SLOT );
-	if( item == NULL || !item->GetProto() )
+	if( item == NULL || !item->GetProto() || slot < 0)
 		return ADD_ITEM_RESULT_ERROR;
 
 	item->m_isDirty = true;
@@ -319,13 +319,13 @@ AddItemResult ItemInterface::m_AddItem(Item *item, int8 ContainerSlot, int8 slot
 		else
 		{
 			m_pOwner->SetUInt32Value( VisibleBase, item->GetUInt32Value( OBJECT_FIELD_ENTRY ) );
-			m_pOwner->SetUInt32Value( VisibleBase + 1, item->GetUInt32Value( ITEM_FIELD_ENCHANTMENT ) ); // perm enchant
-			m_pOwner->SetUInt32Value( VisibleBase + 2, item->GetUInt32Value( ITEM_FIELD_ENCHANTMENT + 3 ) ); // temp enchant
-			m_pOwner->SetUInt32Value( VisibleBase + 3, item->GetUInt32Value( ITEM_FIELD_ENCHANTMENT + 6 ) ); // gem 1
-			m_pOwner->SetUInt32Value( VisibleBase + 4, item->GetUInt32Value( ITEM_FIELD_ENCHANTMENT + 9 ) ); // gem 2
-			m_pOwner->SetUInt32Value( VisibleBase + 5, item->GetUInt32Value( ITEM_FIELD_ENCHANTMENT + 12 ) ); // gem 3
-			m_pOwner->SetUInt32Value( VisibleBase + 6, item->GetUInt32Value( ITEM_FIELD_ENCHANTMENT + 15 ) ); // ???
-			m_pOwner->SetUInt32Value( VisibleBase + 7, item->GetUInt32Value( ITEM_FIELD_ENCHANTMENT + 18 ) ); // ???
+			m_pOwner->SetUInt32Value( VisibleBase + 1, item->GetUInt32Value( ITEM_FIELD_ENCHANTMENT ) );
+			m_pOwner->SetUInt32Value( VisibleBase + 2, item->GetUInt32Value( ITEM_FIELD_ENCHANTMENT + 3 ) );
+			m_pOwner->SetUInt32Value( VisibleBase + 3, item->GetUInt32Value( ITEM_FIELD_ENCHANTMENT + 6 ) );
+			m_pOwner->SetUInt32Value( VisibleBase + 4, item->GetUInt32Value( ITEM_FIELD_ENCHANTMENT + 9 ) );
+			m_pOwner->SetUInt32Value( VisibleBase + 5, item->GetUInt32Value( ITEM_FIELD_ENCHANTMENT + 12 ) );
+			m_pOwner->SetUInt32Value( VisibleBase + 6, item->GetUInt32Value( ITEM_FIELD_ENCHANTMENT + 15 ) );
+			m_pOwner->SetUInt32Value( VisibleBase + 7, item->GetUInt32Value( ITEM_FIELD_ENCHANTMENT + 18 ) );
 			m_pOwner->SetUInt32Value( VisibleBase + 8, item->GetUInt32Value( ITEM_FIELD_RANDOM_PROPERTIES_ID ) );
 		}
 	}
@@ -737,7 +737,7 @@ Item* ItemInterface::FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank)
 					Item *item2 = ((Container*)item)->GetItem(j);
 					if (item2)
 					{
-						if((item2->GetProto()->ItemId == itemid && item->wrapped_item_id==0) && (item2->GetProto()->MaxCount >= (item2->GetUInt32Value(ITEM_FIELD_STACK_COUNT) + cnt)))
+						if((item2->GetProto()->ItemId == itemid && item2->wrapped_item_id==0) && (item2->GetProto()->MaxCount >= (item2->GetUInt32Value(ITEM_FIELD_STACK_COUNT) + cnt)))
 						{
 							return item2;
 						}
@@ -772,7 +772,7 @@ Item* ItemInterface::FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank)
 						Item *item2 = ((Container*)item)->GetItem(j);
 						if (item2)
 						{
-							if((item2->GetProto()->ItemId == itemid && item->wrapped_item_id==0) && (item2->GetProto()->MaxCount >= (item2->GetUInt32Value(ITEM_FIELD_STACK_COUNT) + cnt)))
+							if((item2->GetProto()->ItemId == itemid && item2->wrapped_item_id==0) && (item2->GetProto()->MaxCount >= (item2->GetUInt32Value(ITEM_FIELD_STACK_COUNT) + cnt)))
 							{
 								return item2;
 							}
@@ -1524,7 +1524,7 @@ int8 ItemInterface::CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemPrototype
 		if (!ignore_combat && m_pOwner->CombatStatus.IsInCombat() && (slot < EQUIPMENT_SLOT_MAINHAND || slot > EQUIPMENT_SLOT_RANGED))
 			return INV_ERR_CANT_DO_IN_COMBAT;
 
-		if(proto->Flags & ITEM_FLAG_UNIQUE_EQUIP && IsEquipped(proto->ItemId))
+		if( IsEquipped(proto->ItemId) && (proto->Unique || proto->Flags & ITEM_FLAG_UNIQUE_EQUIP ))
 			return INV_ERR_CANT_CARRY_MORE_OF_THIS;
 		
 		// Check to see if we have the correct race
@@ -2254,6 +2254,10 @@ Item* ItemInterface::GetItemByGUID(uint64 Guid)
 //-------------------------------------------------------------------//
 void ItemInterface::BuildInventoryChangeError(Item *SrcItem, Item *DstItem, uint8 Error)
 {
+
+	if( !m_pOwner->GetSession() )
+		return; // low chances for this
+
 	WorldPacket data(22);
 
 	data.Initialize( SMSG_INVENTORY_CHANGE_FAILURE );

@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -183,7 +183,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode( WorldPacket & recv_data )
 	
 	if ((status == QMGR_QUEST_AVAILABLE) || (status == QMGR_QUEST_REPEATABLE) || (status == QMGR_QUEST_CHAT))
 	{
-		sQuestMgr.BuildQuestDetails(&data, qst,qst_giver,1, language);	 // 0 because we want goodbye to function
+		sQuestMgr.BuildQuestDetails(&data, qst,qst_giver,1, language, _player);	 // 0 because we want goodbye to function
 		SendPacket(&data);
 		sLog.outDebug( "WORLD: Sent SMSG_QUESTGIVER_QUEST_DETAILS." );
 	}
@@ -487,7 +487,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode( WorldPacket & recv_data 
 				qst = QuestStorage.LookupEntry(quest_id);*/
 			if(!qst)
 			{
-				sLog.outError("WARNING: Cannot complete quest, as it doesnt exist.");
+				sLog.outError("WARNING: Cannot get reward for quest %u, as it doesn't exist at Unit %u.", quest_id, quest_giver->GetEntry());
 				return;
 			}
 			status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id),false);
@@ -507,7 +507,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode( WorldPacket & recv_data 
 			/*if(!qst) sQuestMgr.FindQuest(quest_id);*/
 			if(!qst)
 			{
-				sLog.outError("WARNING: Cannot complete quest, as it doesnt exist.");
+				sLog.outError("WARNING: Cannot get reward for quest %u, as it doesn't exist at GO %u.", quest_id, quest_giver->GetEntry());
 				return;
 			}
 			status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id),false);
@@ -529,7 +529,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode( WorldPacket & recv_data 
 	if (status == QMGR_QUEST_FINISHED)
 	{
         WorldPacket data;
-		sQuestMgr.BuildOfferReward(&data, qst, qst_giver, 1, language);
+		sQuestMgr.BuildOfferReward(&data, qst, qst_giver, 1, language, _player);
 		SendPacket(&data);
 		sLog.outDebug( "WORLD: Sent SMSG_QUESTGIVER_REQUEST_ITEMS." );
 	}
@@ -570,7 +570,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode( WorldPacket & recvPacket
 				sQuestMgr.FindQuest(quest_id);*/
 			if(!qst)
 			{
-				sLog.outError("WARNING: Cannot complete quest, as it doesnt exist.");
+				sLog.outError("WARNING: Cannot complete quest %u, as it doesn't exist at Unit %u.", quest_id, quest_giver->GetEntry());
 				return;
 			}
 			status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id),false);
@@ -590,7 +590,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode( WorldPacket & recvPacket
 			/*if(!qst) sQuestMgr.FindQuest(quest_id);*/
 			if(!qst)
 			{
-				sLog.outError("WARNING: Cannot complete quest, as it doesnt exist.");
+				sLog.outError("WARNING: Cannot complete quest %u, as it doesn't exist at GO %u.", quest_id, quest_giver->GetEntry());
 				return;
 			}
 			status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id),false);
@@ -620,7 +620,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode( WorldPacket & recvPacket
 	if (status == QMGR_QUEST_FINISHED)
 	{
 		WorldPacket data;
-		sQuestMgr.BuildOfferReward(&data, qst, qst_giver, 1, language);
+		sQuestMgr.BuildOfferReward(&data, qst, qst_giver, 1, language, _player);
 		SendPacket(&data);
 		sLog.outDebug( "WORLD: Sent SMSG_QUESTGIVER_REQUEST_ITEMS." );
 	}
@@ -805,7 +805,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket &recv_data)
 							sQuestMgr.SendPushToPartyResponse(_player, pPlayer, response);
 
 						data.clear();
-						sQuestMgr.BuildQuestDetails(&data, pQuest, pPlayer, 1, pPlayer->GetSession()->language);
+						sQuestMgr.BuildQuestDetails(&data, pQuest, pPlayer, 1, pPlayer->GetSession()->language, _player);
 						pPlayer->GetSession()->SendPacket(&data);
 						pPlayer->SetQuestSharer(pguid);
 					}

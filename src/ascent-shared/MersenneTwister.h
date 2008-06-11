@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -116,7 +116,7 @@ SERVER_DECL uint32 RandomUInt(uint32 n);
 *
 * Copyright:
 ============
-* © 1997 - 2007 Agner Fog. All software in this library is published under the
+* ï¿½ 1997 - 2007 Agner Fog. All software in this library is published under the
 * GNU General Public License with the further restriction that it cannot be 
 * used for gambling applications. See licence.htm
 *******************************************************************************/

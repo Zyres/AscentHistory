@@ -154,16 +154,6 @@
 	</References>
 	<Files>
 		<Filter
-			Name="AiAgents"
-			Filter="">
-			<File
-				RelativePath="..\..\src\ascent-world\AIAHealSupport.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\ascent-world\AIAHealSupport.h">
-			</File>
-		</Filter>
-		<Filter
 			Name="Launcher"
 			Filter="">
 			<File
@@ -215,6 +205,20 @@
 				</File>
 				<File
 					RelativePath="..\..\src\ascent-world\ConsoleListener.cpp">
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="experimental"
+			Filter="">
+			<Filter
+				Name="AiAgents"
+				Filter="">
+				<File
+					RelativePath="..\..\src\ascent-world\AIAHealSupport.cpp">
+				</File>
+				<File
+					RelativePath="..\..\src\ascent-world\AIAHealSupport.h">
 				</File>
 			</Filter>
 		</Filter>
@@ -619,6 +623,12 @@
 		</File>
 		<File
 			RelativePath="..\..\src\ascent-world\SocialHandler.cpp">
+		</File>
+		<File
+			RelativePath="..\..\src\ascent-world\SpeedDetector.cpp">
+		</File>
+		<File
+			RelativePath="..\..\src\ascent-world\SpeedDetector.h">
 		</File>
 		<File
 			RelativePath="..\..\src\ascent-world\Spell.cpp">

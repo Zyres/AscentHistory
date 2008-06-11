@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,7 +25,7 @@
 #endif
 #include "../ascent-shared/ascent_getopt.h"
 
-#define BANNER "Ascent %s r%u/%s-%s (%s) :: Logon Server"
+#define BANNER "OpenAscent %s r%u/%s-%s (%s) :: Logon Server"
 
 #ifndef WIN32
 #include <sched.h>

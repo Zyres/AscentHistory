@@ -140,6 +140,8 @@ ascent_world_SOURCES = \
     Skill.h \
     SkillHandler.cpp \
     SocialHandler.cpp \
+    SpeedDetector.cpp \
+    SpeedDetector.h \
     SpellAuras.cpp \
     SpellAuras.h \
     SpellTarget.cpp \

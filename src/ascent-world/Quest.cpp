@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -46,7 +46,7 @@ WorldPacket* WorldSession::BuildQuestQueryResponse(Quest *qst)
 	*data << uint32(0);							 // Unknown (always 0)
 	*data << uint32(0);							 // Unknown (always 0)
 	*data << uint32(qst->next_quest_id);			// Next Quest ID
-	*data << uint32(qst->reward_money);			 // Copper reward
+	*data << uint32( sQuestMgr.GenerateRewardMoney( _player, qst ) );			 // Copper reward
  // disabled for dirty fix remove this   *data << uint32(qst->reward_xp_as_money);	   // Copper given instead of XP
 	/**data << uint32(0);
 	*data << uint32(0);			
@@ -338,9 +338,16 @@ void QuestLogEntry::Finish()
 
 	// clear from player log
 	m_plr->SetQuestLogSlot(NULL, m_slot);
-	m_plr->PushToRemovedQuests(m_quest->id);
+	if(GetQuest()->is_repeatable != ASCENT_QUEST_REPEATABLE_DAILY)
+		m_plr->PushToRemovedQuests(m_quest->id);
 
+	if(GetQuest()->is_repeatable == ASCENT_QUEST_REPEATABLE_DAILY)
+	{
+		m_plr->PushToFinishedDailies(m_quest->id);
+	}
 	// delete ourselves
+
+
 	delete this;
 }
 
@@ -418,4 +425,5 @@ void QuestLogEntry::SendUpdateAddKill(uint32 i)
 {
 	sQuestMgr.SendQuestUpdateAddKill(m_plr, m_quest->id, m_quest->required_mob[i], m_mobcount[i], m_quest->required_mobcount[i], 0);
 }
+
 

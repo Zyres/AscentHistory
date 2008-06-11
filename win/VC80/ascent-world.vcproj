@@ -1013,6 +1013,14 @@
 			>
 		</File>
 		<File
+			RelativePath="..\..\src\ascent-world\SpeedDetector.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\ascent-world\SpeedDetector.h"
+			>
+		</File>
+		<File
 			RelativePath="..\..\src\ascent-world\Spell.cpp"
 			>
 		</File>

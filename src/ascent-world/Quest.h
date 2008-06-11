@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -36,15 +36,15 @@ finished = 8
 
 enum QUEST_STATUS
 {
-	QMGR_QUEST_NOT_AVAILABLE			= 0x00,	// There aren't quests avaiable.				   | "No Mark"
-	QMGR_QUEST_AVAILABLELOW_LEVEL	   = 0x01,	// Quest avaiable, and your level isnt enough.	 | "Gray Quotation Mark !"
-	QMGR_QUEST_CHAT					 = 0x02,	// Quest avaiable it shows a talk baloon.		  | "No Mark"
-	QMGR_QUEST_NOT_FINISHED			 = 0x03,	// Quest isnt finished yet.						| "Gray Question ? Mark"
+	QMGR_QUEST_NOT_AVAILABLE			= 0x00,	// There aren't quests avaiable.				| "No Mark"
+	QMGR_QUEST_AVAILABLELOW_LEVEL		= 0x01,	// Quest avaiable, and your level isnt enough.	| "Gray Quotation Mark !"
+	QMGR_QUEST_CHAT						= 0x02,	// Quest avaiable it shows a talk baloon.		| "No Mark"
+	QMGR_QUEST_NOT_FINISHED				= 0x03,	// Quest isnt finished yet.						| "Gray Question ? Mark"
 	QMGR_QUEST_REPEATABLE_FINISHED		= 0x04,
-	QMGR_QUEST_REPEATABLE			   = 0x05,	// Quest repeatable								| "Blue Question ? Mark" 
+	QMGR_QUEST_REPEATABLE				= 0x05,	// Quest repeatable								| "Blue Question ? Mark" 
 	QMGR_QUEST_AVAILABLE				= 0x06,	// Quest avaiable, and your level is enough		| "Yellow Quotation ! Mark" 
-	QMGR_QUEST_FINISHED				 = 0x08,	// Quest has been finished.						| "Yellow Question  ? Mark" (7 has no minimap icon)
-	//QUEST_ITEM_UPDATE				 = 0x06	 // Yellow Question "?" Mark. //Unknown
+	QMGR_QUEST_FINISHED					= 0x08,	// Quest has been finished.						| "Yellow Question  ? Mark" (7 has no minimap icon)
+	//QUEST_ITEM_UPDATE					= 0x06	 // Yellow Question "?" Mark. //Unknown
 };
 
 enum QUESTGIVER_QUEST_TYPE
@@ -91,7 +91,7 @@ enum INVALID_REASON
 	INVALID_REASON_DONT_HAVE_EXP_ACCOUNT	= 16,
 	INVALID_REASON_DONT_HAVE_REQ_ITEMS		= 21, //changed for 2.1.3
 	INVALID_REASON_DONT_HAVE_REQ_MONEY		= 23,
-	INVALID_REASON_UNKNOW26					= 26, //"you have completed 10 daily quests today"
+	INVALID_REASON_REACHED_DAILY_LIMIT		= 26, //"you have completed xx daily quests today" confirmd :)
 	INVALID_REASON_UNKNOW27					= 27,//"You cannot completed quests once you have reached tired time"
 };
 
@@ -107,6 +107,9 @@ enum QUEST_SHARE
 	QUEST_SHARE_MSG_HAVE_QUEST	  = 7,
 	QUEST_SHARE_MSG_FINISH_QUEST	= 8,
 };
+
+#define ASCENT_QUEST_REPEATABLE 1
+#define ASCENT_QUEST_REPEATABLE_DAILY 2
 
 class QuestScript;
 #pragma pack(push,1)
@@ -186,7 +189,6 @@ struct Quest
 	uint32 count_required_item;
 	uint32 required_mobtype[4];
 	uint32 count_reward_item;
-	uint32 reward_xp_as_money;
 
 	QuestScript* pQuestScript;
 };

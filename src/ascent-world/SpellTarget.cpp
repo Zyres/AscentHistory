@@ -465,6 +465,12 @@ void Spell::SpellTargetAllPartyMembersRangeNR(uint32 i, uint32 j)
 			p = static_cast< Player* >( static_cast< Creature* >( u_caster )->GetTotemOwner() );
 		else if( u_caster->IsPet() && static_cast< Pet* >( u_caster )->GetPetOwner() ) 
 			p = static_cast< Pet* >( u_caster )->GetPetOwner();
+		else if( u_caster->GetUInt64Value( UNIT_FIELD_CREATEDBY ) )
+		{
+			Unit *t = u_caster->GetMapMgr()->GetUnit( u_caster->GetUInt64Value( UNIT_FIELD_CREATEDBY ) );
+			if ( t && t->IsPlayer() )
+				p = static_cast< Player* >( t );
+		}
 	}
 
 	if( p == NULL )
@@ -578,6 +584,8 @@ void Spell::SpellTargetPetOwner(uint32 i, uint32 j)
 	TargetsList* tmpMap = &m_targetUnits[i];
 	if( u_caster != NULL && u_caster->IsPet() && static_cast< Pet* >( u_caster )->GetPetOwner() )
 		SafeAddTarget( tmpMap, u_caster->GetUInt64Value( UNIT_FIELD_SUMMONEDBY ) );
+	else if( u_caster != NULL && u_caster->GetAIInterface() && u_caster->GetAIInterface()->GetPetOwner() )
+		SafeAddTarget( tmpMap, u_caster->GetAIInterface()->GetPetOwner()->GetGUID() );
 }
 
 /// this is handled in DO

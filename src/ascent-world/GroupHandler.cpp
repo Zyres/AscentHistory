@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -69,7 +69,7 @@ void WorldSession::HandleGroupInviteOpcode( WorldPacket & recv_data )
 		return;
 	}
 	
-	if(player->GetTeam()!=_player->GetTeam() && _player->GetSession()->GetPermissionCount() == 0)
+	if(player->GetTeam()!=_player->GetTeam() && _player->GetSession()->GetPermissionCount() == 0 && !sWorld.interfaction_group)
 	{
 		SendPartyCommandResult(_player, 0, membername, ERR_PARTY_WRONG_FACTION);
 		return;
@@ -304,12 +304,17 @@ void WorldSession::HandleLootMethodOpcode( WorldPacket & recv_data )
 		return;
 	}
 	
-	// TODO: fix me burlex 
-	//Player *plyr = objmgr.GetPlayer((uint32)lootMaster);
-	//if(!plyr)return;
-	Group* pGroup = _player->GetGroup();
-	if( pGroup != NULL)
-		pGroup->SetLooter( _player, lootMethod, threshold );
+	Group* pGroup = _player->GetGroup(); 
+
+	if( pGroup == NULL)
+		return;
+
+	Player * pLootMaster = objmgr.GetPlayer((uint32)lootMaster);
+
+	if ( pLootMaster )
+		pGroup->SetLooter(pLootMaster , lootMethod, threshold );
+	else
+		pGroup->SetLooter(_player , lootMethod, threshold );
 }
 
 void WorldSession::HandleMinimapPingOpcode( WorldPacket & recv_data )

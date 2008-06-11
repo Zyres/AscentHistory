@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -121,6 +121,7 @@ void WorldSession::CharacterEnumProc(QueryResult * result)
 	CreatureInfo *info = NULL;
 	uint8 num = 0;
 	uint8 race;
+	_side = -1; // side should be set on every enumeration for safety
 
 	// should be more than enough.. 200 bytes per char..
 	WorldPacket data(SMSG_CHAR_ENUM, (result ? result->GetRowCount() * 200 : 1));	
@@ -139,11 +140,11 @@ void WorldSession::CharacterEnumProc(QueryResult * result)
 		do
 		{
 			fields = result->Fetch();
-			guid = fields[0].GetUInt32();
+			guid = fields[0].GetUInt64();
 			bytes2 = fields[6].GetUInt32();
 			Class = fields[3].GetUInt8();			
 			flags = fields[17].GetUInt32();
-			race = fields[3].GetUInt8();
+			race = fields[2].GetUInt8();
 
 			if( _side < 0 )
 			{
@@ -153,10 +154,10 @@ void WorldSession::CharacterEnumProc(QueryResult * result)
 			}
 
 			/* build character enum, w0000t :p */
-			data << fields[0].GetUInt64();		// guid
+			data << guid;				// guid
 			data << fields[7].GetString();		// name
-			data << fields[2].GetUInt8();		// race
-			data << race;						// class
+			data << race;				// race
+			data << Class;				// class
 			data << fields[4].GetUInt8();		// gender
 			data << fields[5].GetUInt32();		// PLAYER_BYTES
 			data << uint8(bytes2 & 0xFF);		// facial hair
@@ -214,15 +215,14 @@ void WorldSession::CharacterEnumProc(QueryResult * result)
 				{
 					containerslot = res->Fetch()[0].GetInt8();
 					slot = res->Fetch()[1].GetInt8();
-
 					if( containerslot == -1 && slot < 19 && slot >= 0 )
 					{
 						proto = ItemPrototypeStorage.LookupEntry(res->Fetch()[2].GetUInt32());
 						if(proto)
 						{
 							// slot0 = head, slot14 = cloak
-							
-							if(!(slot == 0 && (flags & (uint32)PLAYER_FLAG_NOHELM) != 0) && !(slot == 14 && (flags & (uint32)PLAYER_FLAG_NOCLOAK) != 0)) {
+							if(!(slot == 0 && (flags & (uint32)PLAYER_FLAG_NOHELM) != 0) && !(slot == 14 && (flags & (uint32)PLAYER_FLAG_NOCLOAK) != 0)) 
+							{
 								items[slot].displayid = proto->DisplayInfoID;
 								items[slot].invtype = proto->InventoryType;
 								// weapon glows
@@ -234,9 +234,9 @@ void WorldSession::CharacterEnumProc(QueryResult * result)
 									{
 										enc = dbcEnchant.LookupEntry( enchantid );
 										if( enc != NULL )
-										items[slot].enchantment = enc->visual;
+											items[slot].enchantment = enc->visual;
 										else
-										items[slot].enchantment = 0;;
+											items[slot].enchantment = 0;;
 									}
 								}
 							}
@@ -248,6 +248,9 @@ void WorldSession::CharacterEnumProc(QueryResult * result)
 
 			for( i = 0; i < 20; ++i )
 			{
+				// 2.4.0 added a uint32 here, it's obviously one of the itemtemplate fields,
+				// we just gotta figure out which one :P
+//				data << items[i].displayid << items[i].invtype << uint32(0);
 				data << items[i].displayid << items[i].invtype << uint32(items[i].enchantment);
 			}
 
@@ -356,7 +359,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 
 	//Same Faction limitation only applies to PVP and RPPVP realms :)
 	uint32 realmType = sLogonCommHandler.GetRealmType();
-	if( !HasGMPermissions() && realmType == REALM_PVP && _side < 0 )
+	if( !HasGMPermissions() && realmType == REALMTYPE_PVP && _side >= 0 && !sWorld.crossover_chars) // ceberwow fixed bug
 	{
 		if( ((pNewChar->GetTeam()== 0) && (_side == 1)) || ((pNewChar->GetTeam()== 1) && (_side == 0)) )
 		{
@@ -388,6 +391,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 	pn->cl = pNewChar->getClass();
 	pn->race = pNewChar->getRace();
 	pn->gender = pNewChar->getGender();
+	pn->acct = GetAccountId();
 	pn->m_Group=0;
 	pn->subGroup=0;
 	pn->m_loggedInPlayer=NULL;
@@ -571,6 +575,7 @@ void WorldSession::HandleCharDeleteOpcode( WorldPacket & recv_data )
 		}
 		else
 			fail = 0x3C;
+    _side = -1; // ceberwow added it
 	}
 
 	OutPacket(SMSG_CHAR_DELETE, 1, &fail);
@@ -884,10 +889,10 @@ void WorldSession::FullLogin(Player * plr)
 
 	// Send revision (if enabled)
 #ifdef WIN32
-	_player->BroadcastMessage("Server: %sAscent %s r%u/%s-Win-%s %s(www.ascentemu.com)", MSG_COLOR_WHITE, BUILD_TAG,
+	_player->BroadcastMessage("Server: %sOpenAscent %s r%u/%s-Win-%s %s(www.openascent.com)", MSG_COLOR_WHITE, BUILD_TAG,
 		BUILD_REVISION, CONFIG, ARCH, MSG_COLOR_LIGHTBLUE);		
 #else
-	_player->BroadcastMessage("Server: %sAscent %s r%u/%s-%s %s(www.ascentemu.com)", MSG_COLOR_WHITE, BUILD_TAG,
+	_player->BroadcastMessage("Server: %sOpenAscent %s r%u/%s-%s %s(www.openascent.com)", MSG_COLOR_WHITE, BUILD_TAG,
 		BUILD_REVISION, PLATFORM_TEXT, ARCH, MSG_COLOR_LIGHTBLUE);
 #endif
 

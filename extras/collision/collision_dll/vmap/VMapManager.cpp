@@ -865,7 +865,8 @@ namespace VMAP
     {
         if(hasDirFile(dirFileName) && containsLoadedMapTile(pMapTileIdent))
         {
-            removeLoadedMapTile(pMapTileIdent);
+			if(containsLoadedMapTile(pMapTileIdent))
+			   removeLoadedMapTile(pMapTileIdent);
             FilesInDir& filesInDir = getDirFiles(dirFileName);
             filesInDir.decRefCount();
             if(filesInDir.getRefCount() <= 0)

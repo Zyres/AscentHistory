@@ -381,6 +381,33 @@ bool WinterWondervoltAura(uint32 i, Aura* pAura, bool apply)
 
 // -----------------------------------------------------------------------------
 
+bool GoblinWeatherMachine(uint32 i, Spell* pSpell)
+{
+	if(!pSpell->p_caster) return true;
+ 
+	uint32 Effect = RandomUInt(5);
+	uint32 Weather = 46736 + Effect;
+	
+	pSpell->p_caster->CastSpell(pSpell->p_caster, dbcSpell.LookupEntry(Weather), true);
+	return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool SummonBlackQirajiBT(uint32 i, Spell * pSpell)
+{
+	if (pSpell == NULL || pSpell->u_caster == NULL)
+		return true;
+
+	if (pSpell->u_caster->HasAura(26655))
+		pSpell->u_caster->RemoveAura(26655);
+	else
+		pSpell->u_caster->CastSpell(pSpell->u_caster, 26655, true);
+
+	return true;
+}
+
+// -----------------------------------------------------------------------------
 
 
 
@@ -410,6 +437,8 @@ void SetupItemSpells_1(ScriptMgr * mgr)
 	mgr->register_dummy_spell(26541, &SummonCritterDummy);      // Red Helper Box
 	mgr->register_dummy_spell(26275, &WinterWondervolt);        // PX-238 Winter Wondervolt Trap
 	mgr->register_dummy_aura( 26274, &WinterWondervoltAura);    // PX-238 Winter Wondervolt Transform Aura
+	mgr->register_dummy_spell(46203, &GoblinWeatherMachine);    // Goblin Weather Machine - Prototype 01-B
+	mgr->register_dummy_spell(26656, &SummonBlackQirajiBT);		// Summon Black Qiraji Battle Tank
 
 
 

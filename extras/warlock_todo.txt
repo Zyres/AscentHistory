@@ -1,130 +1,74 @@
-Vampiric Touch, doesn't give any mana.
-HealthStone rank 2
-Nether Protection procs of shadow and fire dmg DoT's ticks
+revision: 193
+db: RusDB
+bug: Some pets are unable to learn spells from grimoires, specially felhunter who can't learn anything succubus works great.
 
-Demonology
-SoulWell - nothing appears - wtf ? i can;t find this spell :S
+revision: 145
+bug: Seed of Corruption does not do the explode damage
+How it should work: Causes 1044 Shadow damage over 18 sec. When the target takes 1044 total damage or dies, the seed will inflict 1110 to 1290 Shadow damage to all enemies within 15 yards of the target.
+http://www.wowwiki.com/Seed_of_Corruption
 
-Imp:
-*Phase Shift - nothing happens imp still get's attacked by enemy
-Succubus ( succy )
-*Seduction - nothing happens
-*Shooting Kiss - no aggro made
-Felhunter
-*Spell lock - no spell lock for 8 seconds
-*Devour Magic - no buffs dispelled
-*Tainted Blood - no dmg reduction
-*Paranoia - doesn't destealths rogues or druids
+revision: 145
+bug:Talent: Shadow and Flame: not working or partially working
+How it should work:Shadow Bolt and Incinerate spells gain an additional 4-8-12-16-20% of your bonus spell damage.
+http://www.wowwiki.com/Shadow_and_Flame
 
-General
--Should receive soul shard when pet is dismissed due to out of range or getting on windrider
+revision: 145
+Warlock T6 :Set: Malefic Raiment
+bug: Set effect not working
+How it should work:
+for 2 parts: Each time your Corruption or Immolate spells deals periodic damage, you heal 70 health.
+for 4 parts: Increases the damage dealt by your Shadow Bolt and Incinerate abilities by 6%.
 
-Talents - Affliction
--Shadow Mastery: for some reason only applies to rank 1 skills. Doesn't apply to drain spells. Only uses base spell damage, not total spell damage after +damage is taken into consideration.
--Fel Concentration: somewhat works, proc rate for cast time reduction seems to be less than 75% at maximum lvl
--Empowered corruption: does not add any damage to corruption as it should (+36% at maximum lvl)
+revision: 145
+Warlock minions are not receiving bonus stats from their owner
+Pet scaling
+* 1 stam gives 0.3 to your pet.
+* 1 resistance gives 0.4 to your pet.
+* 1 armor gives 0.35 armor to the pet.
+* 1 spell damage gives 0.15 spell damage, and 0.57 attack power to your pet.
+* 1 int gives your pet 0.3 int.
 
-Talents - Destruction
--Intensity: has no noticable effect (supposed to give 70% at max lvl to reduce the chance of spell interruption).
--Shadow and Flame: is supposed to give +20% damage to shadowbolt and incinerate but doesn't.
--Emberstorm: only applies to base damage, not damage after spell casts.
+revision: 145
+General bugs:
+-Warlocks are not receiving soulshards from players that yield honor
+-Arena preparation buff does not reduce the soul shards cost of spells
+-In Bg's Pets must be Revived with their master after dying
 
-Talents - Demonology
--Soul link: does not transfer 20% of damage to pet or give the +5% damage
--Demonic Sacrifice: Working, though fire damage gained from imp and shadow damage gained from succubus and felguard are applied to base spell damage, not total spell damage after all other effects. Also, ff you use Demonic Sacrifice and log out with no pet, your character will show a Voidwalker next to them. When you log onto another character than back on to your lock, you'll have both the Demonic Sacrifice you used, and a Voidwalker out. Sacrificing this one would make 2 Sacrifices stack.
+revision: 185
+db: RusDB
+bug: Improved shadowbolt: on spell crit it procs and grants you 20% more shadow damage however it shouldn't disappear from another people,pet or dot damage and it's disappearing (in blizz nice pve warlocks have at least 25% crit to grant this buff always on and this way do an additional 20% dmg)
+How it should work: Not disappearing with another people/pet/dot damage
+http://www.wowwiki.com/Improved_shadowbolt
 
-Pets
--Pets on defense/passive immediately attacks the closest enemy if it kills the current mob. It also immediately attacks the closest enemy if it is just summoned or from log in.
+revision: 185
+db: RusDB
+bug: NIghtfall procs on the first hit of corruption not on every tick
+How it should work: procs on every corruption tick
+http://www.wowwiki.com/Nightfall_%28Warlock_Talent%29
 
-///////////////////////////////////////////////////////////////////////////////
+revision: 185
+db: RusDB
+bug: Corruption. It can be casted without infront requirement
+How it should work: read above
+http://www.wowwiki.com/Corruption
 
-Demonology Tree:
-Mana Feed - doesn't work
-Demonic Resilience - doesn't work
-Demonic Tactics
+revision: 185
+db: RusDB
+bug: Shyphon life
+How it should work: Like corruption, no infront check is necessary
+http://www.wowwiki.com/Shyphon_life
 
-Destruction Tree:
-Shadow Burn - skill works but doesn't return soul shard if target died withing 5 secs
+revision: 143
+bug: Ritual of Summoning doesn't work, portal doesn't show up.
+How it should work: Summoning portal opens up, deduct one soul shard is basically what it does.
+More information here: http://www.wowwiki.com/Ritual_of_Summoning
 
-Affliction Tree:
-Soul Siphon - doesn't work
+revision:--
+bug:Phase Shift(imps spell) only visual
+How it should work:Phase Shift makes the Imp invulnerable to all hostile and beneficial abilities, with the exception of Soul Link and Health Funnel. Phase shift can be canceled simply by clicking the spell icon. The Imp cannot attack while in this state; if it attacks, it will automatically cancel Phase Shift. It has a 10 second cooldown and does not cost the Imp any mana to use, however, it can only be cast while out of combat.
 
-////////////////////////////////////////////////////////////////////////////////////////
-
-General (might affect more then just warlocks)
-- Should receive soul shard when pet is dismissed due to out of range or getting on windrider
-- Temporary +spell damage buffs (trinkets, potions, etc) will only apply the +damage to DoT's while the effect is in place - Not when you start the spell cast. For example, say you used a trinket that gives +150 spell damage. You apply Corruption and Unstable Affliction. You gain the +150 spell damage bonus as normal - your Unstable Affliction and Corruption should gain around 25 damage a tick. Half way through the ticks, the trinket wears off. You will now LOSE that 25 damage a tick, even though the DoT was applied when you initiated the cast.
-
-Hellfire/Rain of fire - must have a target selected else it will stop channeling immediately; channeling isn't affected by talent to reduce spell pushback; starts damaging only after good 3-4 seconds of channel.
-
-Curse of Agony:
-- Causes the "beginning damage" throughout the whole spell cast, making it to do much less damage than it should. (Its damage should ramp up <a href="http://www.wowwiki.com/Curse_of_Agony" target="_blank">http://www.wowwiki.com/Curse_of_Agony</a>
-
-Curse of Doom:
-- Works, but only gets 100% bonus from spell damage instead of 200%.
-
-Life Tap:
-- works, but it can kill you with durability loss
-
-Eye of krilrogg:
-- Summons the eye, but you can control it only in OLs, and after moving a bit further away, you stop the channeling and disconnect 50% of the time. D/c 7/12 times already.
-
-Summon Infernal:
-- No 200 damage stun. Dismissing the infernal won't release him from his chains and send him wild, but instead just disappear. Does less damage than normal.
-
-Enslave demon:
-- Does not have any effect on demons.
-
-Doom guard:
-- Proc (from curse of doom) and summoning (from ritual of doom) does not work.
-
-Ritual of soul:
-- Creates the soul well but does not allow raid members to extract a healthstone from it.
-
-Fear mechanics need to be worked on, a little latency just breaks up all the effect, its not ever worth casting fear in pvp.
-
-Demons:
-- Demons should get dismissed when mounted and get back when dismounted.
-
-Summoned demons DO NOT get any stats from the warlock such as health or mana resulting in one-shot kills in raid or pvp environment.
-
-SUCCUBUS:
-
-- Seduction seduces self or does nothing.
-- Lash of pain attacks rapidly as described above.
-- Soothing kiss - doesn't work.
-
-VOIDWALKER:
-
-- Consume shadows can work in combat making it available to solo instances lol.
-- Suffering seems to taunt mob in a VAST area, once taunted whole stormwind.
-- Torment does nothing.
-
-FELHUNTER:
-
-- Paranoia seems to work, or maybe stealth is gimped, I see stealthed people like 20 yards away.
-- Tainted blood puts the buff on but it does nothing.
-- Devour magic doesnt remove any buffs ever.
-- Spell lock doesn't work anymore (it did).
-
-FELGUARD:
-
-- Cleave attacks rapidly but only one target and most likely will attack self (could do ~100k dps if really wanted)
-- The passive buffs don't work.
-
-Affliction talents and spells:
-
-IMPORTANT - Soul siphon doesn't work at all. Should increase amount drained by drain life by an additional 2/4% for each affliction effect up to maximum 24/60% (if you have max rank and 4 affliction debuffs on target, it would increase drain life spell by 16%. Whenever a debuff is applied, it increases by another 4% up to 60%).
-- Improved life tap - does not work i think
-- Improved drain soul - doesn't work. should give 7/14% of mana back after killing something while draining soul.
-IMPORTANT - Siphon life - works but doesn't benefit from shadow damage so is useless.
-
-Demonology:
-
-- Improved health funnel. doesn't increase the health given to minion when channeling.
-- improved enslave demon. the spell itself doesn't work.
-- master conjuror. doesn't work. should increase effect of firestone and spellstone by 15/30%
-
-- when infernal dies, server crashes
-
-- put talent points into health funnel and see if caster dies like that
+revision: 145
+bug: backlash
+bug: Ranged attacks (Arrows-Bullets) does not proc this talent
+How it should work: Ranged attacks (Arrows-Bullets) should hvae a chance to proc this talent
+http://www.wowwiki.com/Backlash

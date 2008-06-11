@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -467,6 +467,7 @@ void CommandTableStorage::Init()
 		{ "gm",		  '0', &ChatHandler::HandleGMListCommand,		"Shows active GM's",			  NULL, 0, 0, 0},
 		{ "gmoff",	   't', &ChatHandler::HandleGMOffCommand,		 "Sets GM tag off",				NULL, 0, 0, 0},
 		{ "gmon",		't', &ChatHandler::HandleGMOnCommand,		  "Sets GM tag on",				 NULL, 0, 0, 0},
+		{ "gmannounce", 'u', &ChatHandler::HandleGMAnnounceCommand, "Sends Msg to all online GMs", NULL, 0, 0, 0},
 		{ "gps",		 '0', &ChatHandler::HandleGPSCommand,		   "Shows Position",				 NULL, 0, 0, 0},
 		{ "info",		'0', &ChatHandler::HandleInfoCommand,		  "Server info",					NULL, 0, 0, 0},
 		{ "worldport",   'v', &ChatHandler::HandleWorldPortCommand,	 "",							   NULL, 0, 0, 0},
@@ -548,7 +549,8 @@ void CommandTableStorage::Init()
 		{ "createarenateam", 'g', &ChatHandler::HandleCreateArenaTeamCommands, "Creates arena team", NULL, 0, 0, 0 },
 		{ "whisperblock", 'g', &ChatHandler::HandleWhisperBlockCommand, "Blocks like .gmon except without the <GM> tag", NULL, 0, 0, 0 },
 		{ "logcomment" , '1' , &ChatHandler::HandleGmLogCommentCommand, "Adds a comment to the GM log for the admins to read." , NULL , 0 , 0 , 0 },
-		{ "showitems", 'm', &ChatHandler::HandleShowItems, "test for ItemIterator", NULL, 0, 0, 0 },
+		{ "showitems", 'm', &ChatHandler::HandleShowItems, "Shows items of selected Player", NULL, 0, 0, 0 },
+		{ "showskills", 'm', &ChatHandler::HandleShowSkills, "Shows skills of selected Player", NULL, 0, 0, 0 },      
 		{ "testlos", 'm', &ChatHandler::HandleCollisionTestLOS, "tests los", NULL, 0, 0, 0 },
 		{ "testindoor", 'm', &ChatHandler::HandleCollisionTestIndoor, "tests indoor", NULL, 0, 0, 0 },
 		{ "getheight", 'm', &ChatHandler::HandleCollisionGetHeight, "Gets height", NULL, 0, 0, 0 },

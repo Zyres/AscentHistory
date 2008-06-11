@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -29,7 +29,8 @@ class Unit;
 
 enum ChatMsg
 {
-	CHAT_MSG_ADDON									= 0,
+	CHAT_MSG_ADDON									= -1,
+	CHAT_MSG_SYSTEM                                 = 0,    //28,   CHAT_MSG_SYSTEM                 = 0x00,         0
 	CHAT_MSG_SAY									= 1,
 	CHAT_MSG_PARTY									= 2,
 	CHAT_MSG_RAID									= 3,
@@ -37,8 +38,8 @@ enum ChatMsg
 	CHAT_MSG_OFFICER								= 5,
 	CHAT_MSG_YELL									= 6,
 	CHAT_MSG_WHISPER								= 7,
-	CHAT_MSG_WHISPER_MOB							= 8,
-	CHAT_MSG_WHISPER_INFORM							= 9,
+	CHAT_MSG_WHISPER_MOB							= 8,//CHAT_MSG_WHISPER_INFORM
+	CHAT_MSG_WHISPER_INFORM							= 9,//CHAT_MSG_REPLY
 	CHAT_MSG_EMOTE									= 10,
 	CHAT_MSG_TEXT_EMOTE								= 11,
 	CHAT_MSG_MONSTER_SAY							= 12,
@@ -57,25 +58,21 @@ enum ChatMsg
 	CHAT_MSG_IGNORED								= 25,
 	CHAT_MSG_SKILL									= 26,
 	CHAT_MSG_LOOT									= 27,
-	CHAT_MSG_SYSTEM									= 28,
-	//29
-	//30
-	//31
-	//32
-	//33
-	//34
-	//35
-	//36
-	//37
-	//38
+    CHAT_MSG_MONEY                                  = 28,
+    CHAT_MSG_OPENING                                = 29,
+    CHAT_MSG_TRADESKILLS                            = 30,
+    CHAT_MSG_PET_INFO                               = 31,
+    CHAT_MSG_COMBAT_MISC_INFO                       = 32,
+    CHAT_MSG_COMBAT_XP_GAIN                         = 33,
+    CHAT_MSG_COMBAT_HONOR_GAIN                      = 34,
+    CHAT_MSG_COMBAT_FACTION_CHANGE                  = 35,
 	CHAT_MSG_BG_EVENT_NEUTRAL						= 36,
 	CHAT_MSG_BG_EVENT_ALLIANCE						= 37,
 	CHAT_MSG_BG_EVENT_HORDE							= 38,
-	CHAT_MSG_COMBAT_FACTION_CHANGE					= 38,
 	CHAT_MSG_RAID_LEADER							= 39,
 	CHAT_MSG_RAID_WARNING							= 40,
 	CHAT_MSG_RAID_WARNING_WIDESCREEN				= 41,
-	//42
+    CHAT_MSG_RAID_BOSS_EMOTE                        = 42,
 	CHAT_MSG_FILTERED								= 43,
 	CHAT_MSG_BATTLEGROUND							= 44,
 	CHAT_MSG_BATTLEGROUND_LEADER					= 45,
@@ -215,6 +212,7 @@ protected:
 	bool HandleSummonCommand(const char* args, WorldSession *m_session);
 	bool HandleAppearCommand(const char* args, WorldSession *m_session);
 	bool HandleAnnounceCommand(const char* args, WorldSession *m_session);
+	bool HandleGMAnnounceCommand(const char* args, WorldSession *m_session);
 	bool HandleWAnnounceCommand(const char* args, WorldSession *m_session);
 	bool HandleGMOnCommand(const char* args, WorldSession *m_session);
 	bool HandleGMOffCommand(const char* args, WorldSession *m_session);
@@ -497,6 +495,7 @@ protected:
 	bool HandleWhisperBlockCommand(const char * args, WorldSession * m_session);
 	bool HandleDispelAllCommand(const char * args, WorldSession * m_session);
 	bool HandleShowItems(const char * args, WorldSession * m_session);
+	bool HandleShowSkills(const char * args, WorldSession * m_session);
 	bool HandleCollisionTestIndoor(const char * args, WorldSession * m_session);
 	bool HandleCollisionTestLOS(const char * args, WorldSession * m_session);
 	bool HandleRenameAllCharacter(const char * args, WorldSession * m_session);

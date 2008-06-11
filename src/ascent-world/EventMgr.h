@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -173,7 +173,9 @@ enum EventTypes
 	EVENT_EOTS_CHECK_CAPTURE_POINT_STATUS,
 	EVENT_EOTS_RESET_FLAG,
 	EVENT_PLAYER_RESET_HEARTBEAT,
-	EVENT_COMBAT_TIMER
+	EVENT_COMBAT_TIMER,
+	EVENT_CREATURE_AISPELL,
+	EVENT_UNIT_DELAYED_SPELL_CANCEL,
 };
 
 enum EventFlags

@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -362,11 +362,11 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 				dmg *= Rand( 50 ) ? 2 : 1;
 			}
 			break;
-		case 0xCBC738B8:	// Bloodthirst
+		case SPELL_HASH_BLOODTHIRST:	// Bloodthirst
 			{
                 dmg = u_caster->GetAP()*(m_spellInfo->EffectBasePoints[0]+1) / 100;
 			}break;
-		case 2189817683UL:	// Shield Slam - damage is increased by block value
+		case SPELL_HASH_SHIELD_SLAM:	// Shield Slam - damage is increased by block value
 			{
 				if( p_caster != NULL )
 				{
@@ -381,7 +381,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 				}
 			}break;
 
-		case 0xf79e1873:		// fire armor, is static damage
+		case SPELL_HASH_MOLTEN_ARMOR:		// fire armor, is static damage
 			static_damage=true;
 			break;
 		}
@@ -389,6 +389,11 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 
 	// check for no more damage left (chains)
 	if(!dmg) return;
+	/*********************************************************************
+	CONFLAGRATE SHOULD REMOVE THE IMMOLATE DEBUFF
+	**********************************************************************/
+	if( m_spellInfo->NameHash == SPELL_HASH_CONFLAGRATE )
+		unitTarget->RemoveAuraByNameHash(SPELL_HASH_IMMOLATE );
 
 	/**************************************************************************
 	* This handles the correct damage of "Judgement of Command" (all ranks)
@@ -429,7 +434,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 					_type = RANGED;
 				else
 				{
-					if (m_spellInfo->Flags4 & 0x1000000)
+					if (m_spellInfo->AttributesExC & 0x1000000)
 						_type =  OFFHAND;
 					else
 						_type = MELEE;
@@ -494,7 +499,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 			rss->chance = m_spellInfo->procChance;
 			rss->spellId = m_spellInfo->Id;
 			rss->require_aura_hash = SPELL_HASH_FROST_WARD; 
-			rss->school = SCHOOL_FROST;		
+			rss->school = SCHOOL_FROST;				
 
 			unitTarget->m_reflectSpellSchool.push_back(rss);
 		}break;
@@ -517,7 +522,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 				}
 				else
 					++i;
-
+ 
 			ReflectSpellSchool *rss = new ReflectSpellSchool;
 			rss->chance = m_spellInfo->EffectBasePoints[0];
 			rss->spellId = m_spellInfo->Id;
@@ -531,9 +536,34 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 	 * WARRIOR SPELLS
 	 *************************
 	 * IDs:
-	 * NO SPELLS
+	 * 100		Charge			-	RANK 1,		STATUS: 100% DONE
+	 * 6178		Charge			-	RANK 2,		STATUS: 100% DONE
+	 * 11578	Charge			-	RANK 3,		STATUS: 100% DONE
 	 *  --------------------------------------------
-	 *************************/
+ 	 *************************/
+	/*
+		Charge rank 1:
+		Charge an enemy, generate 9 rage, and stun it for 1 sec.  Cannot be used in combat.
+		Charge rank 2:
+		Charge an enemy, generate 12 rage, and stun it for 1 sec.  Cannot be used in combat.
+		Charge rank 3:
+		Charge an enemy, generate 15 rage, and stun it for 1 sec.  Cannot be used in combat.
+		- by Aziel
+	*/
+	case 100:
+	case 6178:
+	case 11578:
+		{
+			if( !p_caster )
+				return;
+			if (p_caster->GetPowerType() == POWER_TYPE_RAGE && p_caster->IsPlayer())
+			{
+				p_caster->ModUnsigned32Value( UNIT_FIELD_POWER2, m_spellInfo->EffectMiscValue[1] );
+				if( p_caster->GetUInt32Value( UNIT_FIELD_POWER2) > 1000 )
+					p_caster->ModUnsigned32Value( UNIT_FIELD_POWER2, 1000 - p_caster->GetUInt32Value( UNIT_FIELD_POWER2 ) );
+			}
+		}
+		break;
 
 	/*************************
 	 * ROGUE SPELLS
@@ -789,8 +819,11 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 			if(!u_caster || !u_caster->isAlive() || !unitTarget || !unitTarget->isAlive())
 				return;
 			uint32 pet_dmg = this->forced_basepoints[0]*20/100;
-			unitTarget->ModUnsigned32Value(UNIT_FIELD_HEALTH,pet_dmg);
-			unitTarget->DealDamage(u_caster,pet_dmg,0,0,25228,true);
+			if( pet_dmg )
+			{
+				unitTarget->ModUnsigned32Value(UNIT_FIELD_HEALTH,pet_dmg);
+				unitTarget->DealDamage(u_caster,pet_dmg,0,0,25228,true);
+			}
 		}break;
 
 	/*************************
@@ -888,7 +921,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 
 	//curse of agony(18230) = periodic damage increased in 
 	//flag 2031678
-	/*case 34120:
+/*	case 34120:
 		{//steady shot
 		if(unitTarget)
 		if(unitTarget->IsDazed())
@@ -896,9 +929,8 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 //			u_caster->SpellNonMeleeDamageLog(unitTarget,spellId,damage,false);
 			u_caster->SpellNonMeleeDamageLog(unitTarget,spellId,damage,pSpellId==0);
 		}
-	
-		}break;
-	*/
+		
+		}break;*/
 	case 1454://life tap
 	case 1455:
 	case 1456:
@@ -1471,8 +1503,7 @@ void Spell::SpellEffectTeleportUnits( uint32 i )  // Teleport Units
 		/* Send a movement packet to "charge" at this target. Similar to warrior charge. */
 		p_caster->z_axisposition = 0.0f;
 		p_caster->SafeTeleport(p_caster->GetMapId(), p_caster->GetInstanceID(), LocationVector(new_x, new_y, (unitTarget->GetPositionZ() + 0.1f), unitTarget->GetOrientation()));
-
-
+		
 		return;
 	}
 
@@ -1557,7 +1588,6 @@ void Spell::SpellEffectPowerDrain(uint32 i)  // Power Drain
 	if( powerField == UNIT_FIELD_POWER1 && unitTarget->IsPlayer() )
 	{
 		// Resilience - reduces the effect of mana drains by (CalcRating*2)%.
-
 		damage *= float2int32( 1 - ( ( static_cast<Player*>(unitTarget)->CalcRating( PLAYER_RATING_MODIFIER_SPELL_CRIT_RESILIENCE ) * 2 ) / 100.0f ) );
 	}
 	uint32 amt=damage+((u_caster->GetDamageDoneMod(m_spellInfo->School)*80)/100);
@@ -1571,7 +1601,6 @@ void Spell::SpellEffectPowerDrain(uint32 i)  // Power Drain
 		u_caster->SetUInt32Value(powerField,m);
 	else
 		u_caster->SetUInt32Value(powerField,u_caster->GetUInt32Value(powerField)+amt);	
-
 	SendHealManaSpellOnPlayer(u_caster, u_caster, amt, m_spellInfo->EffectMiscValue[i]);
 }
 
@@ -1846,28 +1875,6 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 			break;
 		}
 
-		if (skill && skill->skilline == SKILL_ALCHEMY)
-		{
-			//Potion Master
-			if (strstr(m_itemProto->Name1, "Potion"))
-			{
-				if(p_caster->HasSpell(28675)) 
-					while (Rand(20) && item_count<10) item_count++;
-			}
-			//Elixir Master
-			if (strstr(m_itemProto->Name1, "Elixir") || strstr(m_itemProto->Name1, "Flask"))
-			{
-				if(p_caster->HasSpell(28677)) 
-					while (Rand(20) && item_count<10) item_count++;
-			}
-			//Transmutation Master
-			if (m_spellInfo->Category == 310)
-			{
-				if(p_caster->HasSpell(28672)) 
-					while (Rand(20) && item_count<10) item_count++;
-			}
-		}
-
 		// item count cannot be more than allowed in a single stack
 		if (item_count > m_itemProto->MaxCount)
 			item_count = m_itemProto->MaxCount;
@@ -1919,9 +1926,6 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 			} else {
 				delete newItem;
 			}
-
-			if(skill)
-				DetermineSkillUp(skill->skilline);
 		} 
 		else 
 		{
@@ -1960,10 +1964,41 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 			/*WorldPacket data(45);
 			p_caster->GetSession()->BuildItemPushResult(&data, p_caster->GetGUID(), 1, item_count, m_spellInfo->EffectSpellGroupRelation[i] ,0,0xFF,1,0xFFFFFFFF);
 			p_caster->SendMessageToSet(&data, true);*/
-			if(skill)
-				DetermineSkillUp(skill->skilline);
 		}
-	}	   
+		if ( skill != NULL )
+		{
+			// skill up
+			DetermineSkillUp( skill->skilline );
+
+			// profession discoveries
+			uint32 discovered_recipe = 0;
+			std::set<ProfessionDiscovery*>::iterator itr = objmgr.ProfessionDiscoveryTable.begin();
+			for ( ; itr != objmgr.ProfessionDiscoveryTable.end(); itr++ )
+			{
+				ProfessionDiscovery * pf = ( *itr );
+				if ( pf != NULL && m_spellInfo->Id == pf->SpellId && p_caster->_GetSkillLineCurrent( skill->skilline ) >= pf->SkillValue && !p_caster->HasSpell( pf->SpellToDiscover ) && Rand( pf->Chance ) )
+				{
+					discovered_recipe = pf->SpellToDiscover;
+					break;
+				}
+			}
+			// if something discovered learn p_caster that recipe and broadcast message
+			if ( discovered_recipe != 0 )
+			{
+				SpellEntry * se = dbcSpell.LookupEntry( discovered_recipe );
+				if ( se != NULL )
+				{
+					p_caster->addSpell( discovered_recipe );
+					WorldPacket * data;
+					char msg[256];
+					sprintf( msg, "%sDISCOVERY! %s has discovered how to create %s.|r", MSG_COLOR_GOLD, p_caster->GetName(), se->Name );
+					data = sChatHandler.FillMessageData( CHAT_MSG_SYSTEM, LANG_UNIVERSAL,  msg, p_caster->GetGUID(), 0 );
+					p_caster->GetMapMgr()->SendChatMessageToCellPlayers( p_caster, data, 2, 1, LANG_UNIVERSAL, p_caster->GetSession() );
+					delete data;
+				}
+			}
+		}
+	}
 }
 
 void Spell::SpellEffectWeapon(uint32 i)
@@ -2226,49 +2261,11 @@ void Spell::SpellEffectLeap(uint32 i) // Leap
 {
 	float radius = GetRadius(i);
 
-	//FIXME: check for obstacles
-	 
-	/*float ori = m_caster->GetOrientation();				
-	float posX = m_caster->GetPositionX()+(radius*(cos(ori)));
-	float posY = m_caster->GetPositionY()+(radius*(sin(ori)));
-	float z= m_caster->GetMapMgr()->GetLandHeight(posX,posY);
-
-	if(fabs(p_caster->GetPositionZ() - z) > 2)
-		z=p_caster->GetPositionZ()+2;
-
-	m_caster->SetPosition(posX,posY,z,ori,true);
-
-	WorldPacket data(MSG_MOVE_HEARTBEAT, 33);
-	data << m_caster->GetNewGUID();
-	data << uint32(0) << uint32(0);
-	data << posX;
-	data << posY;
-	data << z;
-	data << ori;
-	m_caster->SendMessageToSet(&data, true); */
-
-	if(!p_caster) return;
-
 	// remove movement impeding auras
-	p_caster->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN);
-	// just in case
-	for(uint32 i = MAX_POSITIVE_AURAS; i < MAX_AURAS; ++i)
-	{
-		if( p_caster->m_auras[i] != NULL )
-		{
-			for(uint32 j = 0; j < 3; ++j)
-			{
-				if( p_caster->m_auras[i]->GetSpellProto()->EffectApplyAuraName[j] == SPELL_AURA_MOD_STUN || 
-					p_caster->m_auras[i]->GetSpellProto()->EffectApplyAuraName[j] == SPELL_AURA_MOD_ROOT )
-				{
-					p_caster->m_auras[i]->Remove();
-					break;
-				}
-			}
-		}
-	}
+	u_caster->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN);
+
 #ifndef COLLISION
-	p_caster->blinked = true;
+	if(!p_caster) return;
 
 	WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
 	data << p_caster->GetNewGUID();
@@ -2279,9 +2276,6 @@ void Spell::SpellEffectLeap(uint32 i) // Leap
 	p_caster->GetSession()->SendPacket(&data);
 	//m_caster->SendMessageToSet(&data, true);
 #else
-	if(!p_caster)
-		return;
-
 	float ori = m_caster->GetOrientation();				
 	float posX = m_caster->GetPositionX()+(radius*(cosf(ori)));
 	float posY = m_caster->GetPositionY()+(radius*(sinf(ori)));
@@ -2300,21 +2294,22 @@ void Spell::SpellEffectLeap(uint32 i) // Leap
 	{
 		// hit an object new point is in dest.
 		// is this necessary?
-		//dest.z = CollideInterface.GetHeight(m_caster->GetMapId(), dest.x, dest.y, dest.z + 2.0f);
+		dest.z = CollideInterface.GetHeight(m_caster->GetMapId(), dest.x, dest.y, dest.z + 2.0f);
 	}
 	else
 		dest.z = z;
 
-	dest.o = p_caster->GetOrientation();
-	p_caster->blinked = true;
-	p_caster->SafeTeleport( p_caster->GetMapId(), p_caster->GetInstanceID(), dest );
+	dest.o = u_caster->GetOrientation();
+	if(p_caster)
+	{
+		p_caster->blinked = true;
+		p_caster->SafeTeleport( p_caster->GetMapId(), p_caster->GetInstanceID(), dest );
+	}
+	else
+	{
+		u_caster->SetPosition(dest, true);
+	}
 #endif
-
-
-	// reset heartbeat for a little while, 2 seconds maybe?
-	p_caster->DelaySpeedHack( 5000 );
-	++p_caster->_heartbeatDisable;
-	p_caster->z_axisposition = 0.0f;
 }
 
 void Spell::SpellEffectEnergize(uint32 i) // Energize
@@ -2404,7 +2399,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint32 i) // Weapon Percent damage
 			_type = RANGED;
 		else
 		{
-			if (m_spellInfo->Flags4 & 0x1000000)
+			if (m_spellInfo->AttributesExC & 0x1000000)
 				_type =  OFFHAND;
 			else
 				_type = MELEE;
@@ -3040,6 +3035,8 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
 			}
 			else if(aur->GetSpellProto()->DispelType == m_spellInfo->EffectMiscValue[i])
 			{
+				unitTarget->HandleProc( PROC_ON_PRE_DISPELL_AURA_VICTIM , u_caster , m_spellInfo, aur->GetSpellId() );
+
 				if( aur->m_spellProto->NameHash == SPELL_HASH_UNSTABLE_AFFLICTION )
 					UARank = aur->m_spellProto->RankNumber;
 
@@ -3141,6 +3138,9 @@ void Spell::SpellEffectSummonGuardian(uint32 i) // Summon Guardian
 	uint32 cr_entry = m_spellInfo->EffectMiscValue[i];
 
 	uint32 level = 0;//u_caster->getLevel();
+
+	if( m_spellInfo->c_is_flags & SPELL_FLAG_IS_INHERITING_LEVEL )
+		level = u_caster->getLevel();
 	/*if ( u_caster->GetTypeId()==TYPEID_PLAYER && itemTarget )
 	{
 		if (itemTarget->GetProto() && itemTarget->GetProto()->RequiredSkill == SKILL_ENGINERING)
@@ -3594,7 +3594,7 @@ void Spell::SpellEffectWeapondamage( uint32 i ) // Weapon damage +
 		_type = RANGED;
 	else
 	{
-		if (m_spellInfo->Flags4 & 0x1000000)
+		if (m_spellInfo->AttributesExC & 0x1000000)
 			_type =  OFFHAND;
 		else
 			_type = MELEE;
@@ -3610,12 +3610,13 @@ void Spell::SpellEffectPowerBurn(uint32 i) // power burn
 		return;
 	if (unitTarget->GetPowerType() != POWER_TYPE_MANA)
 		return;
+
 	if( unitTarget->IsPlayer() )
 	{
 		// Resilience - reduces the effect of mana drains by (CalcRating*2)%.
-
 		damage *= float2int32( 1 - ( ( static_cast<Player*>(unitTarget)->CalcRating( PLAYER_RATING_MODIFIER_SPELL_CRIT_RESILIENCE ) * 2 ) / 100.0f ) );
 	}
+
 	int32 mana = (int32)min( (int32)unitTarget->GetUInt32Value( UNIT_FIELD_POWER1 ), damage );
 	unitTarget->ModUnsigned32Value(UNIT_FIELD_POWER1,-mana);
 	
@@ -4669,7 +4670,7 @@ void Spell::SpellEffectSelfResurrect(uint32 i)
 
 void Spell::SpellEffectSkinning(uint32 i)
 {
-	if( unitTarget == NULL )
+	if( unitTarget == NULL || unitTarget->IsPlayer() )
 		return;
 
 	uint32 sk = static_cast< Player* >( m_caster )->_GetSkillLineCurrent( SKILL_SKINNING );
@@ -4682,14 +4683,16 @@ void Spell::SpellEffectSkinning(uint32 i)
 		static_cast< Player* >( m_caster )->SendLoot( unitTarget->GetGUID(), LOOT_SKINNING );
 		
 		//Not skinable again
-		((Creature*)unitTarget)->Skinned = true;
 		unitTarget->BuildFieldUpdatePacket( p_caster, UNIT_FIELD_FLAGS, 0 );
 
 		//still lootable
 		//pkt=unitTarget->BuildFieldUpdatePacket(UNIT_DYNAMIC_FLAGS,U_DYN_FLAG_LOOTABLE);
 		//static_cast< Player* >( m_caster )->GetSession()->SendPacket(pkt);
-		//delete pkt;	 
-		DetermineSkillUp(SKILL_SKINNING,sk<lvl*5?sk/5:lvl);
+		//delete pkt;
+		if (!((Creature*)unitTarget)->Skinned)
+			DetermineSkillUp(SKILL_SKINNING,sk<lvl*5?sk/5:lvl);
+
+		((Creature*)unitTarget)->Skinned = true;
 	}
 	else
 	{
@@ -4754,19 +4757,14 @@ void Spell::SpellEffectCharge(uint32 i)
 	u_caster->SetPosition(x,y,z,alpha,true);
 	u_caster->addStateFlag(UF_ATTACKING);
 	u_caster ->smsg_AttackStart( unitTarget );
-	if( p_caster )
-	{
-		p_caster->EventAttackStart();
-		p_caster->ResetHeartbeatCoords();
-	}
 	u_caster->setAttackTimer(time, false);
 	u_caster->setAttackTimer(time, true);
-
 
 	// trigger an event to reset speedhack detection
 	if( p_caster )
 	{
-		p_caster->DelaySpeedHack( time + 1000 );
+		p_caster->EventAttackStart();
+		p_caster->SpeedCheatDelay( time + 1000 );
 		p_caster->z_axisposition = 0.0f;
 	}
 }
@@ -5049,7 +5047,7 @@ void Spell::SpellEffectDispelMechanic(uint32 i)
 {
 	if( !unitTarget || !unitTarget->isAlive() )
 		return;
-	/* this was already working before...
+	/* this was already working before...	
 	uint32 sMisc = m_spellInfo->EffectMiscValue[i];
 
 	for( uint32 x = 0 ; x<MAX_AURAS ; x++ )
@@ -5416,7 +5414,7 @@ void Spell::SpellEffectDummyMelee( uint32 i ) // Normalized Weapon damage +
 		_type = RANGED;
 	else
 	{
-		if (m_spellInfo->Flags4 & 0x1000000)
+		if (m_spellInfo->AttributesExC & 0x1000000)
 			_type =  OFFHAND;
 		else
 			_type = MELEE;

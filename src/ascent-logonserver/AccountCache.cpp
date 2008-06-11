@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -388,6 +388,17 @@ Realm * InformationCore::GetRealm(uint32 realm_id)
 	return ret;
 }
 
+int32 InformationCore::GetRealmIdByName(string Name)
+{
+	map<uint32, Realm*>::iterator itr = m_realms.begin();
+	for(; itr != m_realms.end(); ++itr)
+		if (itr->second->Name == Name)
+		{
+			return itr->first;
+		}
+	return -1;
+}
+
 void InformationCore::RemoveRealm(uint32 realm_id)
 {
 	realmLock.Acquire();
@@ -397,6 +408,17 @@ void InformationCore::RemoveRealm(uint32 realm_id)
 		//sLog.outString("Removing realm `%s` (%u) due to socket close.", itr->second->Name.c_str(), realm_id);
 		delete itr->second;
 		m_realms.erase(itr);
+	}
+	realmLock.Release();
+}
+
+void InformationCore::UpdateRealmStatus(uint32 realm_id, uint8 Color)
+{
+	realmLock.Acquire();
+	map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
+	if(itr != m_realms.end())
+	{
+		itr->second->Colour = Color;
 	}
 	realmLock.Release();
 }
@@ -421,21 +443,27 @@ void InformationCore::SendRealms(AuthSocket * Socket)
 	HM_NAMESPACE::hash_map<uint32, uint8>::iterator it;
 	for(; itr != m_realms.end(); ++itr)
 	{
-		data << uint8(itr->second->Icon);
-		data << uint8(0);				   // Locked Flag
-		data << uint8(itr->second->Colour);		
+//		data << uint8(itr->second->Icon);
+//		data << uint8(0);				   // Locked Flag
+//		data << uint8(itr->second->Colour);		
+		data << itr->second->Icon;
+		//data << itr->second->Lock;  for use in later patch
+		data << uint8(0);		// delete when using data << itr->second->Lock;
+		data << itr->second->Colour;		
 
 		// This part is the same for all.
 		data << itr->second->Name;
 		data << itr->second->Address;
-		//data << itr->second->Population;
-		data << uint32(0x3fa1cac1);
+//		data << uint32(0x3fa1cac1);
+		data << itr->second->Population;
 
 		/* Get our character count */
 		it = itr->second->CharacterMap.find(Socket->GetAccountID());
 		data << uint8( (it == itr->second->CharacterMap.end()) ? 0 : it->second );
-		data << uint8(1);   // time zone
-		data << uint8(6);
+//		data << uint8(1);   // time zone
+//		data << uint8(6);
+		data << itr->second->TimeZone;
+		data << uint8(6);    //Realm ID
 	}
 	realmLock.Release();
 
@@ -478,7 +506,8 @@ void InformationCore::TimeoutSockets()
 			s->removed = true;
 			set<uint32>::iterator itr = s->server_ids.begin();
 			for(; itr != s->server_ids.end(); ++itr)
-				RemoveRealm(*itr);
+//				RemoveRealm(*itr);
+				UpdateRealmStatus((*itr), 2);
 			m_serverSockets.erase(it2);
 
 			s->Disconnect();

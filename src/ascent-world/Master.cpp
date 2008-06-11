@@ -1,6 +1,6 @@
 /*
- * Ascent MMORPG Server
- * Copyright (C) 2005-2008 Ascent Team <http://www.ascentemu.com/>
+ * OpenAscent MMORPG Server
+ * Copyright (C) 2008 <http://www.openascent.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,7 @@
 
 #include "StdAfx.h"
 
-#define BANNER "Ascent %s r%u/%s-%s-%s :: World Server"
+#define BANNER "OpenAscent %s r%u/%s-%s-%s :: World Server"
 
 #ifndef WIN32
 #include <sched.h>
@@ -93,9 +93,11 @@ struct Addr
 
 #ifdef WIN32
         static const char* default_config_file = "ascent-world.conf";
+		static const char* default_optional_config_file = "ascent-optional.conf";
         static const char* default_realm_config_file = "ascent-realms.conf";
 #else
         static const char* default_config_file = CONFDIR "/ascent-world.conf";
+		static const char* default_optional_config_file = CONFDIR "/ascent-optional.conf";
         static const char* default_realm_config_file = CONFDIR "/ascent-realms.conf";
 #endif
 
@@ -107,6 +109,7 @@ ThreadBase * GetConsoleListener();
 bool Master::Run(int argc, char ** argv)
 {
 	char * config_file = (char*)default_config_file;
+	char * optional_config_file = (char*)default_optional_config_file;
 	char * realm_config_file = (char*)default_realm_config_file;
 
 	int file_log_level = DEF_VALUE_NOT_SET;
@@ -173,16 +176,18 @@ bool Master::Run(int argc, char ** argv)
 #ifdef REPACK
 	printf("\nRepack: %s | Author: %s | %s\n", REPACK, REPACK_AUTHOR, REPACK_WEBSITE);
 #endif
-	printf("\nCopyright (C) 2005-2008 Ascent Team. http://www.ascentemu.com/\n");
-	printf("This program comes with ABSOLUTELY NO WARRANTY, and is FREE SOFTWARE.\n");
-	printf("You are welcome to redistribute it under the terms of the GNU Affero\n");
-	printf("General Public License, either version 3 or any later version. For a\n");
-	printf("copy of this license, see the COPYING file provided with this distribution.\n");
+	printf("\nCopyright (C) 2008 OpenAscent. http://www.openascent.com/\n");
+	printf("This work is licensed under the Creative Commons\n");
+	printf("Attribution-Noncommercial-ShareAlike 3.0 Unported License. To\n");
+	printf("view a copy of this license, visit\n");
+	printf("http://creativecommons.org/licenses/by-nc-sa/3.0/ or send a letter to\n");
+	printf("Creative Commons, 171 Second Street, Suite 300, San Francisco,\n");
+	printf("California, 94105, USA.\n");
 	Log.Line();
 #ifdef REPACK
 	Log.Color(TRED);
 	printf("Warning: Using repacks is potentially dangerous. You should always compile\n");
-	printf("from the source yourself at www.ascentemu.com.\n");
+	printf("from the source yourself at www.openascentemu.com.\n");
 	printf("By using this repack, you agree to not visit the ascent website and ask\nfor support.\n");
 	printf("For all support, you should visit the repacker's website at %s\n", REPACK_WEBSITE);
 	Log.Color(TNORMAL);
@@ -206,6 +211,12 @@ bool Master::Run(int argc, char ** argv)
 			Log.Success( "Config", "Passed without errors.\n" );
 		else
 			Log.Warning( "Config", "Encountered one or more errors.\n" );
+
+		Log.Notice( "Config", "Checking config file:: %s\n", optional_config_file);
+		if(Config.OptionalConfig.SetSource(optional_config_file, true) )
+			Log.Success( "Config", "Passed without errors.\n");
+		else
+			Log.Warning( "Config", "Encountered one or more errors.\n");
 
 		/* test for die variables */
 		string die;
@@ -235,6 +246,14 @@ bool Master::Run(int argc, char ** argv)
 	else
 	{
 		Log.Error( "Config", ">> ascent-world.conf" );
+		return false;
+	}
+
+	if(Config.OptionalConfig.SetSource(optional_config_file))
+		Log.Success( "Config", ">> ascent-optional.conf");
+	else
+	{
+		Log.Error("Config", ">> ascent-optional.conf");
 		return false;
 	}
 
