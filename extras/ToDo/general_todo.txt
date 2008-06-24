@@ -73,6 +73,14 @@ SMT_RESIST_DISPEL - check if it is used
 - reloadtable does not work
 - you can spellsteal and stack as many auras you wish on yourself. Eventually it will crash server. Test with lightning shield.
 - on full account ban, client should get DCed
+- http://www.wowhead.com/?spell=45819 -> make this spell to have max 1 targets
+- if cancel lifebloom it gives you the benefit of dispell ?
+- WPE hack : move from anyslot to bankslot anytime. This is a memory hack
+- revision number extractor. Maybe include it into the compiler steps ?
+- spell 16346 is spamming console. Why ?
+- skilline is not set for spells
+	.additem 16112
+	.additem 16084
 
 ==========================================================================
 ! BUGS !
@@ -110,4 +118,5 @@ SMT_RESIST_DISPEL - check if it is used
 Zack - test my shit :
 
 - test healsupport or remove it
+- test hacky client server mob position sync. Maybe it would be better so players have this too. Check if melee fighters need this too.
 
