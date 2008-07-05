@@ -156,6 +156,10 @@ public:
 
 	/* Handler On Update Event */
 	void EventQueueUpdate();
+	void EventQueueUpdate(bool forceStart);
+
+	/* Handle GetBattlegroundQueue Command */
+	void HandleGetBattlegroundQueueCommand(WorldSession * m_session);
 
 	/* Handle Battleground Join */
 	void HandleBattlegroundJoin(WorldSession * m_session, WorldPacket & pck);
