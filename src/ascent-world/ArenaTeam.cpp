@@ -376,7 +376,10 @@ void WorldSession::HandleArenaTeamAddMemberOpcode(WorldPacket & recv_data)
 		return;
 
 	if(!pTeam->HasMember(GetPlayer()->GetLowGUID()))
+	{
 		GetPlayer()->SoftDisconnect();
+		return;
+	}
 
 	Player * plr = objmgr.GetPlayer(player_name.c_str(), false);
 	if(plr == NULL)
