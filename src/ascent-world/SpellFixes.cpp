@@ -2774,11 +2774,6 @@ void ApplyExtraDataFixes()
 	if( sp != NULL )
 		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
 
-	// Spell 13530 (Corruption ) is infront from spell extra.
-	sp = dbcSpell.LookupEntryForced(13530);
-	if( sp != NULL )
-		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
-
 	// Spell 13553 (Serpent Sting Rank 6) is infront from spell extra.
 	sp = dbcSpell.LookupEntryForced(13553);
 	if( sp != NULL )
@@ -3659,11 +3654,6 @@ void ApplyExtraDataFixes()
 	if( sp != NULL )
 		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
 
-	// Spell 16402 (Corruption ) is infront from spell extra.
-	sp = dbcSpell.LookupEntryForced(16402);
-	if( sp != NULL )
-		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
-
 	// Spell 16403 (Rend ) is infront from spell extra.
 	sp = dbcSpell.LookupEntryForced(16403);
 	if( sp != NULL )
@@ -4164,11 +4154,6 @@ void ApplyExtraDataFixes()
 	if( sp != NULL )
 		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
 
-	// Spell 17510 (Corruption ) is infront from spell extra.
-	sp = dbcSpell.LookupEntryForced(17510);
-	if( sp != NULL )
-		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
-
 	// Spell 17547 (Mortal Strike ) is infront from spell extra.
 	sp = dbcSpell.LookupEntryForced(17547);
 	if( sp != NULL )
@@ -4304,11 +4289,6 @@ void ApplyExtraDataFixes()
 	if( sp != NULL )
 		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
 
-	// Spell 18088 (Corruption ) is infront from spell extra.
-	sp = dbcSpell.LookupEntryForced(18088);
-	if( sp != NULL )
-		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
-
 	// Spell 18089 (Lightning Bolt Rank 1) is infront from spell extra.
 	sp = dbcSpell.LookupEntryForced(18089);
 	if( sp != NULL )
@@ -4439,11 +4419,6 @@ void ApplyExtraDataFixes()
 	if( sp != NULL )
 		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
 
-	// Spell 18376 (Corruption ) is infront from spell extra.
-	sp = dbcSpell.LookupEntryForced(18376);
-	if( sp != NULL )
-		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
-
 	// Spell 18392 (Fireball ) is infront from spell extra.
 	sp = dbcSpell.LookupEntryForced(18392);
 	if( sp != NULL )
@@ -4486,11 +4461,6 @@ void ApplyExtraDataFixes()
 
 	// Spell 18651 (Multi-Shot ) is infront from spell extra.
 	sp = dbcSpell.LookupEntryForced(18651);
-	if( sp != NULL )
-		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
-
-	// Spell 18656 (Corruption ) is infront from spell extra.
-	sp = dbcSpell.LookupEntryForced(18656);
 	if( sp != NULL )
 		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
 
@@ -5414,11 +5384,6 @@ void ApplyExtraDataFixes()
 	if( sp != NULL )
 		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
 
-	// Spell 21068 (Corruption ) is infront from spell extra.
-	sp = dbcSpell.LookupEntryForced(21068);
-	if( sp != NULL )
-		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
-
 	// Spell 21072 (Fireball ) is infront from spell extra.
 	sp = dbcSpell.LookupEntryForced(21072);
 	if( sp != NULL )
@@ -5926,11 +5891,6 @@ void ApplyExtraDataFixes()
 
 	// Spell 23592 (Lightning Bolt ) is infront from spell extra.
 	sp = dbcSpell.LookupEntryForced(23592);
-	if( sp != NULL )
-		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
-
-	// Spell 23642 (Corruption ) is infront from spell extra.
-	sp = dbcSpell.LookupEntryForced(23642);
 	if( sp != NULL )
 		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
 
@@ -7839,11 +7799,6 @@ void ApplyExtraDataFixes()
 	if( sp != NULL )
 		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
 
-	// Spell 30938 (Corruption ) is infront from spell extra.
-	sp = dbcSpell.LookupEntryForced(30938);
-	if( sp != NULL )
-		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
-
 	// Spell 30980 (Sap ) is infront from spell extra.
 	sp = dbcSpell.LookupEntryForced(30980);
 	if( sp != NULL )
@@ -7901,11 +7856,6 @@ void ApplyExtraDataFixes()
 
 	// Spell 31402 (Kick ) is infront from spell extra.
 	sp = dbcSpell.LookupEntryForced(31402);
-	if( sp != NULL )
-		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
-
-	// Spell 31405 (Corruption ) is infront from spell extra.
-	sp = dbcSpell.LookupEntryForced(31405);
 	if( sp != NULL )
 		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
 
@@ -8004,11 +7954,6 @@ void ApplyExtraDataFixes()
 	if( sp != NULL )
 		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
 
-	// Spell 32063 (Corruption ) is infront from spell extra.
-	sp = dbcSpell.LookupEntryForced(32063);
-	if( sp != NULL )
-		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
-
 	// Spell 32105 (Kick ) is infront from spell extra.
 	sp = dbcSpell.LookupEntryForced(32105);
 	if( sp != NULL )
@@ -8016,11 +7961,6 @@ void ApplyExtraDataFixes()
 
 	// Spell 32154 (Overpower ) is infront from spell extra.
 	sp = dbcSpell.LookupEntryForced(32154);
-	if( sp != NULL )
-		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
-
-	// Spell 32197 (Corruption ) is infront from spell extra.
-	sp = dbcSpell.LookupEntryForced(32197);
 	if( sp != NULL )
 		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
 
@@ -8729,11 +8669,6 @@ void ApplyExtraDataFixes()
 	if( sp != NULL )
 		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
 
-	// Spell 37113 (Corruption ) is infront from spell extra.
-	sp = dbcSpell.LookupEntryForced(37113);
-	if( sp != NULL )
-		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
-
 	// Spell 37159 (Mana Burn ) is infront from spell extra.
 	sp = dbcSpell.LookupEntryForced(37159);
 	if( sp != NULL )
@@ -8891,11 +8826,6 @@ void ApplyExtraDataFixes()
 
 	// Spell 37865 (Frost Shock ) is infront from spell extra.
 	sp = dbcSpell.LookupEntryForced(37865);
-	if( sp != NULL )
-		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
-
-	// Spell 37961 (Corruption ) is infront from spell extra.
-	sp = dbcSpell.LookupEntryForced(37961);
 	if( sp != NULL )
 		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
 
@@ -9321,11 +9251,6 @@ void ApplyExtraDataFixes()
 
 	// Spell 39182 (Serpent Sting ) is infront from spell extra.
 	sp = dbcSpell.LookupEntryForced(39182);
-	if( sp != NULL )
-		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
-
-	// Spell 39212 (Corruption ) is infront from spell extra.
-	sp = dbcSpell.LookupEntryForced(39212);
 	if( sp != NULL )
 		sp->in_front_status = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
 
@@ -11036,18 +10961,6 @@ void Apply112SpellFixes()
 	sp = dbcSpell.LookupEntryForced(18073);
 	if(sp != NULL) {
 		sp->EffectSpellGroupRelation[0] = 64;
-	}
-
-	// Spell 18094 Group Relation (Nightfall Rank 1)
-	sp = dbcSpell.LookupEntryForced(18094);
-	if(sp != NULL) {
-		sp->EffectSpellGroupRelation[0] = 1;
-	}
-
-	// Spell 18095 Group Relation (Nightfall Rank 2)
-	sp = dbcSpell.LookupEntryForced(18095);
-	if(sp != NULL) {
-		sp->EffectSpellGroupRelation[0] = 1;
 	}
 
 	// Spell 18096 Group Relation (Pyroclasm Rank 1)
@@ -17716,6 +17629,7 @@ void ApplyNormalFixes()
 			sp->EffectTriggerSpell[0] = 17941;
 			sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION | PROC_TARGET_SELF;
 			sp->procChance = 2;
+			sp->EffectSpellGroupRelation[0] = 1; 
 		}
 		sp = dbcSpell.LookupEntryForced( 18095 );
 		if( sp != NULL )
@@ -17724,6 +17638,7 @@ void ApplyNormalFixes()
 			sp->EffectTriggerSpell[0] = 17941;
 			sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION | PROC_TARGET_SELF;
 			sp->procChance = 4;
+			sp->EffectSpellGroupRelation[0] = 1; 
 		}
 		//Shadow Trance should be removed on the first SB
 		sp = dbcSpell.LookupEntryForced( 17941 );
