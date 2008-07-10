@@ -1646,7 +1646,7 @@ Unit* MapMgr::GetUnit(const uint64 & guid)
 	else
 		return NULL;*/
 
-	if (!guid)
+	if (guid == NULL)
 		return NULL;
 
 	switch(GET_TYPE_FROM_GUID(guid))
