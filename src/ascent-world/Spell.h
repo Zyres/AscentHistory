@@ -943,7 +943,7 @@ ASCENT_INLINE bool IsDamagingSpell(SpellEntry *sp)
     return false;
 }
 
-ASCENT_INLINE bool IsHealingSpell(SpellEntry *sp)
+ASCENT_INLINE uint32 IsHealingSpell(SpellEntry *sp)
 {
     switch( sp->Effect[0] )
     {
@@ -951,7 +951,7 @@ ASCENT_INLINE bool IsHealingSpell(SpellEntry *sp)
         case SPELL_EFFECT_HEAL:
         case SPELL_EFFECT_HEALTH_FUNNEL:
         case SPELL_EFFECT_HEAL_MAX_HEALTH:
-            return true;
+            return 1;
 		default: break;
     }
     switch( sp->Effect[1] )
@@ -960,7 +960,7 @@ ASCENT_INLINE bool IsHealingSpell(SpellEntry *sp)
         case SPELL_EFFECT_HEAL:
         case SPELL_EFFECT_HEALTH_FUNNEL:
         case SPELL_EFFECT_HEAL_MAX_HEALTH:
-            return true;
+            return 2;
 		default: break;
     }
     switch( sp->Effect[2] )
@@ -969,7 +969,7 @@ ASCENT_INLINE bool IsHealingSpell(SpellEntry *sp)
         case SPELL_EFFECT_HEAL:
         case SPELL_EFFECT_HEALTH_FUNNEL:
         case SPELL_EFFECT_HEAL_MAX_HEALTH:
-            return true;
+            return 3;
 		default: break;
     }
     if( sp->Effect[0] == SPELL_EFFECT_APPLY_AURA ||
@@ -979,7 +979,7 @@ ASCENT_INLINE bool IsHealingSpell(SpellEntry *sp)
         {
             case 8://SPELL_AURA_PERIODIC_HEAL:
             case 62://SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
-                return true;
+                return 1;
 			default: break;
         }
     }
@@ -990,7 +990,7 @@ ASCENT_INLINE bool IsHealingSpell(SpellEntry *sp)
         {
             case 8://SPELL_AURA_PERIODIC_HEAL:
             case 62://SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
-                return true;
+                return 2;
 			default: break;
         }
     }
@@ -1001,7 +1001,7 @@ ASCENT_INLINE bool IsHealingSpell(SpellEntry *sp)
         {
             case 8://SPELL_AURA_PERIODIC_HEAL:
             case 62://SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
-                return true;
+                return 3;
 			default: break;
         }
     }
