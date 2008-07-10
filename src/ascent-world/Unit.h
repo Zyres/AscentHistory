@@ -1124,6 +1124,7 @@ public:
 	int	 HasAurasWithNameHash(uint32 name_hash);
 	bool HasNegativeAuraWithNameHash(uint32 name_hash); //just to reduce search range in some cases
 	bool HasNegativeAura(uint32 spell_id); //just to reduce search range in some cases
+	uint32 CountNegativeAura(uint32 spell_id); //just to reduce search range in some cases
 	bool IsPoisoned();
 
 	AuraCheckResponse AuraCheck(uint32 name_hash, uint32 rank, Object *caster=NULL);
