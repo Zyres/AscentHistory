@@ -142,7 +142,6 @@ void Arena::HookOnPlayerKill(Player * plr, Unit * pVictim)
 	if ( pVictim->IsPlayer() )
 	{
 		plr->m_bgScore.KillingBlows++;
-		UpdatePlayerCounts();
 	}
 }
 
@@ -153,7 +152,7 @@ void Arena::HookOnHK(Player * plr)
 
 void Arena::HookOnPlayerDeath(Player * plr)
 {
-	
+	UpdatePlayerCounts();
 }
 
 void Arena::OnCreate()
