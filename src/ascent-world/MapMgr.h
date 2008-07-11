@@ -96,8 +96,8 @@ public:
 	GameObject ** m_GOStorage;
 	GameObject * CreateGameObject(uint32 entry);
 
-	ASCENT_INLINE uint32 GenerateGameobjectGuid() { return ++m_GOHighGuid; }
-	ASCENT_INLINE GameObject * GetGameObject(uint32 guid)
+	ARCEMU_INLINE uint32 GenerateGameobjectGuid() { return ++m_GOHighGuid; }
+	ARCEMU_INLINE GameObject * GetGameObject(uint32 guid)
 	{
 		if(guid > m_GOHighGuid)
 			return 0;
@@ -127,7 +127,7 @@ public:
 	DynamicObjectStorageMap m_DynamicObjectStorage;
 	DynamicObject * CreateDynamicObject();
 	
-	ASCENT_INLINE DynamicObject * GetDynamicObject(uint32 guid)
+	ARCEMU_INLINE DynamicObject * GetDynamicObject(uint32 guid)
 	{
 		DynamicObjectStorageMap::iterator itr = m_DynamicObjectStorage.find(guid);
 		return (itr != m_DynamicObjectStorage.end()) ? itr->second : 0;
@@ -193,30 +193,30 @@ public:
 	void UpdateCellActivity(uint32 x, uint32 y, int radius);
 
 	// Terrain Functions
-	ASCENT_INLINE float  GetLandHeight(float x, float y) { return GetBaseMap()->GetLandHeight(x, y); }
-	ASCENT_INLINE float  GetWaterHeight(float x, float y) { return GetBaseMap()->GetWaterHeight(x, y); }
-	ASCENT_INLINE uint8  GetWaterType(float x, float y) { return GetBaseMap()->GetWaterType(x, y); }
-	ASCENT_INLINE uint8  GetWalkableState(float x, float y) { return GetBaseMap()->GetWalkableState(x, y); }
-	ASCENT_INLINE uint16 GetAreaID(float x, float y) { return GetBaseMap()->GetAreaID(x, y); }
+	ARCEMU_INLINE float  GetLandHeight(float x, float y) { return GetBaseMap()->GetLandHeight(x, y); }
+	ARCEMU_INLINE float  GetWaterHeight(float x, float y) { return GetBaseMap()->GetWaterHeight(x, y); }
+	ARCEMU_INLINE uint8  GetWaterType(float x, float y) { return GetBaseMap()->GetWaterType(x, y); }
+	ARCEMU_INLINE uint8  GetWalkableState(float x, float y) { return GetBaseMap()->GetWalkableState(x, y); }
+	ARCEMU_INLINE uint16 GetAreaID(float x, float y) { return GetBaseMap()->GetAreaID(x, y); }
 
-	ASCENT_INLINE uint32 GetMapId() { return _mapId; }
+	ARCEMU_INLINE uint32 GetMapId() { return _mapId; }
 
 	void PushToProcessed(Player* plr);
 
-	ASCENT_INLINE bool HasPlayers() { return (m_PlayerStorage.size() > 0); }
-	ASCENT_INLINE bool IsCombatInProgress() { return (_combatProgress.size() > 0); }
+	ARCEMU_INLINE bool HasPlayers() { return (m_PlayerStorage.size() > 0); }
+	ARCEMU_INLINE bool IsCombatInProgress() { return (_combatProgress.size() > 0); }
 	void TeleportPlayers();
 
-	ASCENT_INLINE uint32 GetInstanceID() { return m_instanceID; }
-	ASCENT_INLINE MapInfo *GetMapInfo() { return pMapInfo; }
+	ARCEMU_INLINE uint32 GetInstanceID() { return m_instanceID; }
+	ARCEMU_INLINE MapInfo *GetMapInfo() { return pMapInfo; }
 
 	bool _shutdown;
 
-	ASCENT_INLINE MapScriptInterface * GetInterface() { return ScriptInterface; }
+	ARCEMU_INLINE MapScriptInterface * GetInterface() { return ScriptInterface; }
 	virtual int32 event_GetInstanceID() { return m_instanceID; }
 
 	void LoadAllCells();
-	ASCENT_INLINE size_t GetPlayerCount() { return m_PlayerStorage.size(); }
+	ARCEMU_INLINE size_t GetPlayerCount() { return m_PlayerStorage.size(); }
 	uint32 GetTeamPlayersCount(uint32 teamId);
 
 	void _PerformObjectDuties();
@@ -238,8 +238,8 @@ public:
 	void BeginInstanceExpireCountdown();
 	void HookOnAreaTrigger(Player * plr, uint32 id);
 
-	ASCENT_INLINE void SetWorldState(uint32 state, uint32 value);
-	ASCENT_INLINE uint32 GetWorldState(uint32 state);
+	ARCEMU_INLINE void SetWorldState(uint32 state, uint32 value);
+	ARCEMU_INLINE uint32 GetWorldState(uint32 state);
 	
 	// better hope to clear any references to us when calling this :P
 	void InstanceShutdown()

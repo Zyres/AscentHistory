@@ -239,11 +239,11 @@ public:
 	void SetFollowDistance(float dist) { FollowDistance = dist; };
 	void SetUnitToFollowAngle(float angle) { m_fallowAngle = angle; }
 	bool setInFront(Unit* target);
-	ASCENT_INLINE Unit* getUnitToFollow() { return UnitToFollow; }
+	ARCEMU_INLINE Unit* getUnitToFollow() { return UnitToFollow; }
 	void setCreatureState(CreatureState state){ m_creatureState = state; }
-	ASCENT_INLINE uint8 getAIState() { return m_AIState; }
-	ASCENT_INLINE uint8 getAIType() { return m_AIType; }
-	ASCENT_INLINE uint8 getCurrentAgent() { return m_aiCurrentAgent; }
+	ARCEMU_INLINE uint8 getAIState() { return m_AIState; }
+	ARCEMU_INLINE uint8 getAIType() { return m_AIType; }
+	ARCEMU_INLINE uint8 getCurrentAgent() { return m_aiCurrentAgent; }
 	void setCurrentAgent(AI_Agent agent) { m_aiCurrentAgent = agent; }
 	uint32	getThreatByGUID(uint64 guid);
 	uint32	getThreatByPtr(Unit* obj);
@@ -252,12 +252,12 @@ public:
 	bool	modThreatByGUID(uint64 guid, int32 mod);
 	bool	modThreatByPtr(Unit* obj, int32 mod);
 	void	RemoveThreatByPtr(Unit* obj);
-	ASCENT_INLINE AssistTargetSet GetAssistTargets() { return m_assistTargets; }
-	ASCENT_INLINE void LockAITargets(bool lock) 
+	ARCEMU_INLINE AssistTargetSet GetAssistTargets() { return m_assistTargets; }
+	ARCEMU_INLINE void LockAITargets(bool lock) 
 	{ 
 		lock? m_aiTargetsLock.Acquire(): m_aiTargetsLock.Release(); 
 	};
-	ASCENT_INLINE TargetMap *GetAITargets() { return &m_aiTargets; }
+	ARCEMU_INLINE TargetMap *GetAITargets() { return &m_aiTargets; }
 	void addAssistTargets(Unit* Friends);
 	void ClearHateList();
 	void WipeHateList();
@@ -268,8 +268,8 @@ public:
 	Unit* getSoullinkedWith();
 	void SetSoulLinkedWith(Unit* target);
 	bool GetIsSoulLinked();
-	ASCENT_INLINE size_t getAITargetsCount() { return m_aiTargets.size(); }
-	ASCENT_INLINE uint32 getOutOfCombatRange() { return m_outOfCombatRange; }
+	ARCEMU_INLINE size_t getAITargetsCount() { return m_aiTargets.size(); }
+	ARCEMU_INLINE uint32 getOutOfCombatRange() { return m_outOfCombatRange; }
 	void setOutOfCombatRange(uint32 val) { m_outOfCombatRange = val; }
 
 	// Spell
@@ -311,11 +311,11 @@ public:
 	WayPoint* getWayPoint(uint32 wpid);
 	void deleteWayPoint(uint32 wpid);
 	void deleteWaypoints();
-	ASCENT_INLINE bool hasWaypoints() { return m_waypoints!=NULL; }
-	ASCENT_INLINE void setMoveType(uint32 movetype) { m_moveType = movetype; }
-	ASCENT_INLINE uint32 getMoveType() { return m_moveType; }
-	ASCENT_INLINE void setMoveRunFlag(bool f) { m_moveRun = f; }
-	ASCENT_INLINE bool getMoveRunFlag() { return m_moveRun; }
+	ARCEMU_INLINE bool hasWaypoints() { return m_waypoints!=NULL; }
+	ARCEMU_INLINE void setMoveType(uint32 movetype) { m_moveType = movetype; }
+	ARCEMU_INLINE uint32 getMoveType() { return m_moveType; }
+	ARCEMU_INLINE void setMoveRunFlag(bool f) { m_moveRun = f; }
+	ARCEMU_INLINE bool getMoveRunFlag() { return m_moveRun; }
 	void setWaypointToMove(uint32 id) { m_currentWaypoint = id; }
 	bool IsFlying();
 
@@ -327,10 +327,10 @@ public:
 	uint32 _CalcThreat(uint32 damage, SpellEntry * sp, Unit* Attacker);
 	
 	void SetAllowedToEnterCombat(bool val) { m_AllowedToEnterCombat = val; }
-	ASCENT_INLINE bool GetAllowedToEnterCombat(void) { return m_AllowedToEnterCombat; }
+	ARCEMU_INLINE bool GetAllowedToEnterCombat(void) { return m_AllowedToEnterCombat; }
 
 	void CheckTarget(Unit* target);
-	ASCENT_INLINE void SetAIState(AI_State newstate) { m_AIState = newstate; }
+	ARCEMU_INLINE void SetAIState(AI_State newstate) { m_AIState = newstate; }
 
 	// Movement
 	bool m_canMove;
@@ -362,10 +362,10 @@ public:
 
 	float m_sourceX, m_sourceY, m_sourceZ;
 	uint32 m_totalMoveTime;
-	ASCENT_INLINE void AddStopTime(uint32 Time) { m_moveTimer += Time; }
-	ASCENT_INLINE void SetNextSpell(AI_Spell * sp) { m_nextSpell = sp; }
-	ASCENT_INLINE Unit* GetNextTarget() { return m_nextTarget; }
-	ASCENT_INLINE void SetNextTarget (Unit *nextTarget) 
+	ARCEMU_INLINE void AddStopTime(uint32 Time) { m_moveTimer += Time; }
+	ARCEMU_INLINE void SetNextSpell(AI_Spell * sp) { m_nextSpell = sp; }
+	ARCEMU_INLINE Unit* GetNextTarget() { return m_nextTarget; }
+	ARCEMU_INLINE void SetNextTarget (Unit *nextTarget) 
 	{ 
 		m_nextTarget = nextTarget; 
 		if(nextTarget)
@@ -385,7 +385,7 @@ public:
 	//this is the safe way to do it !
 	void SetNextTarget (uint64 nextTarget_guid);
 
-	/*ASCENT_INLINE void ResetProcCounts()
+	/*ARCEMU_INLINE void ResetProcCounts()
 	{
 		AI_Spell * sp;
 		for(list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
@@ -403,7 +403,7 @@ public:
 	void WipeReferences();
 	WayPointMap			*m_waypoints;
 	TimedEmoteList		*timed_emotes;
-	ASCENT_INLINE void SetPetOwner(Unit * owner) { m_PetOwner = owner; }
+	ARCEMU_INLINE void SetPetOwner(Unit * owner) { m_PetOwner = owner; }
  
 	list<AI_Spell*> m_spells;
 
@@ -426,7 +426,7 @@ public:
 
 	void ResetProcCounts();
 
-	ASCENT_INLINE void SetWaypointMap(WayPointMap * m) { m_waypoints = m; }
+	ARCEMU_INLINE void SetWaypointMap(WayPointMap * m) { m_waypoints = m; }
 	bool m_isGuard;
 //	bool m_fastMove;
 	void setGuardTimer(uint32 timer) { m_guardTimer = timer; }

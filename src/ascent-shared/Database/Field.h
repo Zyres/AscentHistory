@@ -24,16 +24,16 @@ class Field
 {
 public:
 
-	ASCENT_INLINE void SetValue(char* value) { mValue = value; }
+	ARCEMU_INLINE void SetValue(char* value) { mValue = value; }
 
-	ASCENT_INLINE const char *GetString() { return mValue; }
-	ASCENT_INLINE float GetFloat() { return mValue ? static_cast<float>(atof(mValue)) : 0; }
-	ASCENT_INLINE bool GetBool() { return mValue ? atoi(mValue) > 0 : false; }
-	ASCENT_INLINE uint8 GetUInt8() { return mValue ? static_cast<uint8>(atol(mValue)) : 0; }
-	ASCENT_INLINE int8 GetInt8() { return mValue ? static_cast<int8>(atol(mValue)) : 0; }
-	ASCENT_INLINE uint16 GetUInt16() { return mValue ? static_cast<uint16>(atol(mValue)) : 0; }
-	ASCENT_INLINE uint32 GetUInt32() { return mValue ? static_cast<uint32>(atol(mValue)) : 0; }
-	ASCENT_INLINE uint32 GetInt32() { return mValue ? static_cast<int32>(atol(mValue)) : 0; }
+	ARCEMU_INLINE const char *GetString() { return mValue; }
+	ARCEMU_INLINE float GetFloat() { return mValue ? static_cast<float>(atof(mValue)) : 0; }
+	ARCEMU_INLINE bool GetBool() { return mValue ? atoi(mValue) > 0 : false; }
+	ARCEMU_INLINE uint8 GetUInt8() { return mValue ? static_cast<uint8>(atol(mValue)) : 0; }
+	ARCEMU_INLINE int8 GetInt8() { return mValue ? static_cast<int8>(atol(mValue)) : 0; }
+	ARCEMU_INLINE uint16 GetUInt16() { return mValue ? static_cast<uint16>(atol(mValue)) : 0; }
+	ARCEMU_INLINE uint32 GetUInt32() { return mValue ? static_cast<uint32>(atol(mValue)) : 0; }
+	ARCEMU_INLINE uint32 GetInt32() { return mValue ? static_cast<int32>(atol(mValue)) : 0; }
 	uint64 GetUInt64() 
 	{
 		if(mValue)

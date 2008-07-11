@@ -151,7 +151,7 @@ protected:
 			return entry.count==0;
 		}
 
-		ASCENT_INLINE void shift_generations_down()
+		ARCEMU_INLINE void shift_generations_down()
 		{
 			if(std::remove_if(generations,generations+MAX_AWAITING_THREADS,no_waiters)==generations+MAX_AWAITING_THREADS)
 			{
@@ -171,7 +171,7 @@ protected:
 			dispose_entry(entry);
 		}
 
-		ASCENT_INLINE void dispose_entry(list_entry& entry)
+		ARCEMU_INLINE void dispose_entry(list_entry& entry)
 		{
 			ASSERT(entry.count==0);
 			if(entry.semaphore)
@@ -182,7 +182,7 @@ protected:
 			entry.notified=false;
 		}
 
-		ASCENT_INLINE HANDLE duplicate_handle(HANDLE source)
+		ARCEMU_INLINE HANDLE duplicate_handle(HANDLE source)
 		{
 			HANDLE const current_process=GetCurrentProcess();
 
@@ -205,7 +205,7 @@ protected:
 class Condition
 {
 public:
-	ASCENT_INLINE Condition(Mutex * mutex) : m_nLockCount(0), m_externalMutex(mutex)
+	ARCEMU_INLINE Condition(Mutex * mutex) : m_nLockCount(0), m_externalMutex(mutex)
 	{
 		  ::InitializeCriticalSection(&m_critsecWaitSetProtection);
 	}
@@ -216,13 +216,13 @@ public:
 		assert(m_deqWaitSet.empty());
 	}
 
-	ASCENT_INLINE void BeginSynchronized()
+	ARCEMU_INLINE void BeginSynchronized()
 	{
 		m_externalMutex->Acquire();
 		++m_nLockCount;
 	}
 
-	ASCENT_INLINE void EndSynchronized()
+	ARCEMU_INLINE void EndSynchronized()
 	{
 		assert(LockHeldByCallingThread());
 		--m_nLockCount;
@@ -476,29 +476,29 @@ private:
 class Condition
 {
 public:
-	ASCENT_INLINE Condition(Mutex *m)
+	ARCEMU_INLINE Condition(Mutex *m)
 	{
 		mut=m;
 		pthread_cond_init(&cond,NULL);
 	}
-	ASCENT_INLINE ~Condition()
+	ARCEMU_INLINE ~Condition()
 	{
 		pthread_cond_destroy(&cond);
 	}
 
-	ASCENT_INLINE void Signal()
+	ARCEMU_INLINE void Signal()
 	{
 		pthread_cond_signal(&cond);
 	}
-	ASCENT_INLINE void Broadcast()
+	ARCEMU_INLINE void Broadcast()
 	{
 		pthread_cond_broadcast(&cond);
 	}
-	ASCENT_INLINE void Wait()
+	ARCEMU_INLINE void Wait()
 	{
 		pthread_cond_wait(&cond,&mut->mutex);
 	}
-	ASCENT_INLINE bool Wait(time_t seconds)
+	ARCEMU_INLINE bool Wait(time_t seconds)
 	{
 		timespec tv;
 		tv.tv_nsec = 0;
@@ -508,11 +508,11 @@ public:
 		else
 			return false;
 	}
-	ASCENT_INLINE void BeginSynchronized()
+	ARCEMU_INLINE void BeginSynchronized()
 	{
 		mut->Acquire();
 	}
-	ASCENT_INLINE void EndSynchronized()
+	ARCEMU_INLINE void EndSynchronized()
 	{
 		mut->Release();
 	}

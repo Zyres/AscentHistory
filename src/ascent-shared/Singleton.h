@@ -49,8 +49,8 @@ public:
 	__forceinline static type & getSingleton( ) { WPAssert( mSingleton ); return *mSingleton; }
 	__forceinline static type * getSingletonPtr( ) { return mSingleton; }
 #else
-	ASCENT_INLINE static type & getSingleton( ) { WPAssert( mSingleton ); return *mSingleton; }
-	ASCENT_INLINE static type * getSingletonPtr( ) { return mSingleton; }
+	ARCEMU_INLINE static type & getSingleton( ) { WPAssert( mSingleton ); return *mSingleton; }
+	ARCEMU_INLINE static type * getSingletonPtr( ) { return mSingleton; }
 #endif
 
 protected:

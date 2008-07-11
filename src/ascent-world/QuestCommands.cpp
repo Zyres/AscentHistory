@@ -16,14 +16,14 @@
 
 class ChatHandler;
 
-ASCENT_INLINE std::string MyConvertIntToString(const int arg)
+ARCEMU_INLINE std::string MyConvertIntToString(const int arg)
 {
 	stringstream out;
 	out << arg;
 	return out.str();
 }
 
-ASCENT_INLINE std::string MyConvertFloatToString(const float arg)
+ARCEMU_INLINE std::string MyConvertFloatToString(const float arg)
 {
 	stringstream out;
 	out << arg;
@@ -224,7 +224,7 @@ bool ChatHandler::HandleQuestStartCommand(const char * args, WorldSession * m_se
 						{
 							Item *item = objmgr.CreateItem( qst->receive_items[i], plr);
 							if(!plr->GetItemInterface()->AddItemToFreeSlot(item))
-								delete item;
+								ItemPool.PooledDelete( item );
 						}
 					}
 
@@ -235,7 +235,7 @@ bool ChatHandler::HandleQuestStartCommand(const char * args, WorldSession * m_se
 						{
 							item->SetUInt32Value(ITEM_FIELD_STACK_COUNT, qst->srcitemcount ? qst->srcitemcount : 1);
 							if(!plr->GetItemInterface()->AddItemToFreeSlot(item))
-								delete item;
+								ItemPool.PooledDelete( item );
 						}
 					}
 				

@@ -64,7 +64,7 @@ public:
 		return (itr == _onlinePlayers.end()) ? 0 : itr->second;
 	}
 
-	ASCENT_INLINE WorldSession * GetSession(uint32 sid) { return _sessions[sid]; }
+	ARCEMU_INLINE WorldSession * GetSession(uint32 sid) { return _sessions[sid]; }
 
 	void HandleAuthRequest(WorldPacket & pck);
 	void HandleAuthResult(WorldPacket & pck);
@@ -76,13 +76,13 @@ public:
 	void HandleWoWPacket(WorldPacket & pck);
 	void HandlePlayerChangedServers(WorldPacket & pck);
 
-	ASCENT_INLINE void QueuePacket(WorldPacket * pck) { _pckQueue.Push(pck); }
+	ARCEMU_INLINE void QueuePacket(WorldPacket * pck) { _pckQueue.Push(pck); }
 
 	void Update();
 	void DestroySession(uint32 sid);
 
-	ASCENT_INLINE void SendPacket(WorldPacket * data) { if(_clientSocket) _clientSocket->SendPacket(data); }
-	ASCENT_INLINE void SetSocket(WSClient * s) { _clientSocket = s; }
+	ARCEMU_INLINE void SendPacket(WorldPacket * data) { if(_clientSocket) _clientSocket->SendPacket(data); }
+	ARCEMU_INLINE void SetSocket(WSClient * s) { _clientSocket = s; }
 
 	void RequestTransfer(Player * plr, uint32 MapId, uint32 InstanceId, LocationVector & vec);
 };

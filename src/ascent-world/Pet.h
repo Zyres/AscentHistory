@@ -126,7 +126,7 @@ public:
 	virtual void Update(uint32 time);
 	void OnPushToWorld();
 
-	ASCENT_INLINE uint32 GetXP(void) { return m_PetXP; }
+	ARCEMU_INLINE uint32 GetXP(void) { return m_PetXP; }
 
 	void InitializeSpells();
 	void ReInitializeSpells();
@@ -134,17 +134,17 @@ public:
 	void SendSpellsToOwner();
 	void SendNullSpellsToOwner();
 
-	ASCENT_INLINE void SetPetAction(uint32 act) { m_Action = act; }
-	ASCENT_INLINE uint32 GetPetAction(void) { return m_Action; }
+	ARCEMU_INLINE void SetPetAction(uint32 act) { m_Action = act; }
+	ARCEMU_INLINE uint32 GetPetAction(void) { return m_Action; }
 
-	ASCENT_INLINE void SetPetState(uint32 state) { m_State = state; }
-	ASCENT_INLINE uint32 GetPetState(void) { return m_State; }
+	ARCEMU_INLINE void SetPetState(uint32 state) { m_State = state; }
+	ARCEMU_INLINE uint32 GetPetState(void) { return m_State; }
 
-	ASCENT_INLINE void SetPetDiet(uint32 diet) { m_Diet = diet; }
-	ASCENT_INLINE void SetPetDiet() { m_Diet = myFamily->petdietflags; }
-	ASCENT_INLINE uint32 GetPetDiet(void) { return m_Diet; }
+	ARCEMU_INLINE void SetPetDiet(uint32 diet) { m_Diet = diet; }
+	ARCEMU_INLINE void SetPetDiet() { m_Diet = myFamily->petdietflags; }
+	ARCEMU_INLINE uint32 GetPetDiet(void) { return m_Diet; }
 	
-	ASCENT_INLINE AI_Spell* GetAISpellForSpellId(uint32 spellid)
+	ARCEMU_INLINE AI_Spell* GetAISpellForSpellId(uint32 spellid)
 	{
 		std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.find(spellid);
 		if(itr != m_AISpellStore.end())
@@ -159,8 +159,8 @@ public:
 
 	void DelayedRemove(bool bTime, bool bDeath);
 
-	ASCENT_INLINE Player* GetPetOwner() { return m_Owner; }
-	ASCENT_INLINE void ClearPetOwner() { m_Owner = 0; }
+	ARCEMU_INLINE Player* GetPetOwner() { return m_Owner; }
+	ARCEMU_INLINE void ClearPetOwner() { m_Owner = 0; }
 	void GiveXP(uint32 xp);
 	uint32 GetNextLevelXP(uint32 currentlevel);
 	void ApplyStatsForLevel();
@@ -180,17 +180,17 @@ public:
 	uint32 GetUntrainCost();
 	void SetSpellState(SpellEntry * sp, uint16 State);
 	uint16 GetSpellState(SpellEntry * sp);
-	ASCENT_INLINE void RemoveSpell(uint32 SpellID)
+	ARCEMU_INLINE void RemoveSpell(uint32 SpellID)
 	{
 		SpellEntry * sp = dbcSpell.LookupEntry(SpellID);
 		if(sp) RemoveSpell(sp);
 	}
-	ASCENT_INLINE void SetSpellState(uint32 SpellID, uint16 State)
+	ARCEMU_INLINE void SetSpellState(uint32 SpellID, uint16 State)
 	{
 		SpellEntry * sp = dbcSpell.LookupEntry(SpellID);
 		if(sp) SetSpellState(sp, State);
 	}
-	ASCENT_INLINE uint16 GetSpellState(uint32 SpellID)
+	ARCEMU_INLINE uint16 GetSpellState(uint32 SpellID)
 	{
 		if(SpellID == 0)
 			return DEFAULT_SPELL_STATE;
@@ -202,12 +202,12 @@ public:
 	}
 	
 	AI_Spell * CreateAISpell(SpellEntry * info);
-	ASCENT_INLINE PetSpellMap* GetSpells() { return &mSpells; }
-	ASCENT_INLINE bool IsSummon() { return Summon; }
+	ARCEMU_INLINE PetSpellMap* GetSpells() { return &mSpells; }
+	ARCEMU_INLINE bool IsSummon() { return Summon; }
 
 	void __fastcall SetAutoCastSpell(AI_Spell * sp);
 	void Rename(string NewName);
-	ASCENT_INLINE string& GetName() { return m_name; }
+	ARCEMU_INLINE string& GetName() { return m_name; }
 	void AddPetSpellToOwner(uint32 spellId);
 	uint16 SpellTP(uint32 spellId);
 	uint16 GetUsedTP();

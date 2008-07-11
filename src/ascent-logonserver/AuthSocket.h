@@ -59,12 +59,12 @@ public:
 
 	void SendChallengeError(uint8 Error);
 	void SendProofError(uint8 Error, uint8 * M2);
-	ASCENT_INLINE sAuthLogonChallenge_C * GetChallenge() { return &m_challenge; }
-	ASCENT_INLINE void SendPacket(const uint8* data, const uint16 len) { Send(data, len); }
+	ARCEMU_INLINE sAuthLogonChallenge_C * GetChallenge() { return &m_challenge; }
+	ARCEMU_INLINE void SendPacket(const uint8* data, const uint16 len) { Send(data, len); }
 	void OnDisconnect();
-	ASCENT_INLINE time_t GetLastRecv() { return last_recv; }
+	ARCEMU_INLINE time_t GetLastRecv() { return last_recv; }
 	bool removedFromSet;
-	ASCENT_INLINE uint32 GetAccountID() { return m_account ? m_account->AccountId : 0; }
+	ARCEMU_INLINE uint32 GetAccountID() { return m_account ? m_account->AccountId : 0; }
 
 protected:
 

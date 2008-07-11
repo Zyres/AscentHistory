@@ -260,10 +260,10 @@ public:
 	virtual void Update( uint32 time );
 
 	/// Creature inventory
-	ASCENT_INLINE uint32 GetItemIdBySlot(uint32 slot) { return m_SellItems->at(slot).itemid; }
-	ASCENT_INLINE uint32 GetItemAmountBySlot(uint32 slot) { return m_SellItems->at(slot).amount; }
+	ARCEMU_INLINE uint32 GetItemIdBySlot(uint32 slot) { return m_SellItems->at(slot).itemid; }
+	ARCEMU_INLINE uint32 GetItemAmountBySlot(uint32 slot) { return m_SellItems->at(slot).amount; }
 
-	ASCENT_INLINE bool HasItems() { return ((m_SellItems != NULL) ? true : false); }
+	ARCEMU_INLINE bool HasItems() { return ((m_SellItems != NULL) ? true : false); }
 
 	int32 GetSlotByItemId(uint32 itemid)
 	{
@@ -288,7 +288,7 @@ public:
 		return 0;
 	}
 
-	ASCENT_INLINE void GetSellItemBySlot(uint32 slot, CreatureItem &ci)
+	ARCEMU_INLINE void GetSellItemBySlot(uint32 slot, CreatureItem &ci)
 	{
 		ci = m_SellItems->at(slot);
 	}
@@ -310,9 +310,9 @@ public:
 		ci.itemid = 0;
 	}
 
-	ASCENT_INLINE std::vector<CreatureItem>::iterator GetSellItemBegin() { return m_SellItems->begin(); }
-	ASCENT_INLINE std::vector<CreatureItem>::iterator GetSellItemEnd()   { return m_SellItems->end(); }
-	ASCENT_INLINE size_t GetSellItemCount() { return m_SellItems->size(); }
+	ARCEMU_INLINE std::vector<CreatureItem>::iterator GetSellItemBegin() { return m_SellItems->begin(); }
+	ARCEMU_INLINE std::vector<CreatureItem>::iterator GetSellItemEnd()   { return m_SellItems->end(); }
+	ARCEMU_INLINE size_t GetSellItemCount() { return m_SellItems->size(); }
 	void RemoveVendorItem(uint32 itemid)
 	{
 		for(std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
@@ -349,22 +349,22 @@ public:
 	list<QuestRelation *>::iterator QuestsEnd() { return m_quests->end(); };
 	void SetQuestList(std::list<QuestRelation *>* qst_lst) { m_quests = qst_lst; };
 
-	ASCENT_INLINE bool isQuestGiver() { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER ); };
-	ASCENT_INLINE bool isVendor()       const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_VENDOR ); }
-    ASCENT_INLINE bool isTrainer()      const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER ); }
-    ASCENT_INLINE bool isQuestGiver()   const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER ); }
-    ASCENT_INLINE bool isGossip()       const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP ); }
-    ASCENT_INLINE bool isTaxi()         const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_FLIGHTMASTER ); }
-    ASCENT_INLINE bool isGuildMaster()  const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_PETITIONER ); }
-    ASCENT_INLINE bool isBattleMaster() const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_BATTLEMASTER ); }
-    ASCENT_INLINE bool isBanker()       const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_BANKER ); }
-    ASCENT_INLINE bool isInnkeeper()    const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_INNKEEPER ); }
-    ASCENT_INLINE bool isSpiritHealer() const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITHEALER ); }
-    ASCENT_INLINE bool isSpiritGuide()  const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITGUIDE ); }
-    ASCENT_INLINE bool isTabardDesigner()const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TABARDDESIGNER ); }
-    ASCENT_INLINE bool isAuctioner()    const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_AUCTIONEER ); }
-    ASCENT_INLINE bool isArmorer()      const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_REPAIR ); }
-    ASCENT_INLINE bool isServiceProvider() const
+	ARCEMU_INLINE bool isQuestGiver() { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER ); };
+	ARCEMU_INLINE bool isVendor()       const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_VENDOR ); }
+    ARCEMU_INLINE bool isTrainer()      const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER ); }
+    ARCEMU_INLINE bool isQuestGiver()   const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER ); }
+    ARCEMU_INLINE bool isGossip()       const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP ); }
+    ARCEMU_INLINE bool isTaxi()         const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_FLIGHTMASTER ); }
+    ARCEMU_INLINE bool isGuildMaster()  const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_PETITIONER ); }
+    ARCEMU_INLINE bool isBattleMaster() const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_BATTLEMASTER ); }
+    ARCEMU_INLINE bool isBanker()       const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_BANKER ); }
+    ARCEMU_INLINE bool isInnkeeper()    const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_INNKEEPER ); }
+    ARCEMU_INLINE bool isSpiritHealer() const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITHEALER ); }
+    ARCEMU_INLINE bool isSpiritGuide()  const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITGUIDE ); }
+    ARCEMU_INLINE bool isTabardDesigner()const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TABARDDESIGNER ); }
+    ARCEMU_INLINE bool isAuctioner()    const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_AUCTIONEER ); }
+    ARCEMU_INLINE bool isArmorer()      const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_REPAIR ); }
+    ARCEMU_INLINE bool isServiceProvider() const
         {
             return HasFlag( UNIT_NPC_FLAGS,
                 UNIT_NPC_FLAG_VENDOR | UNIT_NPC_FLAG_TRAINER | UNIT_NPC_FLAG_FLIGHTMASTER |
@@ -372,9 +372,9 @@ public:
                 UNIT_NPC_FLAG_INNKEEPER | UNIT_NPC_FLAG_GUARD | UNIT_NPC_FLAG_SPIRITHEALER |
                 UNIT_NPC_FLAG_SPIRITGUIDE | UNIT_NPC_FLAG_TABARDDESIGNER | UNIT_NPC_FLAG_AUCTIONEER );
         }
-    ASCENT_INLINE bool isSpiritService() const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITHEALER | UNIT_NPC_FLAG_SPIRITGUIDE ); }
+    ARCEMU_INLINE bool isSpiritService() const { return HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITHEALER | UNIT_NPC_FLAG_SPIRITGUIDE ); }
 	
-	ASCENT_INLINE uint32 GetHealthFromSpell() { return m_healthfromspell; }
+	ARCEMU_INLINE uint32 GetHealthFromSpell() { return m_healthfromspell; }
 	void SetHealthFromSpell(uint32 value) { m_healthfromspell = value;}
 
 	int32 FlatResistanceMod[7];
@@ -451,8 +451,8 @@ public:
 	uint64 TaggerGuid;
 
 	/// Misc
-	ASCENT_INLINE void setEmoteState(uint8 emote) { m_emoteState = emote; };
-	ASCENT_INLINE uint32 GetSQL_id() { return spawnid; };
+	ARCEMU_INLINE void setEmoteState(uint8 emote) { m_emoteState = emote; };
+	ARCEMU_INLINE uint32 GetSQL_id() { return spawnid; };
 
 	virtual void setDeathState(DeathState s);
 
@@ -491,31 +491,31 @@ public:
 	void SetEnslaveSpell(uint32 spellId) { m_enslaveSpell = spellId; }
 	bool RemoveEnslave();
 
-	ASCENT_INLINE Player *GetTotemOwner() { return totemOwner; }
-	ASCENT_INLINE void SetTotemOwner(Player *owner) { totemOwner = owner; }
-	ASCENT_INLINE uint32 GetTotemSlot() { return totemSlot; }
-	ASCENT_INLINE void SetTotemSlot(uint32 slot) { totemSlot = slot; }
+	ARCEMU_INLINE Player *GetTotemOwner() { return totemOwner; }
+	ARCEMU_INLINE void SetTotemOwner(Player *owner) { totemOwner = owner; }
+	ARCEMU_INLINE uint32 GetTotemSlot() { return totemSlot; }
+	ARCEMU_INLINE void SetTotemSlot(uint32 slot) { totemSlot = slot; }
 
-	ASCENT_INLINE bool IsPickPocketed() { return m_PickPocketed; }
-	ASCENT_INLINE void SetPickPocketed(bool val = true) { m_PickPocketed = val; }
+	ARCEMU_INLINE bool IsPickPocketed() { return m_PickPocketed; }
+	ARCEMU_INLINE void SetPickPocketed(bool val = true) { m_PickPocketed = val; }
 
-	ASCENT_INLINE CreatureAIScript * GetScript() { return _myScriptClass; }
+	ARCEMU_INLINE CreatureAIScript * GetScript() { return _myScriptClass; }
 	void LoadScript();
 
 	void CallScriptUpdate();
 
 	uint32 m_TaxiNode;
 	CreatureInfo *creature_info;
-	ASCENT_INLINE CreatureInfo *GetCreatureName()
+	ARCEMU_INLINE CreatureInfo *GetCreatureName()
 	{
 		return creature_info; 
 	}
-	ASCENT_INLINE void SetCreatureName(CreatureInfo *ci) { creature_info = ci; }
-	ASCENT_INLINE Trainer* GetTrainer() { return mTrainer; }
+	ARCEMU_INLINE void SetCreatureName(CreatureInfo *ci) { creature_info = ci; }
+	ARCEMU_INLINE Trainer* GetTrainer() { return mTrainer; }
 	void RegenerateFocus();
 
 	CreatureFamilyEntry * myFamily;
-	ASCENT_INLINE bool IsTotem() { return totemOwner != 0 && totemSlot != -1; }
+	ARCEMU_INLINE bool IsTotem() { return totemOwner != 0 && totemSlot != -1; }
 	void TotemExpire();
 	void FormationLinkUp(uint32 SqlId);
 	void ChannelLinkUpGO(uint32 SqlId);

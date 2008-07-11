@@ -158,7 +158,7 @@ public:
 	void Dealloc();
 	void Load();
 	void Override(const char * command, const char * level);
-	ASCENT_INLINE ChatCommand * Get() { return _commandTable; }
+	ARCEMU_INLINE ChatCommand * Get() { return _commandTable; }
 };
 
 class SERVER_DECL ChatHandler : public Singleton<ChatHandler>

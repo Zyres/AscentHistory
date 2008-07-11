@@ -46,23 +46,23 @@ public:
 	void RemoveObject(Object *obj);
 	bool HasObject(Object *obj) { return (_objects.find(obj) != _objects.end()); }
 	bool HasPlayers() { return ((_playerCount > 0) ? true : false); }
-	ASCENT_INLINE size_t GetObjectCount() { return _objects.size(); }
+	ARCEMU_INLINE size_t GetObjectCount() { return _objects.size(); }
 	void RemoveObjects();
-	ASCENT_INLINE ObjectSet::iterator Begin() { return _objects.begin(); }
-	ASCENT_INLINE ObjectSet::iterator End() { return _objects.end(); }
+	ARCEMU_INLINE ObjectSet::iterator Begin() { return _objects.begin(); }
+	ARCEMU_INLINE ObjectSet::iterator End() { return _objects.end(); }
 
 	//State Related
 	void SetActivity(bool state);
 
-	ASCENT_INLINE bool IsActive() { return _active; }
-	ASCENT_INLINE bool IsLoaded() { return _loaded; }
+	ARCEMU_INLINE bool IsActive() { return _active; }
+	ARCEMU_INLINE bool IsLoaded() { return _loaded; }
 
 	//Object Loading Managing
 	void LoadObjects(CellSpawns * sp);
-	ASCENT_INLINE uint32 GetPlayerCount() { return _playerCount; }
+	ARCEMU_INLINE uint32 GetPlayerCount() { return _playerCount; }
 
-	ASCENT_INLINE bool IsUnloadPending() { return _unloadpending; }
-	ASCENT_INLINE void SetUnloadPending(bool up) { _unloadpending = up; }
+	ARCEMU_INLINE bool IsUnloadPending() { return _unloadpending; }
+	ARCEMU_INLINE void SetUnloadPending(bool up) { _unloadpending = up; }
 	void QueueUnloadPending();
 	void CancelPendingUnload();
 	void Unload();

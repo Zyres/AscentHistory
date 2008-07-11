@@ -79,7 +79,7 @@ public:
 	AuctionHouse(uint32 ID);
 	~AuctionHouse();
 
-	ASCENT_INLINE uint32 GetID() { return dbc->id; }
+	ARCEMU_INLINE uint32 GetID() { return dbc->id; }
 	void LoadAuctions();
 
 	void UpdateAuctions();

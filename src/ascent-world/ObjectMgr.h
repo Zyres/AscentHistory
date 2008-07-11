@@ -20,7 +20,7 @@
 #ifndef _OBJECTMGR_H
 #define _OBJECTMGR_H
 
-ASCENT_INLINE bool FindXinYString(std::string& x, std::string& y)
+ARCEMU_INLINE bool FindXinYString(std::string& x, std::string& y)
 {
 	return y.find(x) != std::string::npos;
 }
@@ -243,7 +243,7 @@ public:
 	void SendTo(Player* Plr);
 	void SendGossipMenu( uint32 TitleTextId, uint64 npcGUID );
 	GossipMenuItem GetItem(uint32 Id);
-	ASCENT_INLINE void SetTextID(uint32 TID) { TextId = TID; }
+	ARCEMU_INLINE void SetTextID(uint32 TID) { TextId = TID; }
 
 protected:
 	uint32 TextId;
@@ -305,10 +305,10 @@ public:
 	void AddSignature(uint32 PlayerGuid);
 	void RemoveSignature(uint32 PlayerGuid);
 
-	ASCENT_INLINE uint32 GetLeader() { return LeaderGuid; }
-	ASCENT_INLINE uint32 GetID() { return CharterId; }
+	ARCEMU_INLINE uint32 GetLeader() { return LeaderGuid; }
+	ARCEMU_INLINE uint32 GetID() { return CharterId; }
 
-	ASCENT_INLINE bool IsFull() { return (SignatureCount == Slots); }
+	ARCEMU_INLINE bool IsFull() { return (SignatureCount == Slots); }
 };
 
 typedef std::map<uint32, std::list<SpellEntry*>* >                  OverrideIdMap;
@@ -618,7 +618,7 @@ public:
 	bool HandleInstanceReputationModifiers(Player * pPlayer, Unit * pVictim);
 	void LoadInstanceReputationModifiers();
 
-	ASCENT_INLINE bool IsSpellDisabled(uint32 spellid)
+	ARCEMU_INLINE bool IsSpellDisabled(uint32 spellid)
 	{
 		if(m_disabled_spells.find(spellid) != m_disabled_spells.end())
 			return true;
@@ -626,8 +626,8 @@ public:
 	}
 
 	void LoadDisabledSpells();
-	ASCENT_INLINE GuildMap::iterator GetGuildsBegin() { return mGuild.begin(); }
-	ASCENT_INLINE GuildMap::iterator GetGuildsEnd() { return mGuild.end(); }
+	ARCEMU_INLINE GuildMap::iterator GetGuildsBegin() { return mGuild.begin(); }
+	ARCEMU_INLINE GuildMap::iterator GetGuildsEnd() { return mGuild.end(); }
 
 	std::set<ProfessionDiscovery*> ProfessionDiscoveryTable;
 

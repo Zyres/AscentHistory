@@ -494,7 +494,7 @@ Player::~Player ( )
 	}
 }
 
-ASCENT_INLINE uint32 GetSpellForLanguage(uint32 SkillID)
+ARCEMU_INLINE uint32 GetSpellForLanguage(uint32 SkillID)
 {
 	switch(SkillID)
 	{
@@ -754,12 +754,12 @@ bool Player::Create(WorldPacket& data )
 				if((*is).slot<INVENTORY_SLOT_BAG_END)
 				{
 					if( !GetItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, (*is).slot) )
-						delete item;
+						ItemPool.PooledDelete( item );
 				}
 				else
 				{
 					if( !GetItemInterface()->AddItemToFreeSlot(item) )
-						delete item;
+						ItemPool.PooledDelete( item );
 				}
 			}
 		}
