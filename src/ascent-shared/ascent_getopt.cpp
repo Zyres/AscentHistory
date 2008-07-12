@@ -18,11 +18,11 @@
  */
 
 #include "Common.h"
-#include "ascent_getopt.h"
+#include "arcemu_getopt.h"
 
 int arg_counter = 1;
-char ascent_optarg[514];
-int ascent_getopt_long_only(int ___argc, char *const *___argv, const char *__shortopts, const struct ascent_option *__longopts, int *__longind)
+char arcemu_optarg[514];
+int arcemu_getopt_long_only(int ___argc, char *const *___argv, const char *__shortopts, const struct arcemu_option *__longopts, int *__longind)
 {
 	// burlex todo: handle the shortops, at the moment it only works with longopts.
 
@@ -61,7 +61,7 @@ int ascent_getopt_long_only(int ___argc, char *const *___argv, const char *__sho
 			arg_counter++;
 
 			// determine action based on type
-			if (__longopts[i].has_arg == ascent_required_argument)
+			if (__longopts[i].has_arg == arcemu_required_argument)
 			{
 				if(!par)
 					return 1;
@@ -76,7 +76,7 @@ int ascent_getopt_long_only(int ___argc, char *const *___argv, const char *__sho
 
 			// store argument in optarg
 			if (par)
-				strncpy(ascent_optarg, par, 514);
+				strncpy(arcemu_optarg, par, 514);
 
 			if (__longopts[i].flag != 0)
 			{

@@ -17,14 +17,14 @@
  *
  */
 
-// Ascent Configuration Header File
+// arcemu Configuration Header File
 // Feel free to customize to your needs.
 
-#ifndef __ASCENTCONFIG_H
-#define __ASCENTCONFIG_H
+#ifndef __arcemuCONFIG_H
+#define __arcemuCONFIG_H
 
-/** Enable/disable Ascent world server cluster support.
- * Warning: Ascent will no longer function independantly when built in cluster mode. 
+/** Enable/disable arcemu world server cluster support.
+ * Warning: arcemu will no longer function independantly when built in cluster mode. 
  * It will require a realmserver to function.
  * As of last update, it is nowhere near complete, only enable for dev use.
  * Default: Disabled
@@ -52,8 +52,8 @@
  */
 //#define USE_MEMORY_MAPPING_FOR_MAPS
 
-/** Enable/disable Ascent's Voice Chat support.
- * While not completely finished (but close!) you can link your Ascent server to a voice chat
+/** Enable/disable arcemu's Voice Chat support.
+ * While not completely finished (but close!) you can link your arcemu server to a voice chat
  * server (also compiled by default) and use the client's ingame voice chat function.
  * At the moment it is only good for joining, you can't leave a voice channel yet :P
  * Also, it only works for parties. Custom chat channels are not fully supported yet.
@@ -91,9 +91,9 @@
 /**
  * Optimize the server for MySQL usage.
  * This may give a small boost to performance.
- * Enable it if you do not plan on using Ascent with PostgreSQL or SQLite.
+ * Enable it if you do not plan on using arcemu with PostgreSQL or SQLite.
  */
 #define OPTIMIZE_SERVER_FOR_MYSQL 1
 
-#endif		// __ASCENTCONFIG_H
+#endif		// __arcemuCONFIG_H
 

@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="ascent-realmserver"
+	Name="arcemu-realmserver"
 	ProjectGUID="{B6F51344-229B-4E72-AD84-DB1271C5CFA2}"
 	RootNamespace="realmserver"
 	>
@@ -20,7 +20,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\..\..\bin\Release"
-			IntermediateDirectory=".\ascent-realmserver___Win32_Release"
+			IntermediateDirectory=".\arcemu-realmserver___Win32_Release"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -51,7 +51,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="..\..\src\ascent-shared"
+				AdditionalIncludeDirectories="..\..\src\arcemu-shared"
 				PreprocessorDefinitions="WIN32,NDEBUG,_CONSOLE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -85,12 +85,12 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="ws2_32.lib libmysql.lib libeay32.lib dbghelp.lib zlib.lib pcre.lib"
-				OutputFile=".\..\..\bin\Release/ascent-realmserver.exe"
+				OutputFile=".\..\..\bin\Release/arcemu-realmserver.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\dep\lib32"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\..\..\bin\Release/ascent-realmserver.pdb"
+				ProgramDatabaseFile=".\..\..\bin\Release/arcemu-realmserver.pdb"
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -125,7 +125,7 @@
 		<Configuration
 			Name="Release|x64"
 			OutputDirectory=".\..\..\bin\Release_x64"
-			IntermediateDirectory=".\ascent-realmserver___Win32_Release_x64"
+			IntermediateDirectory=".\arcemu-realmserver___Win32_Release_x64"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -153,7 +153,7 @@
 				Optimization="4"
 				InlineFunctionExpansion="2"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\..\src\ascent-shared"
+				AdditionalIncludeDirectories="..\..\src\arcemu-shared"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;X64"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -188,12 +188,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib libmysql.lib libeay32.lib dbghelp.lib zlib.lib pcre.lib"
-				OutputFile=".\..\..\bin\Release_x64/ascent-realmserver.exe"
+				OutputFile=".\..\..\bin\Release_x64/arcemu-realmserver.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\dep\lib64"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\..\..\bin\Release_x64/ascent-realmserver.pdb"
+				ProgramDatabaseFile=".\..\..\bin\Release_x64/arcemu-realmserver.pdb"
 				SubSystem="1"
 				TargetMachine="17"
 			/>
@@ -226,7 +226,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\..\..\bin\Debug"
-			IntermediateDirectory=".\ascent-realmserver___Win32_Debug"
+			IntermediateDirectory=".\arcemu-realmserver___Win32_Debug"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -252,7 +252,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="..\..\src\ascent-shared"
+				AdditionalIncludeDirectories="..\..\src\arcemu-shared"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE"
 				IgnoreStandardIncludePath="false"
 				MinimalRebuild="true"
@@ -285,13 +285,13 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="ws2_32.lib libmysql.lib libeay32.lib dbghelp.lib zlib.lib pcre.lib"
-				OutputFile=".\..\..\bin\Debug\ascent-realmserver.exe"
+				OutputFile=".\..\..\bin\Debug\arcemu-realmserver.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\dep\lib32"
 				ModuleDefinitionFile=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\..\..\bin\Debug\ascent-realmserver.pdb"
+				ProgramDatabaseFile=".\..\..\bin\Debug\arcemu-realmserver.pdb"
 				GenerateMapFile="false"
 				SubSystem="1"
 				FixedBaseAddress="1"
@@ -325,7 +325,7 @@
 		<Configuration
 			Name="Debug|x64"
 			OutputDirectory=".\..\..\bin\Debug_x64"
-			IntermediateDirectory=".\ascent-realmserver___Win32_Debug"
+			IntermediateDirectory=".\arcemu-realmserver___Win32_Debug"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -352,7 +352,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="..\..\src\ascent-shared"
+				AdditionalIncludeDirectories="..\..\src\arcemu-shared"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;X64"
 				IgnoreStandardIncludePath="false"
 				MinimalRebuild="true"
@@ -384,13 +384,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib libmysql.lib libeay32.lib dbghelp.lib zlib.lib pcre.lib"
-				OutputFile=".\..\..\bin\Debug_x64\ascent-realmserver.exe"
+				OutputFile=".\..\..\bin\Debug_x64\arcemu-realmserver.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\dep\lib64"
 				ModuleDefinitionFile=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\..\..\bin\Debug_x64\ascent-realmserver.pdb"
+				ProgramDatabaseFile=".\..\..\bin\Debug_x64\arcemu-realmserver.pdb"
 				GenerateMapFile="false"
 				SubSystem="1"
 				TargetMachine="17"
@@ -430,19 +430,19 @@
 			Name="LogonComm"
 			>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\LogonCommClient.cpp"
+				RelativePath="..\..\src\arcemu-realmserver\LogonCommClient.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\LogonCommClient.h"
+				RelativePath="..\..\src\arcemu-realmserver\LogonCommClient.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\LogonCommHandler.cpp"
+				RelativePath="..\..\src\arcemu-realmserver\LogonCommHandler.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\LogonCommHandler.h"
+				RelativePath="..\..\src\arcemu-realmserver\LogonCommHandler.h"
 				>
 			</File>
 		</Filter>
@@ -450,27 +450,27 @@
 			Name="Client"
 			>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\CharacterHandler.cpp"
+				RelativePath="..\..\src\arcemu-realmserver\CharacterHandler.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\QueryHandler.cpp"
+				RelativePath="..\..\src\arcemu-realmserver\QueryHandler.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\Session.cpp"
+				RelativePath="..\..\src\arcemu-realmserver\Session.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\Session.h"
+				RelativePath="..\..\src\arcemu-realmserver\Session.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\WorldSocket.cpp"
+				RelativePath="..\..\src\arcemu-realmserver\WorldSocket.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\WorldSocket.h"
+				RelativePath="..\..\src\arcemu-realmserver\WorldSocket.h"
 				>
 			</File>
 		</Filter>
@@ -478,19 +478,19 @@
 			Name="Manager"
 			>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\ClientManager.cpp"
+				RelativePath="..\..\src\arcemu-realmserver\ClientManager.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\ClientManager.h"
+				RelativePath="..\..\src\arcemu-realmserver\ClientManager.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\ClusterManager.cpp"
+				RelativePath="..\..\src\arcemu-realmserver\ClusterManager.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\ClusterManager.h"
+				RelativePath="..\..\src\arcemu-realmserver\ClusterManager.h"
 				>
 			</File>
 		</Filter>
@@ -498,23 +498,23 @@
 			Name="Worker Server"
 			>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\WorkerOpcodes.h"
+				RelativePath="..\..\src\arcemu-realmserver\WorkerOpcodes.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\WorkerServer.cpp"
+				RelativePath="..\..\src\arcemu-realmserver\WorkerServer.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\WorkerServer.h"
+				RelativePath="..\..\src\arcemu-realmserver\WorkerServer.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\WorkerServerSocket.cpp"
+				RelativePath="..\..\src\arcemu-realmserver\WorkerServerSocket.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\WorkerServerSocket.h"
+				RelativePath="..\..\src\arcemu-realmserver\WorkerServerSocket.h"
 				>
 			</File>
 		</Filter>
@@ -522,7 +522,7 @@
 			Name="Defines"
 			>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\Structures.h"
+				RelativePath="..\..\src\arcemu-realmserver\Structures.h"
 				>
 			</File>
 		</Filter>
@@ -530,24 +530,24 @@
 			Name="Storage"
 			>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\ObjectStorage.cpp"
+				RelativePath="..\..\src\arcemu-realmserver\ObjectStorage.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-realmserver\ObjectStorage.h"
+				RelativePath="..\..\src\arcemu-realmserver\ObjectStorage.h"
 				>
 			</File>
 		</Filter>
 		<File
-			RelativePath="..\..\src\ascent-realmserver\Master.cpp"
+			RelativePath="..\..\src\arcemu-realmserver\Master.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-realmserver\Master.h"
+			RelativePath="..\..\src\arcemu-realmserver\Master.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-realmserver\RStdAfx.cpp"
+			RelativePath="..\..\src\arcemu-realmserver\RStdAfx.cpp"
 			>
 			<FileConfiguration
 				Name="Release|x64"
@@ -575,7 +575,7 @@
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-realmserver\RStdAfx.h"
+			RelativePath="..\..\src\arcemu-realmserver\RStdAfx.h"
 			>
 		</File>
 	</Files>

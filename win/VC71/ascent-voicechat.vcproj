@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="ascent-voicechat"
+	Name="arcemu-voicechat"
 	ProjectGUID="{C36E06CE-9CBF-4B13-AA03-DA3F886F6B59}"
 	Keyword="Win32Proj">
 	<Platforms>
@@ -13,13 +13,13 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\..\..\bin\Debug"
-			IntermediateDirectory="ascent-voicechat__2003_debug"
+			IntermediateDirectory="arcemu-voicechat__2003_debug"
 			ConfigurationType="1"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src\ascent-shared"
+				AdditionalIncludeDirectories="..\..\src\arcemu-shared"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -33,11 +33,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib libmysql.lib libeay32.lib dbghelp.lib zlib.lib pcre.lib"
-				OutputFile="$(OutDir)/ascent-voicechat.exe"
+				OutputFile="$(OutDir)/arcemu-voicechat.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\extras\collision\collision_dll\Debug"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/ascent-voicechat.pdb"
+				ProgramDatabaseFile="$(OutDir)/arcemu-voicechat.pdb"
 				SubSystem="1"
 				TargetMachine="1"/>
 			<Tool
@@ -64,12 +64,12 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\..\..\bin\Release"
-			IntermediateDirectory="ascent-voicechat__2003_release"
+			IntermediateDirectory="arcemu-voicechat__2003_release"
 			ConfigurationType="1"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\src\ascent-shared"
+				AdditionalIncludeDirectories="..\..\src\arcemu-shared"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="4"
 				UsePrecompiledHeader="0"
@@ -81,7 +81,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib libmysql.lib libeay32.lib dbghelp.lib zlib.lib pcre.lib"
-				OutputFile="$(OutDir)/ascent-voicechat.exe"
+				OutputFile="$(OutDir)/arcemu-voicechat.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\extras\collision\collision_dll\Release"
 				GenerateDebugInformation="TRUE"
@@ -119,13 +119,13 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath="..\..\src\ascent-voicechat\ConfigReader.c">
+				RelativePath="..\..\src\arcemu-voicechat\ConfigReader.c">
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-voicechat\Main.c">
+				RelativePath="..\..\src\arcemu-voicechat\Main.c">
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-voicechat\VoiceChat.c">
+				RelativePath="..\..\src\arcemu-voicechat\VoiceChat.c">
 			</File>
 		</Filter>
 		<Filter
@@ -133,10 +133,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath="..\..\src\ascent-voicechat\VoiceChat.h">
+				RelativePath="..\..\src\arcemu-voicechat\VoiceChat.h">
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-voicechat\VoiceChatOpcodes.h">
+				RelativePath="..\..\src\arcemu-voicechat\VoiceChatOpcodes.h">
 			</File>
 		</Filter>
 	</Files>

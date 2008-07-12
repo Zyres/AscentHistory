@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="ascent-logonserver"
+	Name="arcemu-logonserver"
 	ProjectGUID="{6E15F06D-5546-474D-BB42-39848DEF77E0}"
 	RootNamespace="logonserver"
 	Keyword="Win32Proj"
@@ -21,7 +21,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\..\..\bin\Debug"
-			IntermediateDirectory=".\ascent-logonserver___Win32_Debug"
+			IntermediateDirectory=".\arcemu-logonserver___Win32_Debug"
 			ConfigurationType="1"
 			CharacterSet="2"
 			>
@@ -44,7 +44,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="..\..\src\ascent-shared"
+				AdditionalIncludeDirectories="..\..\src\arcemu-shared"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -72,11 +72,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib libmysql.lib libeay32.lib dbghelp.lib zlib.lib pcre.lib"
-				OutputFile="$(OutDir)/ascent-logonserver.exe"
+				OutputFile="$(OutDir)/arcemu-logonserver.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\dep\lib32"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/ascent-logonserver.pdb"
+				ProgramDatabaseFile="$(OutDir)/arcemu-logonserver.pdb"
 				SubSystem="1"
 				TargetMachine="1"
 				FixedBaseAddress="1"
@@ -110,7 +110,7 @@
 		<Configuration
 			Name="Debug|x64"
 			OutputDirectory=".\..\..\bin\Debug_x64"
-			IntermediateDirectory=".\ascent-logonserver___Win32_Debug_x64"
+			IntermediateDirectory=".\arcemu-logonserver___Win32_Debug_x64"
 			ConfigurationType="1"
 			CharacterSet="2"
 			>
@@ -134,7 +134,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="..\..\src\ascent-shared"
+				AdditionalIncludeDirectories="..\..\src\arcemu-shared"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;X64"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -162,11 +162,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib libmysql.lib libeay32.lib dbghelp.lib zlib.lib pcre.lib"
-				OutputFile="$(OutDir)/ascent-logonserver.exe"
+				OutputFile="$(OutDir)/arcemu-logonserver.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\dep\lib64"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/ascent-logonserver.pdb"
+				ProgramDatabaseFile="$(OutDir)/arcemu-logonserver.pdb"
 				SubSystem="1"
 				TargetMachine="17"
 				FixedBaseAddress="1"
@@ -200,7 +200,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\..\..\bin\Release"
-			IntermediateDirectory=".\ascent-logonserver___Win32_Release"
+			IntermediateDirectory=".\arcemu-logonserver___Win32_Release"
 			ConfigurationType="1"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -228,7 +228,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="..\..\src\ascent-shared"
+				AdditionalIncludeDirectories="..\..\src\arcemu-shared"
 				PreprocessorDefinitions="_HAS_ITERATOR_DEBUGGING=0;WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -259,11 +259,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib libmysql.lib libeay32.lib dbghelp.lib zlib.lib pcre.lib"
-				OutputFile="$(OutDir)/ascent-logonserver.exe"
+				OutputFile="$(OutDir)/arcemu-logonserver.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\dep\lib32"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/ascent-logonserver.pdb"
+				ProgramDatabaseFile="$(OutDir)/arcemu-logonserver.pdb"
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -299,7 +299,7 @@
 		<Configuration
 			Name="Release|x64"
 			OutputDirectory=".\..\..\bin\Release_x64"
-			IntermediateDirectory=".\ascent-logonserver___Win32_Release_x64"
+			IntermediateDirectory=".\arcemu-logonserver___Win32_Release_x64"
 			ConfigurationType="1"
 			CharacterSet="2"
 			>
@@ -323,7 +323,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="4"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="..\..\src\ascent-shared"
+				AdditionalIncludeDirectories="..\..\src\arcemu-shared"
 				PreprocessorDefinitions="_HAS_ITERATOR_DEBUGGING=0;WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;X64"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -354,11 +354,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib libmysql.lib libeay32.lib dbghelp.lib zlib.lib pcre.lib"
-				OutputFile="$(OutDir)/ascent-logonserver.exe"
+				OutputFile="$(OutDir)/arcemu-logonserver.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\dep\lib64"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/ascent-logonserver.pdb"
+				ProgramDatabaseFile="$(OutDir)/arcemu-logonserver.pdb"
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -399,19 +399,19 @@
 			Name="WS Interface"
 			>
 			<File
-				RelativePath="..\..\src\ascent-logonserver\LogonCommServer.cpp"
+				RelativePath="..\..\src\arcemu-logonserver\LogonCommServer.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-logonserver\LogonCommServer.h"
+				RelativePath="..\..\src\arcemu-logonserver\LogonCommServer.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-logonserver\LogonOpcodes.cpp"
+				RelativePath="..\..\src\arcemu-logonserver\LogonOpcodes.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-logonserver\LogonOpcodes.h"
+				RelativePath="..\..\src\arcemu-logonserver\LogonOpcodes.h"
 				>
 			</File>
 		</Filter>
@@ -419,23 +419,23 @@
 			Name="Client Handlers"
 			>
 			<File
-				RelativePath="..\..\src\ascent-logonserver\AuthSocket.cpp"
+				RelativePath="..\..\src\arcemu-logonserver\AuthSocket.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-logonserver\AuthSocket.h"
+				RelativePath="..\..\src\arcemu-logonserver\AuthSocket.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-logonserver\AuthStructs.h"
+				RelativePath="..\..\src\arcemu-logonserver\AuthStructs.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-logonserver\AutoPatcher.cpp"
+				RelativePath="..\..\src\arcemu-logonserver\AutoPatcher.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-logonserver\AutoPatcher.h"
+				RelativePath="..\..\src\arcemu-logonserver\AutoPatcher.h"
 				>
 			</File>
 		</Filter>
@@ -443,11 +443,11 @@
 			Name="Caching"
 			>
 			<File
-				RelativePath="..\..\src\ascent-logonserver\AccountCache.cpp"
+				RelativePath="..\..\src\arcemu-logonserver\AccountCache.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-logonserver\AccountCache.h"
+				RelativePath="..\..\src\arcemu-logonserver\AccountCache.h"
 				>
 			</File>
 		</Filter>
@@ -455,7 +455,7 @@
 			Name="Console"
 			>
 			<File
-				RelativePath="..\..\src\ascent-logonserver\LogonConsole.cpp"
+				RelativePath="..\..\src\arcemu-logonserver\LogonConsole.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -475,12 +475,12 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-logonserver\LogonConsole.h"
+				RelativePath="..\..\src\arcemu-logonserver\LogonConsole.h"
 				>
 			</File>
 		</Filter>
 		<File
-			RelativePath="..\..\src\ascent-logonserver\LogonStdAfx.cpp"
+			RelativePath="..\..\src\arcemu-logonserver\LogonStdAfx.cpp"
 			>
 			<FileConfiguration
 				Name="Debug|Win32"
@@ -516,15 +516,15 @@
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-logonserver\LogonStdAfx.h"
+			RelativePath="..\..\src\arcemu-logonserver\LogonStdAfx.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-logonserver\Main.cpp"
+			RelativePath="..\..\src\arcemu-logonserver\Main.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-logonserver\Main.h"
+			RelativePath="..\..\src\arcemu-logonserver\Main.h"
 			>
 		</File>
 	</Files>

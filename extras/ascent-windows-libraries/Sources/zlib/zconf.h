@@ -219,7 +219,6 @@
 #    ifdef FAR
 #      undef FAR
 #    endif
-#    define NOMINMAX
 #    include <windows.h>
      /* No need for _export, use ZLIB.DEF instead. */
      /* For complete Windows compatibility, use WINAPI, not __stdcall. */

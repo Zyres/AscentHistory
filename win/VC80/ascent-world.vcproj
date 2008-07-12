@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="ascent-world"
+	Name="arcemu-world"
 	ProjectGUID="{1DC6C4DA-A028-41F3-877D-D5400C594F88}"
 	RootNamespace="game"
 	>
@@ -20,7 +20,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\..\..\bin\Debug"
-			IntermediateDirectory=".\ascent-world___Win32_Debug"
+			IntermediateDirectory=".\arcemu-world___Win32_Debug"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -46,7 +46,7 @@
 				AdditionalOptions="/Zm250"
 				Optimization="0"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="..\..\src\ascent-shared"
+				AdditionalIncludeDirectories="..\..\src\arcemu-shared"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -111,7 +111,7 @@
 		<Configuration
 			Name="Debug|x64"
 			OutputDirectory=".\..\..\bin\Debug_x64"
-			IntermediateDirectory=".\ascent-world___Win32_Debug_x64"
+			IntermediateDirectory=".\arcemu-world___Win32_Debug_x64"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -138,7 +138,7 @@
 				AdditionalOptions="/Zm250"
 				Optimization="0"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="..\..\src\ascent-shared"
+				AdditionalIncludeDirectories="..\..\src\arcemu-shared"
 				PreprocessorDefinitions="WIN32,_DEBUG,_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;X64"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -203,7 +203,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\..\..\bin\Release"
-			IntermediateDirectory=".\ascent-world___Win32_Release"
+			IntermediateDirectory=".\arcemu-world___Win32_Release"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -234,7 +234,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="..\..\src\ascent-shared"
+				AdditionalIncludeDirectories="..\..\src\arcemu-shared"
 				PreprocessorDefinitions="_HAS_ITERATOR_DEBUGGING=0;WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -300,7 +300,7 @@
 		<Configuration
 			Name="Release|x64"
 			OutputDirectory=".\..\..\bin\Release_x64"
-			IntermediateDirectory=".\ascent-world___Win32_Release_x64"
+			IntermediateDirectory=".\arcemu-world___Win32_Release_x64"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -329,7 +329,7 @@
 				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="0"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\..\src\ascent-shared"
+				AdditionalIncludeDirectories="..\..\src\arcemu-shared"
 				PreprocessorDefinitions="_HAS_ITERATOR_DEBUGGING=0;WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;X64"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -400,7 +400,7 @@
 			Name="Launcher"
 			>
 			<File
-				RelativePath="..\..\src\ascent-shared\CoreMemoryAllocator_Core.cpp"
+				RelativePath="..\..\src\arcemu-shared\CoreMemoryAllocator_Core.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -436,636 +436,636 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-world\Main.cpp"
+				RelativePath="..\..\src\arcemu-world\Main.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-world\Master.cpp"
+				RelativePath="..\..\src\arcemu-world\Master.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\ascent-world\Master.h"
+				RelativePath="..\..\src\arcemu-world\Master.h"
 				>
 			</File>
 			<Filter
 				Name="Console"
 				>
 				<File
-					RelativePath="..\..\src\ascent-world\BaseConsole.h"
+					RelativePath="..\..\src\arcemu-world\BaseConsole.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\ascent-world\CConsole.cpp"
+					RelativePath="..\..\src\arcemu-world\CConsole.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\ascent-world\CConsole.h"
+					RelativePath="..\..\src\arcemu-world\CConsole.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\ascent-world\ConsoleCommands.cpp"
+					RelativePath="..\..\src\arcemu-world\ConsoleCommands.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\ascent-world\ConsoleCommands.h"
+					RelativePath="..\..\src\arcemu-world\ConsoleCommands.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\ascent-world\ConsoleListener.cpp"
+					RelativePath="..\..\src\arcemu-world\ConsoleListener.cpp"
 					>
 				</File>
 			</Filter>
 		</Filter>
 		<File
-			RelativePath="..\..\src\ascent-world\AddonMgr.cpp"
+			RelativePath="..\..\src\arcemu-world\AddonMgr.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\AddonMgr.h"
+			RelativePath="..\..\src\arcemu-world\AddonMgr.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\AIInterface.cpp"
+			RelativePath="..\..\src\arcemu-world\AIInterface.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\AIInterface.h"
+			RelativePath="..\..\src\arcemu-world\AIInterface.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\AlteracValley.cpp"
+			RelativePath="..\..\src\arcemu-world\AlteracValley.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\AlteracValley.h"
+			RelativePath="..\..\src\arcemu-world\AlteracValley.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ArathiBasin.cpp"
+			RelativePath="..\..\src\arcemu-world\ArathiBasin.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ArathiBasin.h"
+			RelativePath="..\..\src\arcemu-world\ArathiBasin.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\AreaTrigger.cpp"
+			RelativePath="..\..\src\arcemu-world\AreaTrigger.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\AreaTrigger.h"
+			RelativePath="..\..\src\arcemu-world\AreaTrigger.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Arenas.cpp"
+			RelativePath="..\..\src\arcemu-world\Arenas.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Arenas.h"
+			RelativePath="..\..\src\arcemu-world\Arenas.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ArenaTeam.cpp"
+			RelativePath="..\..\src\arcemu-world\ArenaTeam.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ArenaTeam.h"
+			RelativePath="..\..\src\arcemu-world\ArenaTeam.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\AuctionHouse.cpp"
+			RelativePath="..\..\src\arcemu-world\AuctionHouse.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\AuctionHouse.h"
+			RelativePath="..\..\src\arcemu-world\AuctionHouse.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\AuctionMgr.cpp"
+			RelativePath="..\..\src\arcemu-world\AuctionMgr.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\AuctionMgr.h"
+			RelativePath="..\..\src\arcemu-world\AuctionMgr.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\BattlegroundCommands.cpp"
+			RelativePath="..\..\src\arcemu-world\BattlegroundCommands.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\BattlegroundHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\BattlegroundHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\BattlegroundMgr.cpp"
+			RelativePath="..\..\src\arcemu-world\BattlegroundMgr.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\BattlegroundMgr.h"
+			RelativePath="..\..\src\arcemu-world\BattlegroundMgr.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\CellHandler.h"
+			RelativePath="..\..\src\arcemu-world\CellHandler.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Channel.cpp"
+			RelativePath="..\..\src\arcemu-world\Channel.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Channel.h"
+			RelativePath="..\..\src\arcemu-world\Channel.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ChannelHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\ChannelHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ChannelMgr.h"
+			RelativePath="..\..\src\arcemu-world\ChannelMgr.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\CharacterHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\CharacterHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Chat.cpp"
+			RelativePath="..\..\src\arcemu-world\Chat.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Chat.h"
+			RelativePath="..\..\src\arcemu-world\Chat.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ChatHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\ChatHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ClusterInterface.cpp"
+			RelativePath="..\..\src\arcemu-world\ClusterInterface.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ClusterInterface.h"
+			RelativePath="..\..\src\arcemu-world\ClusterInterface.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\CollideInterface.cpp"
+			RelativePath="..\..\src\arcemu-world\CollideInterface.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\CollideInterface.h"
+			RelativePath="..\..\src\arcemu-world\CollideInterface.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\CombatHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\CombatHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Container.cpp"
+			RelativePath="..\..\src\arcemu-world\Container.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Container.h"
+			RelativePath="..\..\src\arcemu-world\Container.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Corpse.cpp"
+			RelativePath="..\..\src\arcemu-world\Corpse.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Corpse.h"
+			RelativePath="..\..\src\arcemu-world\Corpse.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Creature.cpp"
+			RelativePath="..\..\src\arcemu-world\Creature.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Creature.h"
+			RelativePath="..\..\src\arcemu-world\Creature.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\DatabaseCleaner.cpp"
+			RelativePath="..\..\src\arcemu-world\DatabaseCleaner.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\DatabaseCleaner.h"
+			RelativePath="..\..\src\arcemu-world\DatabaseCleaner.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\DayWatcherThread.cpp"
+			RelativePath="..\..\src\arcemu-world\DayWatcherThread.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\DayWatcherThread.h"
+			RelativePath="..\..\src\arcemu-world\DayWatcherThread.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\debugcmds.cpp"
+			RelativePath="..\..\src\arcemu-world\debugcmds.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\DuelHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\DuelHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\DynamicObject.cpp"
+			RelativePath="..\..\src\arcemu-world\DynamicObject.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\DynamicObject.h"
+			RelativePath="..\..\src\arcemu-world\DynamicObject.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\EventableObject.cpp"
+			RelativePath="..\..\src\arcemu-world\EventableObject.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\EventableObject.h"
+			RelativePath="..\..\src\arcemu-world\EventableObject.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\EventMgr.cpp"
+			RelativePath="..\..\src\arcemu-world\EventMgr.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\EventMgr.h"
+			RelativePath="..\..\src\arcemu-world\EventMgr.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\EyeOfTheStorm.cpp"
+			RelativePath="..\..\src\arcemu-world\EyeOfTheStorm.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\EyeOfTheStorm.h"
+			RelativePath="..\..\src\arcemu-world\EyeOfTheStorm.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\faction.cpp"
+			RelativePath="..\..\src\arcemu-world\faction.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\faction.h"
+			RelativePath="..\..\src\arcemu-world\faction.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\GameObject.cpp"
+			RelativePath="..\..\src\arcemu-world\GameObject.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\GameObject.h"
+			RelativePath="..\..\src\arcemu-world\GameObject.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\GMTicket.cpp"
+			RelativePath="..\..\src\arcemu-world\GMTicket.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Group.cpp"
+			RelativePath="..\..\src\arcemu-world\Group.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Group.h"
+			RelativePath="..\..\src\arcemu-world\Group.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\GroupHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\GroupHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Guild.cpp"
+			RelativePath="..\..\src\arcemu-world\Guild.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Guild.h"
+			RelativePath="..\..\src\arcemu-world\Guild.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\GuildHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\GuildHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\HonorHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\HonorHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\HonorHandler.h"
+			RelativePath="..\..\src\arcemu-world\HonorHandler.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Item.cpp"
+			RelativePath="..\..\src\arcemu-world\Item.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Item.h"
+			RelativePath="..\..\src\arcemu-world\Item.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ItemHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\ItemHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ItemInterface.cpp"
+			RelativePath="..\..\src\arcemu-world\ItemInterface.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ItemInterface.h"
+			RelativePath="..\..\src\arcemu-world\ItemInterface.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ItemPrototype.h"
+			RelativePath="..\..\src\arcemu-world\ItemPrototype.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Level0.cpp"
+			RelativePath="..\..\src\arcemu-world\Level0.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Level1.cpp"
+			RelativePath="..\..\src\arcemu-world\Level1.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Level2.cpp"
+			RelativePath="..\..\src\arcemu-world\Level2.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Level3.cpp"
+			RelativePath="..\..\src\arcemu-world\Level3.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\LfgHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\LfgHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\LfgMgr.cpp"
+			RelativePath="..\..\src\arcemu-world\LfgMgr.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\LfgMgr.h"
+			RelativePath="..\..\src\arcemu-world\LfgMgr.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\LocalizationMgr.cpp"
+			RelativePath="..\..\src\arcemu-world\LocalizationMgr.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\LocalizationMgr.h"
+			RelativePath="..\..\src\arcemu-world\LocalizationMgr.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\LogonCommClient.cpp"
+			RelativePath="..\..\src\arcemu-world\LogonCommClient.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\LogonCommClient.h"
+			RelativePath="..\..\src\arcemu-world\LogonCommClient.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\LogonCommHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\LogonCommHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\LogonCommHandler.h"
+			RelativePath="..\..\src\arcemu-world\LogonCommHandler.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\LootMgr.cpp"
+			RelativePath="..\..\src\arcemu-world\LootMgr.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\LootMgr.h"
+			RelativePath="..\..\src\arcemu-world\LootMgr.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\MailSystem.cpp"
+			RelativePath="..\..\src\arcemu-world\MailSystem.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\MailSystem.h"
+			RelativePath="..\..\src\arcemu-world\MailSystem.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Map.cpp"
+			RelativePath="..\..\src\arcemu-world\Map.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Map.h"
+			RelativePath="..\..\src\arcemu-world\Map.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\MapCell.cpp"
+			RelativePath="..\..\src\arcemu-world\MapCell.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\MapCell.h"
+			RelativePath="..\..\src\arcemu-world\MapCell.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\MapMgr.cpp"
+			RelativePath="..\..\src\arcemu-world\MapMgr.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\MapMgr.h"
+			RelativePath="..\..\src\arcemu-world\MapMgr.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\MapScriptInterface.cpp"
+			RelativePath="..\..\src\arcemu-world\MapScriptInterface.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\MapScriptInterface.h"
+			RelativePath="..\..\src\arcemu-world\MapScriptInterface.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\MiscHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\MiscHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\MovementHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\MovementHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\NameTables.h"
+			RelativePath="..\..\src\arcemu-world\NameTables.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\NPCHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\NPCHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\NPCHandler.h"
+			RelativePath="..\..\src\arcemu-world\NPCHandler.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Object.cpp"
+			RelativePath="..\..\src\arcemu-world\Object.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Object.h"
+			RelativePath="..\..\src\arcemu-world\Object.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ObjectMgr.cpp"
+			RelativePath="..\..\src\arcemu-world\ObjectMgr.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ObjectMgr.h"
+			RelativePath="..\..\src\arcemu-world\ObjectMgr.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ObjectStorage.cpp"
+			RelativePath="..\..\src\arcemu-world\ObjectStorage.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ObjectStorage.h"
+			RelativePath="..\..\src\arcemu-world\ObjectStorage.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Opcodes.cpp"
+			RelativePath="..\..\src\arcemu-world\Opcodes.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Opcodes.h"
+			RelativePath="..\..\src\arcemu-world\Opcodes.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Pet.cpp"
+			RelativePath="..\..\src\arcemu-world\Pet.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Pet.h"
+			RelativePath="..\..\src\arcemu-world\Pet.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\PetHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\PetHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Player.cpp"
+			RelativePath="..\..\src\arcemu-world\Player.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Player.h"
+			RelativePath="..\..\src\arcemu-world\Player.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\PlayerPacketWrapper.cpp"
+			RelativePath="..\..\src\arcemu-world\PlayerPacketWrapper.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\QueryHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\QueryHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Quest.cpp"
+			RelativePath="..\..\src\arcemu-world\Quest.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Quest.h"
+			RelativePath="..\..\src\arcemu-world\Quest.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\QuestCommands.cpp"
+			RelativePath="..\..\src\arcemu-world\QuestCommands.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\QuestHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\QuestHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\QuestMgr.cpp"
+			RelativePath="..\..\src\arcemu-world\QuestMgr.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\QuestMgr.h"
+			RelativePath="..\..\src\arcemu-world\QuestMgr.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\RaidHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\RaidHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\RecallCommands.cpp"
+			RelativePath="..\..\src\arcemu-world\RecallCommands.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ReputationHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\ReputationHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ScriptMgr.cpp"
+			RelativePath="..\..\src\arcemu-world\ScriptMgr.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ScriptMgr.h"
+			RelativePath="..\..\src\arcemu-world\ScriptMgr.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\SkillHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\SkillHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\SkillNameMgr.h"
+			RelativePath="..\..\src\arcemu-world\SkillNameMgr.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\SocialHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\SocialHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\SpeedDetector.cpp"
+			RelativePath="..\..\src\arcemu-world\SpeedDetector.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\SpeedDetector.h"
+			RelativePath="..\..\src\arcemu-world\SpeedDetector.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Spell.cpp"
+			RelativePath="..\..\src\arcemu-world\Spell.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Spell.h"
+			RelativePath="..\..\src\arcemu-world\Spell.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\SpellAuras.cpp"
+			RelativePath="..\..\src\arcemu-world\SpellAuras.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\SpellAuras.h"
+			RelativePath="..\..\src\arcemu-world\SpellAuras.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\SpellEffects.cpp"
+			RelativePath="..\..\src\arcemu-world\SpellEffects.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\SpellFailure.h"
+			RelativePath="..\..\src\arcemu-world\SpellFailure.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\SpellHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\SpellHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\SpellTarget.cpp"
+			RelativePath="..\..\src\arcemu-world\SpellTarget.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\SpellFixes.cpp"
+			RelativePath="..\..\src\arcemu-world\SpellFixes.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Stats.cpp"
+			RelativePath="..\..\src\arcemu-world\Stats.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Stats.h"
+			RelativePath="..\..\src\arcemu-world\Stats.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\StdAfx.cpp"
+			RelativePath="..\..\src\arcemu-world\StdAfx.cpp"
 			>
 			<FileConfiguration
 				Name="Debug|Win32"
@@ -1101,151 +1101,151 @@
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\StdAfx.h"
+			RelativePath="..\..\src\arcemu-world\StdAfx.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\TaxiHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\TaxiHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\TaxiMgr.cpp"
+			RelativePath="..\..\src\arcemu-world\TaxiMgr.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\TaxiMgr.h"
+			RelativePath="..\..\src\arcemu-world\TaxiMgr.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\TerrainMgr.cpp"
+			RelativePath="..\..\src\arcemu-world\TerrainMgr.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\TerrainMgr.h"
+			RelativePath="..\..\src\arcemu-world\TerrainMgr.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\TradeHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\TradeHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\TransporterHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\TransporterHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\TransporterHandler.h"
+			RelativePath="..\..\src\arcemu-world\TransporterHandler.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Unit.cpp"
+			RelativePath="..\..\src\arcemu-world\Unit.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\Unit.h"
+			RelativePath="..\..\src\arcemu-world\Unit.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\UpdateFields.h"
+			RelativePath="..\..\src\arcemu-world\UpdateFields.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\UpdateMask.h"
+			RelativePath="..\..\src\arcemu-world\UpdateMask.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\VoiceChatClientSocket.cpp"
+			RelativePath="..\..\src\arcemu-world\VoiceChatClientSocket.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\VoiceChatClientSocket.h"
+			RelativePath="..\..\src\arcemu-world\VoiceChatClientSocket.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\VoiceChatHandler.cpp"
+			RelativePath="..\..\src\arcemu-world\VoiceChatHandler.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\VoiceChatHandler.h"
+			RelativePath="..\..\src\arcemu-world\VoiceChatHandler.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WarsongGulch.cpp"
+			RelativePath="..\..\src\arcemu-world\WarsongGulch.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WarsongGulch.h"
+			RelativePath="..\..\src\arcemu-world\WarsongGulch.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WayPoints.cpp"
+			RelativePath="..\..\src\arcemu-world\WayPoints.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WeatherMgr.cpp"
+			RelativePath="..\..\src\arcemu-world\WeatherMgr.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WeatherMgr.h"
+			RelativePath="..\..\src\arcemu-world\WeatherMgr.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WordFilter.cpp"
+			RelativePath="..\..\src\arcemu-world\WordFilter.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WordFilter.h"
+			RelativePath="..\..\src\arcemu-world\WordFilter.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WorkdSocketCluster.cpp"
+			RelativePath="..\..\src\arcemu-world\WorkdSocketCluster.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WorkerServerClient.cpp"
+			RelativePath="..\..\src\arcemu-world\WorkerServerClient.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WorkerServerClient.h"
+			RelativePath="..\..\src\arcemu-world\WorkerServerClient.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\World.cpp"
+			RelativePath="..\..\src\arcemu-world\World.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\World.h"
+			RelativePath="..\..\src\arcemu-world\World.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WorldCreator.cpp"
+			RelativePath="..\..\src\arcemu-world\WorldCreator.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WorldCreator.h"
+			RelativePath="..\..\src\arcemu-world\WorldCreator.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WorldRunnable.cpp"
+			RelativePath="..\..\src\arcemu-world\WorldRunnable.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WorldRunnable.h"
+			RelativePath="..\..\src\arcemu-world\WorldRunnable.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WorldSession.cpp"
+			RelativePath="..\..\src\arcemu-world\WorldSession.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WorldSession.h"
+			RelativePath="..\..\src\arcemu-world\WorldSession.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WorldSocket.cpp"
+			RelativePath="..\..\src\arcemu-world\WorldSocket.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\WorldSocket.h"
+			RelativePath="..\..\src\arcemu-world\WorldSocket.h"
 			>
 		</File>
 	</Files>
