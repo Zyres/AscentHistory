@@ -1,33 +1,33 @@
 #include "StdAfx.h"
-#include "ItemPool.h"
+#include "SpellPool.h"
 
 //put some objects in pool
-oItemBufferPool::oItemBufferPool()
+oSpellBufferPool::oSpellBufferPool()
 {
 	max_avails = INITI_POOL_WITH_SIZE;
-	avail_list = (Item **)malloc(sizeof(Item*) * max_avails); //list that contains pointers to objects
+	avail_list = (Spell **)malloc(sizeof(Spell*) * max_avails); //list that contains pointers to objects
 	if( !avail_list )
-		sLog.outError("Item Pool failed to alocate more memory = %u bytes",sizeof(Item*) * max_avails);
+		sLog.outError("Spell Pool failed to alocate more memory = %u bytes",sizeof(Spell*) * max_avails);
 	next_free_avail = 0;
 	InitPoolNewSection(0,max_avails);
 }
 
 //get rid of all objects
-oItemBufferPool::~oItemBufferPool()
+oSpellBufferPool::~oSpellBufferPool()
 {
 }
 
-void oItemBufferPool::DestroyPool()
+void oSpellBufferPool::DestroyPool()
 {
 
-#ifdef TRACK_LEAKED_ITEMS_AND_MEMORY_CORRUPTION
+#ifdef TRACK_LEAKED_SpellS_AND_MEMORY_CORRUPTION
 	if( next_free_avail != 0 )
 	{
-		sLog.outDebug("Memory leak detected in Object Pool for items having %u leaked items. Listing pointers: \n",next_free_avail);
-		std::list<Item *>::iterator itr=used_list.begin();
+		sLog.outDebug("Memory leak detected in Object Pool for Spells having %u leaked Spells. Listing pointers: \n",next_free_avail);
+		std::list<Spell *>::iterator itr=used_list.begin();
 		uint32 foundit = 0;
 		for(itr=used_list.begin();itr!=used_list.end();itr++ )
-			sLog.outDebug("Leaked item p = %u with owner %u \n",*itr,(*itr)->GetOwner() );
+			sLog.outDebug("Leaked Spell p = %u with owner %u \n",*itr,(*itr)->GetOwner() );
 	}
 #endif
 
@@ -38,32 +38,32 @@ void oItemBufferPool::DestroyPool()
 	avail_list = NULL;
 }
 
-//new pool must be filled with item objects
-void oItemBufferPool::InitPoolNewSection(uint32 from, uint32 to)
+//new pool must be filled with Spell objects
+void oSpellBufferPool::InitPoolNewSection(uint32 from, uint32 to)
 {
 	for(uint32 i=from;i<to;i++)
 	{
-		avail_list[i] = new Item;
+		avail_list[i] = new Spell;
 		ASSERT( avail_list[i] );
 	}
 }
 
 //we increase our pool size if we run out of it
-void oItemBufferPool::ExtedLimitAvailLimit()
+void oSpellBufferPool::ExtedLimitAvailLimit()
 {
 	uint32 prev_max = max_avails;
 	max_avails += EXTEND_POOL_WITH_SIZE;
-	avail_list = (Item **)realloc( avail_list, sizeof(Item*) * max_avails );
+	avail_list = (Spell **)realloc( avail_list, sizeof(Spell*) * max_avails );
 	if( !avail_list )
-		sLog.outError("Item Pool failed to alocate more memory = %u bytes",sizeof(Item*) * max_avails);
+		sLog.outError("Spell Pool failed to alocate more memory = %u bytes",sizeof(Spell*) * max_avails);
 	InitPoolNewSection( prev_max, max_avails );
 }
 
-Item *oItemBufferPool::PooledNew()
+Spell *oSpellBufferPool::PooledNew()
 {
 	ObjLock.Acquire();
 
-	//recycle the item object
+	//recycle the Spell object
 	avail_list[ next_free_avail ]->Virtual_Constructor();
 
 	//move our index to next free object
@@ -74,7 +74,7 @@ Item *oItemBufferPool::PooledNew()
 	if( next_free_avail == max_avails )
 		ExtedLimitAvailLimit();
 
-#ifdef TRACK_LEAKED_ITEMS_AND_MEMORY_CORRUPTION
+#ifdef TRACK_LEAKED_SpellS_AND_MEMORY_CORRUPTION
 	used_list.push_back( avail_list[ free_index ] );
 #endif
 	ObjLock.Release();
@@ -82,15 +82,8 @@ Item *oItemBufferPool::PooledNew()
 	return avail_list[ free_index ];
 }
 
-void oItemBufferPool::PooledDelete( Item *dumped )
+void oSpellBufferPool::PooledDelete( Spell *dumped )
 {
-	//containers are items and not stored in this pool atm
-	if( dumped->IsContainer() )
-	{
-		delete dumped;
-		return;
-	}
-
 	//remove events and remove object from world ...
 	dumped->Virtual_Destructor();
 
@@ -99,20 +92,15 @@ void oItemBufferPool::PooledDelete( Item *dumped )
 #ifdef _DEBUG
 	if( next_free_avail == POOL_IS_FULL_INDEX )
 	{
-		sLog.outDebug("Pool is full and we still tried to add more items to it. Maybe item was alocated not from pool ? \n" );
+		sLog.outDebug("Pool is full and we still tried to add more Spells to it. Maybe Spell was alocated not from pool ? \n" );
 		delete dumped;
 		return; // OMG, We made more deletes then inserts ? This should not happen !
 	}
-	if( dumped->GetTypeId() != TYPEID_ITEM )
-	{
-		sLog.outDebug("We tried to add to the item pool an non item object ! \n" );
-		return;
-	}
 #endif
 
-#ifdef TRACK_LEAKED_ITEMS_AND_MEMORY_CORRUPTION
-	//check if item is in list
-	std::list<Item *>::iterator itr=used_list.begin();
+#ifdef TRACK_LEAKED_SpellS_AND_MEMORY_CORRUPTION
+	//check if Spell is in list
+	std::list<Spell *>::iterator itr=used_list.begin();
 	uint32 foundit = 0;
 	for(itr=used_list.begin();itr!=used_list.end();itr++ )
 		if( *itr == dumped )
@@ -131,14 +119,14 @@ void oItemBufferPool::PooledDelete( Item *dumped )
 	next_free_avail--;
 	avail_list[ next_free_avail ] = dumped;
 
-#ifdef TRACK_LEAKED_ITEMS_AND_MEMORY_CORRUPTION
+#ifdef TRACK_LEAKED_SpellS_AND_MEMORY_CORRUPTION
 	used_list.remove( dumped );
 #endif
 	ObjLock.Release();
 }
 
-#ifdef TRACK_LEAKED_ITEMS_AND_MEMORY_CORRUPTION
-uint32 oItemBufferPool::IsValidPointer( Item *objpointer )
+#ifdef TRACK_LEAKED_SpellS_AND_MEMORY_CORRUPTION
+uint32 oSpellBufferPool::IsValidPointer( Spell *objpointer )
 {
 	ObjLock.Acquire();
 	std::list<Item *>::iterator itr=used_list.begin();
@@ -155,7 +143,7 @@ uint32 oItemBufferPool::IsValidPointer( Item *objpointer )
 #endif
 #ifdef _DEBUG
 //maybe we want to see if this pointer is really expired at some point
-uint32	oItemBufferPool::IsDeletedPointer( Item *objpointer )
+uint32	oSpellBufferPool::IsDeletedPointer( Spell *objpointer )
 {
 	ObjLock.Acquire();
 	uint32 object_is_deleted = 0;
@@ -169,4 +157,5 @@ uint32	oItemBufferPool::IsDeletedPointer( Item *objpointer )
 	return object_is_deleted;
 }
 #endif
-createFileSingleton( oItemBufferPool );
+
+createFileSingleton( oSpellBufferPool );
